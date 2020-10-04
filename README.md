@@ -5,7 +5,7 @@
 ## Nursery
 Nursery is a weak daemon process manager that can start/stop process in background. 
 
-![FancyToys](Assets\repository\FancyToys.jpg)
+![FancyToys](Assets/repository/FancyToys.jpg)
 
 ### How does it work?
 
