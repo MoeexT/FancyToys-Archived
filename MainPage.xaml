@@ -1,0 +1,77 @@
+﻿<Page
+    x:Class="FancyToys.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FancyToys"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource BackgroundAcrylicBrush}" 
+    FontFamily="Microsoft YaHei UI Light" MinWidth="800" MinHeight="500" >
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <!--这个加了也不显示，之前可以，不想弄了nmd-->
+        <Grid Grid.Row="0" x:Name="AppTitleBar" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <Grid x:Name="AllContent" Grid.Row="1">
+            <muxc:NavigationView x:Name="NavView" 
+            PaneDisplayMode="Left"
+            PaneTitle="Fancy Toys"
+            ExpandedModeThresholdWidth="150"
+            IsPaneOpen="True"
+            IsBackButtonVisible="Collapsed"
+            IsPaneToggleButtonVisible="True"
+            OpenPaneLength="160"
+            SelectionFollowsFocus="Enabled"
+            IsSettingsVisible="True" 
+            FontFamily="Microsoft YaHei UI Light" 
+            FontSize="12" 
+            FontStyle="Normal" 
+            FontWeight="Normal" 
+            ItemInvoked="NavView_ItemInvoked"
+            BackRequested="NavView_BackRequested"
+            Loaded="NavView_Loaded"
+            SelectionChanged="NavView_SelectionChanged" >
+
+                <muxc:NavigationView.MenuItems>
+                    <muxc:NavigationViewItem Content="Home" Icon="Home" Tag="home" x:Name="HomeItem" FontFamily="Microsoft YaHei UI Light"/>
+                    <muxc:NavigationViewItem Content="Nursery" Tag="nursery" x:Name="NurseryItem" FontFamily="Microsoft YaHei UI Light">
+                        <muxc:NavigationViewItem.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE95E;"/>
+                        </muxc:NavigationViewItem.Icon>
+                    </muxc:NavigationViewItem>
+                    <muxc:NavigationViewItem Content="Trimage" x:Name="ImageItem" ToolTipService.ToolTip="裁剪图片" Tag="trimage">
+                        <muxc:NavigationViewItem.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
+                        </muxc:NavigationViewItem.Icon>
+                    </muxc:NavigationViewItem>
+                    <muxc:NavigationViewItem Content="AV" x:Name="VideoItem" ToolTipService.ToolTip="修剪视频、音频" Tag="avideo">
+                        <muxc:NavigationViewItem.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA69;"/>
+                        </muxc:NavigationViewItem.Icon>
+                    </muxc:NavigationViewItem>
+                </muxc:NavigationView.MenuItems>
+                <Frame x:Name="ContentFrame" Navigated="On_Navigated" AllowDrop="True">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition />
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </muxc:NavigationView>
+        </Grid>
+
+
+    </Grid>
+</Page>

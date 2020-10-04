@@ -1,0 +1,138 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FancyToys.Pages.Nursery"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:mtuc="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    Background="{ThemeResource BackgroundAcrylicBrush}" 
+    x:Class="FancyToys.Pages.Nursery.NurseryPage"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <muxc:CommandBarFlyout Placement="Right" x:Name="CommandFlyout" ShowMode="Transient">
+            <AppBarButton Label="Args" Icon="Attach" Click="AppBarArgsButton_Click" ToolTipService.ToolTip="添加参数" />
+            <AppBarButton Label="Delete" Icon="Delete" Click="AppBarDeleteButton_Click" ToolTipService.ToolTip="删除" />
+        </muxc:CommandBarFlyout>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="0,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="220"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="10,0,0,0">
+                <muxc:MenuBar Height="30" Background="{ThemeResource BackgroundAcrylicBrush}">
+                    <muxc:MenuBarItem Title="📄File">
+                        <MenuFlyoutItem Text="Add File" Click="AddFlyoutItem_Click" FontSize="14" FontFamily="Microsoft YaHei UI Light">
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Modifiers="Control" Key="O"/>
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                        </MenuFlyoutItem>
+                    </muxc:MenuBarItem>
+                    <muxc:MenuBarItem Title="🛠Edit">
+                        <MenuFlyoutItem Text="Stop All" Click="StopAllFlyoutItem_Click"/>
+                        <MenuFlyoutItem Text="Remove All" Click="RemoveAllFlyoutItem_Click"/>
+                    </muxc:MenuBarItem>
+                    <muxc:MenuBarItem Title="👀View">
+                        <muxc:RadioMenuFlyoutItem Text="🧑Default" Click="SetMidSmallFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <MenuFlyoutSeparator/>
+                        <muxc:RadioMenuFlyoutItem Text="👶Small" Click="SetSmallFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="🧑Mid-Small" Click="SetMidSmallFlyoutItem_Click" IsChecked="True" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="👨Mid-Large" Click="SetMidLargeFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="🧔Large" Click="SetLargeFlyoutItem_Click" GroupName="SizeGroup"/>
+                    </muxc:MenuBarItem>
+
+                    <muxc:MenuBarItem Title="🖐Help">
+                        <MenuFlyoutItem Text="How to use..." Click="HelpFlyoutItem_Click" FontSize="14" FontFamily="Microsoft YaHei UI Light"/>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="About" Click="AboutFlyoutItem_Click" FontSize="14" FontFamily="Microsoft YaHei UI Light">
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Modifiers="Control" Key="I"/>
+                            </MenuFlyoutItem.KeyboardAccelerators>
+
+                        </MenuFlyoutItem>
+                    </muxc:MenuBarItem>
+                </muxc:MenuBar>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="10,0,0,0">
+                <ListBox x:Name="ProcessListBox" Background="{ThemeResource BackgroundAcrylicBrush}" 
+                             ItemsSource="{Binding SwitchList}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Height" Value="32" />
+                            <Setter Property="Padding" Value="10,0,0,0"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+
+            <Grid  Grid.Row="2"  Margin="10,0,10,10">
+                <Rectangle
+                    x:Name="DropArea" 
+                    AllowDrop="True" 
+                    Drop="DropArea_Drop"
+                    DragOver="DropArea_DragOver"
+                    StrokeDashArray="2.5,2.5"
+                    Stroke="#FFC3C3C3"
+                    StrokeThickness="3"
+                    RadiusX="5"
+                    RadiusY="5"
+                    Canvas.ZIndex="1">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="#FF7C7C7C" Opacity="0.2"/>
+                    </Rectangle.Fill>
+                </Rectangle>
+
+                <TextBlock 
+                    Text="Drop file here" 
+                    Margin="31,73,19,93" 
+                    FontSize="36" 
+                    FontFamily="Microsoft YaHei UI Light" Height="44" 
+                    Foreground="#FF888888" Canvas.ZIndex="-1" FontStyle="Normal"
+                    />
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <mtuc:DataGrid 
+                x:Name="ProcessInformationDataGrid"
+                IsReadOnly="True"
+                ItemsSource="{x:Bind InfoList}"
+                >
+                <!--<mtuc:DataGrid.Columns>
+                    <mtuc:DataGridTextColumn Header="Process" Binding="{Binding Process}" Tag="process"/>
+                    <mtuc:DataGridTextColumn Header="PID" Binding="{Binding PID}" Tag="pid"/>
+                    <mtuc:DataGridTextColumn Header="CPU" Binding="{Binding CPU}" Tag="cpu"/>
+                    <mtuc:DataGridTextColumn Header="Memory" Binding="{Binding Memory}" Tag="memory"/>
+                </mtuc:DataGrid.Columns>-->
+            </mtuc:DataGrid>
+        </Grid>
+
+        <!--<mtuc:GridSplitter
+            GripperCursor="Default"
+            HorizontalAlignment="Left"
+            Grid.Column="1"
+            ResizeDirection="Auto"
+            ResizeBehavior="BasedOnAlignment"
+            CursorBehavior="ChangeOnSplitterHover"
+            Width="16"
+            >
+            <mtuc:GridSplitter.RenderTransform>
+                <TranslateTransform X="-8" />
+            </mtuc:GridSplitter.RenderTransform>
+        </mtuc:GridSplitter>-->
+
+
+
+    </Grid>
+</Page>

@@ -1,0 +1,19 @@
+﻿<ContentDialog
+    x:Class="FancyToys.Pages.Dialog.ConfirmCloseDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FancyToys.Pages.Dialog"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="关闭FancyToys？"
+    PrimaryButtonText="关闭"
+    SecondaryButtonText="取消"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <RadioButton x:Name="rbTerminate" GroupName="close" Content="退出" IsChecked="True"/>
+        <RadioButton x:Name="rbSystray" GroupName="close" Content="最小化到系统托盘"/>
+    </StackPanel>
+</ContentDialog>
