@@ -109,8 +109,9 @@ namespace FancyToys
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
+        private void SystemNavigationManager_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
         {
+            /*
             Deferral deferral = e.GetDeferral();
             ConfirmCloseDialog dlg = new ConfirmCloseDialog();
             ContentDialogResult result = await dlg.ShowAsync();
@@ -149,7 +150,7 @@ namespace FancyToys
                         deferral.Complete();
                         break;
                 }
-            }
+            }*/
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

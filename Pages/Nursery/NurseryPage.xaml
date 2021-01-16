@@ -44,12 +44,12 @@
                         <MenuFlyoutItem Text="Remove All" Click="RemoveAllFlyoutItem_Click"/>
                     </muxc:MenuBarItem>
                     <muxc:MenuBarItem Title="👀View">
-                        <muxc:RadioMenuFlyoutItem Text="🧑Default" Click="SetMidSmallFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="🧑Default" Tag="38" Click="SetSizeFlyoutItem_Click" GroupName="SizeGroup"/>
                         <MenuFlyoutSeparator/>
-                        <muxc:RadioMenuFlyoutItem Text="👶Small" Click="SetSmallFlyoutItem_Click" GroupName="SizeGroup"/>
-                        <muxc:RadioMenuFlyoutItem Text="🧑Mid-Small" Click="SetMidSmallFlyoutItem_Click" IsChecked="True" GroupName="SizeGroup"/>
-                        <muxc:RadioMenuFlyoutItem Text="👨Mid-Large" Click="SetMidLargeFlyoutItem_Click" GroupName="SizeGroup"/>
-                        <muxc:RadioMenuFlyoutItem Text="🧔Large" Click="SetLargeFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="👶Small" Tag="32" Click="SetSizeFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="🧑Mid-Small" Tag="38" Click="SetSizeFlyoutItem_Click" IsChecked="True" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="👨Mid-Large" Tag="42" Click="SetSizeFlyoutItem_Click" GroupName="SizeGroup"/>
+                        <muxc:RadioMenuFlyoutItem Text="🧔Large" Tag="50" Click="SetSizeFlyoutItem_Click" GroupName="SizeGroup"/>
                     </muxc:MenuBarItem>
 
                     <muxc:MenuBarItem Title="🖐Help">

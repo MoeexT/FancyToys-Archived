@@ -1,4 +1,4 @@
-﻿<ContentDialog
+﻿<ContentDialog xmlns:my="using:Microsoft.Toolkit.Uwp.UI.Controls" 
     x:Class="FancyToys.Pages.Dialog.MessageDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,13 +6,33 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="一个提示"
-    PrimaryButtonText="我知道啦😋"
-    SecondaryButtonText="还是算了😑"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+    SecondaryButtonText="取消">
+    <ContentDialog.Title>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <FontIcon x:Name="TitleIcon" Grid.Column="0" FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" FontSize="22" />
+            <TextBlock x:Name="TitleText" Grid.Column="1" Text="标题" Margin="5,0,0,0" />
+        </Grid>
+    </ContentDialog.Title>
+    
+    <Grid x:Name="TheGrid" HorizontalAlignment="Left" Height="160" Width="270">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="22" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="TheTextBlock" Grid.Row="0" Text="Default text." Margin="2,0,0,0" />
+        <Image x:Name="TheImage" Grid.Row="1"
+            Stretch="Uniform"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            ToolTipService.ToolTip="点击以更换图片" Source="/Assets/wj.jpg"
+            AllowDrop="True"
+            DragOver="DragImageOver"
+            Drop="DropImageIn"
+            />
 
-    <Grid>
-        <TextBlock x:Name="TheTextBlock" Text="Default text." />
     </Grid>
 </ContentDialog>

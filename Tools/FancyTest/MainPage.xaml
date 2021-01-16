@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="FancyTest.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FancyTest"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Button x:Name="SendButton" Content="发送" Margin="33,73,0,0" VerticalAlignment="Top" Width="58" Click="SendButton_Click"/>
+        <TextBox x:Name="Message" HorizontalAlignment="Left" Margin="96,73,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="33" Width="197" PlaceholderText="键入以发送"/>
+        <TextBox x:Name="Monitor" HorizontalAlignment="Left" Margin="298,73,0,0" Text="nihao" TextWrapping="Wrap" VerticalAlignment="Top" Height="456" Width="730" FontSize="12"/>
+
+    </Grid>
+</Page>

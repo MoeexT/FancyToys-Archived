@@ -4,7 +4,6 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using NLog;
 using System.Diagnostics;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -12,6 +11,8 @@ using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls.Primitives;
 
+using FancyToys.Pages.Dialog;
+using Microsoft.UI.Xaml.Controls;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -22,7 +23,6 @@ namespace FancyToys.Pages.Nursery
     /// </summary>
     public sealed partial class NurseryPage : Page
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
         Dictionary<string, FileProcessStruct> pNersury; // = new Dictionary<string, FileProcessStruct>();
         //private HashSet<string> selectedSet = new HashSet<string>();
         private string lastFile;
@@ -133,13 +133,12 @@ namespace FancyToys.Pages.Nursery
                 DataPackageView dpv = e.DataView;
                 if (dpv.Contains(StandardDataFormats.StorageItems))
                 {
-                    List<StorageFile> fileList = new List<StorageFile>();
+                    //List<StorageFile> fileList = new List<StorageFile>();
                     var files = await dpv.GetStorageItemsAsync();
                     foreach (var item in files)
                     {
                         if (item.Name.EndsWith(".exe"))
                         {
-                            //DialogUtil.Info(item.Name);
                             AddFile(item.Path);
                         }
                     }
@@ -157,7 +156,6 @@ namespace FancyToys.Pages.Nursery
             e.DragUIOverride.IsCaptionVisible = true;
             e.DragUIOverride.IsContentVisible = true;
             e.DragUIOverride.IsGlyphVisible = true;
-            //DialogUtil.ShowDialog(e.DragUIOverride.IsCaptionVisible.ToString() + e.DragUIOverride.IsContentVisible.ToString() + e.DragUIOverride.IsGlyphVisible.ToString());
             e.Handled = true;
         }
 
@@ -225,7 +223,7 @@ namespace FancyToys.Pages.Nursery
         private void Switch_RightTapped(object sender, RoutedEventArgs e)
         {
             ToggleSwitch tswitch = sender as ToggleSwitch;
-            lastFile = tswitch.Header.ToString();
+            lastFile = tswitch.OnContent.ToString().Split(' ')[0];
         }
 
         /// <summary>
@@ -244,7 +242,7 @@ namespace FancyToys.Pages.Nursery
             {
                 AddFile(file.Path);
             }
-            FileUtil.FileWriter(pNersury, logger);
+            FileUtil.FileWriter(pNersury);
         }
         private void StopAllFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
@@ -262,6 +260,11 @@ namespace FancyToys.Pages.Nursery
         {
         }
 
+        /// <summary>
+        /// 开关的右键唤出菜单  附加参数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AppBarArgsButton_Click(object sender, RoutedEventArgs e)
         {
             InputDialog inputDialog = new InputDialog("为"+ lastFile +"输入参数", pNersury[lastFile].args);
@@ -269,53 +272,66 @@ namespace FancyToys.Pages.Nursery
             if (inputDialog.isSaved)
             {
                 ModifyNursery(lastFile, inputDialog.inputArgs);
-                FileUtil.FileWriter(pNersury, logger);
+                FileUtil.FileWriter(pNersury);
             }
         }
 
-        private void AppBarDeleteButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 开关的右键删除按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void AppBarDeleteButton_Click(object sender, RoutedEventArgs e)
         {
             //DialogUtil.Info("我要深处啦");
             ToggleSwitch rts = null;
             foreach (ToggleSwitch ts in ProcessListBox.Items)
             {
-                if (ts.Header.ToString().Equals(lastFile))
+                if (ts.OnContent.ToString().StartsWith(lastFile))
                 {
-                    rts = ts;
-                    break;
+                    if (ts.IsOn)
+                    {
+                        //await MessageDialog.Warn("进程未退出", "继续操作可能丢失工作内容");
+                        MessageDialog dialog = new MessageDialog("进程未退出", "继续操作可能丢失工作内容", MessageDialog.MessageType.Info)
+                        {
+                            PrimaryButtonText = "仍然退出"
+                        };
+                        dialog.PrimaryButtonClick += (_s, _e) => 
+                        {
+                            FileProcessStruct ps = pNersury[lastFile];
+                            ps.isRunning = false;
+                            SendMessage(false, ps.pathname, ps.args);
+                            pNersury[lastFile] = ps;
+                            RemoveProcessInformation(lastFile);
+                            rts = ts;
+                        };
+                        await dialog.ShowAsync();
+                    } else {
+                        rts = ts;
+                        break;
+                    }
                 }
             }
             if (rts != null)
             {
                 ProcessListBox.Items.Remove(rts);
                 pNersury.Remove(lastFile);
-                FileUtil.FileWriter(pNersury, logger);
+                FileUtil.FileWriter(pNersury);
             }
         }
 
-        private void SetSmallFlyoutItem_Click(object sender, RoutedEventArgs e)
+        private void SetSizeFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            ProcessListBox.ItemContainerStyle = GetStyle(HeightProperty, "32");
-        }
-        private void SetMidSmallFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            ProcessListBox.ItemContainerStyle = GetStyle(HeightProperty, "38");
-        }
-        private void SetMidLargeFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            ProcessListBox.ItemContainerStyle = GetStyle(HeightProperty, "44");
-        }
-        private void SetLargeFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-            ProcessListBox.ItemContainerStyle = GetStyle(HeightProperty, "50");
+            ProcessListBox.ItemContainerStyle = SetStyle(HeightProperty, ((RadioMenuFlyoutItem)sender).Tag);
         }
         /// <summary>
+        /// 动态改变switchToggle的样式
         /// From https://blog.csdn.net/lindexi_gd/article/details/104992276
         /// </summary>
         /// <param name="property"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private Style GetStyle(DependencyProperty property, object value)
+        private Style SetStyle(DependencyProperty property, object value)
         {
             Style style = new Style
             {

@@ -19,6 +19,7 @@ using Windows.UI.Core;
 using Microsoft.Toolkit.Uwp.Helpers;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml.Controls.Primitives;
+using FancyToys.Pages.Dialog;
 
 namespace FancyToys.Pages.Nursery
 {
@@ -62,12 +63,12 @@ namespace FancyToys.Pages.Nursery
             public int memory;
         }
 
-        private void AddFile(string pathName)
+        private async void AddFile(string pathName)
         {
             string fileName = System.IO.Path.GetFileNameWithoutExtension(pathName);
             if (pNersury.ContainsKey(fileName))
             {
-                DialogUtil.Info(fileName + "已存在😄");
+                await MessageDialog.Info(fileName + "已存在", "尝试更换文件");
                 Debug.WriteLine(fileName + "已存在😄");
                 return;
             }

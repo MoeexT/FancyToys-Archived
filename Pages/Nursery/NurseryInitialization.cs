@@ -23,7 +23,7 @@ namespace FancyToys.Pages.Nursery
         private async void Initialize()
         {
             // 恢复数据
-            pNersury = await FileUtil.FileReader(logger);
+            pNersury = await FileUtil.FileReader();
             InfoList = new ObservableCollection<ProcessInformation>();
             Dictionary<string, ToggleSwitch> switchDict = new Dictionary<string, ToggleSwitch>();
             foreach (KeyValuePair<string, FileProcessStruct> kv in pNersury)
@@ -37,9 +37,9 @@ namespace FancyToys.Pages.Nursery
             }
         }
 
-        private void InitializeLauncher()
+        private async void InitializeLauncher()
         {
-            FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
+            await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
         }
     }
 }

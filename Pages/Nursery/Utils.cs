@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using NLog;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -28,7 +27,7 @@ namespace FancyToys.Pages.Nursery
 
 
 
-        public static async Task<Dictionary<string, NurseryPage.FileProcessStruct>> FileReader(Logger logger)
+        public static async Task<Dictionary<string, NurseryPage.FileProcessStruct>> FileReader()
         {
             StorageFile file = await localFolder.CreateFileAsync(jsonFile, CreationCollisionOption.OpenIfExists);
             string JSONContent = await FileIO.ReadTextAsync(file);
@@ -52,7 +51,7 @@ namespace FancyToys.Pages.Nursery
             return dict;
         }
 
-        public static async void FileWriter(Dictionary<string, NurseryPage.FileProcessStruct> dict, Logger logger)
+        public static async void FileWriter(Dictionary<string, NurseryPage.FileProcessStruct> dict)
         {
             Dictionary<string, FileProcessJson> dj = new Dictionary<string, FileProcessJson>();
             foreach (KeyValuePair<string, NurseryPage.FileProcessStruct> kv in dict)
@@ -72,8 +71,9 @@ namespace FancyToys.Pages.Nursery
         }
     }
 
-    public class DialogUtil
+    /*public class DialogUtil
     {
+        // https://stackoverflow.com/questions/33018346/only-a-single-contentdialog-can-be-open-at-any-time-error-while-opening-anoth
         public static ContentDialog ActiveDialog;
         static TaskCompletionSource<bool> DialogAwaiter = new TaskCompletionSource<bool>();
         public static async void CreateContentDialog(ContentDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
@@ -109,6 +109,6 @@ namespace FancyToys.Pages.Nursery
             await ActiveDialog.ShowAsync();
             ActiveDialog.Closed -= ActiveDialog_Closed;
         }
-    }
+    }*/
 
 }
