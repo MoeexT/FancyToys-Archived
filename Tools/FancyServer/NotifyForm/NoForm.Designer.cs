@@ -1,5 +1,5 @@
 ﻿
-namespace FancyServer
+namespace FancyServer.NotifyForm
 {
     partial class NoForm
     {
@@ -34,6 +34,8 @@ namespace FancyServer
             this.TheNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.TheMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NurseryMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.NurseryAddFileItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.NurserySeparatorItem = new System.Windows.Forms.ToolStripSeparator();
             this.ExitMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.TheMenu.SuspendLayout();
             this.SuspendLayout();
@@ -60,9 +62,27 @@ namespace FancyServer
             // NurseryMenu
             // 
             this.NurseryMenu.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.NurseryMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.NurseryAddFileItem,
+            this.NurserySeparatorItem});
             this.NurseryMenu.Name = "NurseryMenu";
             this.NurseryMenu.Size = new System.Drawing.Size(210, 24);
             this.NurseryMenu.Text = "Nursery";
+            // 
+            // NurseryAddFileItem
+            // 
+            this.NurseryAddFileItem.BackColor = System.Drawing.Color.White;
+            this.NurseryAddFileItem.Name = "NurseryAddFileItem";
+            this.NurseryAddFileItem.Size = new System.Drawing.Size(224, 26);
+            this.NurseryAddFileItem.Text = "Open";
+            this.NurseryAddFileItem.Click += new System.EventHandler(this.NurseryAddFileItem_Click);
+            // 
+            // NurserySeparatorItem
+            // 
+            this.NurserySeparatorItem.BackColor = System.Drawing.Color.Black;
+            this.NurserySeparatorItem.ForeColor = System.Drawing.SystemColors.Control;
+            this.NurserySeparatorItem.Name = "NurserySeparatorItem";
+            this.NurserySeparatorItem.Size = new System.Drawing.Size(221, 6);
             // 
             // ExitMenu
             // 
@@ -92,5 +112,7 @@ namespace FancyServer
         private System.Windows.Forms.ContextMenuStrip TheMenu;
         private System.Windows.Forms.ToolStripMenuItem NurseryMenu;
         private System.Windows.Forms.ToolStripMenuItem ExitMenu;
+        private System.Windows.Forms.ToolStripMenuItem NurseryAddFileItem;
+        private System.Windows.Forms.ToolStripSeparator NurserySeparatorItem;
     }
 }

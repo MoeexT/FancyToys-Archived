@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using FancyServer.Bridge;
 
 namespace FancyServer.Nursery
 {
     partial class ProcessManager
     {
-        private static Process GetProcess(string pathName, string args)
+        private static Process AddProcess(string pathName, string args)
         {
             // if (args == null) { args = string.Empty; }
 
@@ -32,7 +30,7 @@ namespace FancyServer.Nursery
                 isRunning = false
             };
             fpName[pathName] = null;
-            logger.Info("Added {0} to local process table");
+            LoggingManager.Info($"Added {pathName} to local process table.");
             return child;
         }
 
@@ -41,7 +39,7 @@ namespace FancyServer.Nursery
             Process ps = sender as Process;
             string pathName = ps.StartInfo.FileName;
             NurseryManager.OnProcessStopped(pathName, fpName[pathName]);
-            logger.Info("{0} exited", fpName[pathName]);
+            LoggingManager.Info($"Process {fpName[pathName]} exited");
         }
     }
 }

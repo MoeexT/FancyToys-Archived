@@ -11,27 +11,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using FancyServer.Bridge;
 
-namespace FancyServer
+namespace FancyServer.NotifyForm
 {
+    
     public partial class NoForm : Form
     {
         delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
         private static readonly NoForm TheForm = new NoForm();
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         static bool once = false;
         private NoForm()
         {
             InitializeComponent();
+            Init();
             MessageManager.Init();
         }
         public static NoForm GetTheForm() { return TheForm; }
 
-        protected override void OnShown(EventArgs e)
+        private void Init()
         {
-            base.OnShown(e);
-            AutoScaleMode = AutoScaleMode.Font;
-            Visible = false;
+            NurserySeparatorItem.Paint += new PaintEventHandler((s, e) =>
+            {
+                ToolStripSeparator sep = s as ToolStripSeparator;
+                e.Graphics.FillRectangle(new SolidBrush(Color.White),
+                    0, 0, sep.Width, sep.Height);
+                e.Graphics.DrawLine(new Pen(Color.Black),
+                    25, sep.Height / 2, sep.Width - 4, sep.Height / 2);
+            });
         }
 
         private void TheNotifyIcon_MouseClick(object sender, MouseEventArgs e)
@@ -42,18 +49,13 @@ namespace FancyServer
                 if (!once)
                 {
                     once = true;
-                    MessageManager.NurseryAddProcess(@"C:\puppet.exe");
+                    // TODO: delete test code.
+                    NoformToNursery.AddProcess(@"C:\puppet.exe");
+                    LoggingManager.Trace("trace");
                 }
 
-                if (ActionManager.IsShown)
-                {
-                    ActionManager.Show();
-                }
-                else
-                {
-                    ActionManager.Hide();
-                }
-                logger.Debug("NotifyIcon_MouseClick");
+                ActionManager.ReverseShown();
+                LoggingManager.Debug("NotifyIcon MouseClick");
             }
         }
 
@@ -64,35 +66,27 @@ namespace FancyServer
         /// <param name="e"></param>
         private void ExitMenu_Click(object sender, EventArgs e)
         {
-            MessageManager.CloseServer();
-            logger.Debug("Exit app");
-            ActionManager.Exit();
-            Application.Exit();
-        }
-
-
-        private void MenuStrip_Closing(object sender, ToolStripDropDownClosingEventArgs e)
-        {
-            logger.Info(e.CloseReason);
-            if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked)
-            {
-                e.Cancel = true;
-                logger.Debug("item click");
-            }
+            ActionManager.SendExit();
         }
 
         public void AddItemToMenu(string pathName)
         {
+            /* 
+             *  NurseryMenu.DropDownItems ---------> ToolStripItemCollection<ToolStripItem>
+             *                                                    ↑
+             * ToolStripItem ---> ToolStripSeparator  ------------|
+             *          ↓                                         |
+             * ToolStripDropDownItem -----------------------------|
+             */
             bool hasThisPS = false;
-            foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
+            foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.Tag.Equals(pathName)) { hasThisPS = true; }
+                if (item.Tag != null && item.Tag.Equals(pathName)) { hasThisPS = true; }
             }
             if (!hasThisPS)
             {
-                logger.Debug("add {0}", pathName);
+                LoggingManager.Info($"Added {pathName} to menu item.");
                 var newItem = ActionManager.GetItem(pathName);
-                // newItem.CheckState = CheckState.Unchecked;
                 BeginInvoke(new CrossThreadDelegate(() =>
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
@@ -103,16 +97,16 @@ namespace FancyServer
 
         public void SetNurseryItemCheckState(string pathName, CheckState checkState)
         {
-            foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
+            foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.Tag.Equals(pathName))
+                if (item.Tag!= null && item.Tag.Equals(pathName))
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {
-                        item.CheckState = checkState;
+                        (item as ToolStripMenuItem).CheckState = checkState;
 
                     }));
-                    logger.Debug("set {0} {1}.", pathName, checkState);
+                    LoggingManager.Info($"Set menu item {item.Text} check state: {checkState}");
                     return;
                 }
             }
@@ -128,10 +122,15 @@ namespace FancyServer
                     {
                         NurseryMenu.DropDownItems.Remove(item);
                     }));
-                    logger.Debug("set {0} uncheked.", processName);
+                    LoggingManager.Info($"Removed menu item: {processName}");
                     return;
                 }
             }
         }
-    }
+
+        private void NurseryAddFileItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Coming soon.");
+        }
+    }   
 }

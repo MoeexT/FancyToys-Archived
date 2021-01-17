@@ -1,16 +1,9 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.IO.Pipes;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Text;
 using System.Threading;
-using Windows.Storage;
+using System.Diagnostics;
+
+using FancyServer.Bridge;
 
 namespace FancyServer.Messenger
 {
@@ -19,7 +12,6 @@ namespace FancyServer.Messenger
     /// </summary>
     class PipeMessenger
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static NamedPipeClientStream client;
         private static StreamReader reader;
         private static StreamWriter writer;
@@ -42,7 +34,7 @@ namespace FancyServer.Messenger
                 PipeDirection.InOut, PipeOptions.Asynchronous);
 
             client.Connect();
-            logger.Info("Connection established.");
+            LoggingManager.Info("Connection established.");
 
             reader = new StreamReader(client);
             writer = new StreamWriter(client);
@@ -50,31 +42,15 @@ namespace FancyServer.Messenger
             while (true)
             {
                 var line = reader.ReadLine();
-
-                //logger.Info(line);
-                try
-                {
-                    MessageStruct ms = JsonConvert.DeserializeObject<MessageStruct>(line);
-                    MessageManager.Receive(ms);
-                }
-                catch (JsonReaderException e)
-                {
-                    logger.Warn(e.Message);
-                    logger.Error("来自前端的无效消息");
-                }
-                catch (JsonSerializationException e)
-                {
-                    logger.Warn(e.Message);
-                    logger.Error("来自前端的无效消息");
-                }
+                MessageManager.Receive(line);
             }
         }
 
-        public static bool Post(MessageStruct ms)
+        public static bool Post(string message)
         {
             if (writer == null) { return false; }
 
-            writer.WriteLine(JsonConvert.SerializeObject(ms));
+            writer.WriteLine(message);
             writer.Flush();
             return true;
         }
@@ -85,9 +61,6 @@ namespace FancyServer.Messenger
             if (reader != null) { reader.Close(); }
             if (client != null) { client.Close(); }
             if (clientThread != null) { clientThread.Abort(); }
-            logger.Info("Pipe closed.");
         }
     }
-
-
 }

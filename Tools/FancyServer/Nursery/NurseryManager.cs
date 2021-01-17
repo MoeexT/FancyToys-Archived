@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using NLog;
+﻿using FancyServer.Bridge;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +7,20 @@ using System.Threading;
 
 namespace FancyServer.Nursery
 {
+    enum NurseryType
+    {                       //    功能        信息流方向        SDU
+        Setting = 1,        // Nursery 设置        ↓      SettingStruct
+        Operation = 2,      // 进程开启/关闭       ↓↑      OperationStruct
+        Information = 3,    // 进程的具体消息       ↑      InformationStruct
+        StandardFile = 4,   // 子进程标准输出流     ↑      StandradFileStruct
+    }
+
+    struct NurseryStruct
+    {
+        public NurseryType type;    // 消息类型
+        public NurseryCode code;    // 操作结果
+        public string content;      // 消息内容
+    }
 
     /// <summary>
     /// 处理所有由Nursery页面发来的请求
@@ -15,21 +29,7 @@ namespace FancyServer.Nursery
     partial class NurseryManager
     {
 
-        private enum NurseryType
-        {                       //    功能        信息流方向        PDU
-            Setting = 0,        // Nursery 设置        ↓      SettingStruct
-            Operation = 1,      // 进程开启/关闭       ↓↑      OperationStruct
-            Information = 2,    // 进程的具体消息       ↑      InformationStruct
-            StandardFile = 3,   // 子进程标准输出流     ↑      StandradFileStruct
-            Log = 4,            // FancyServer日志     ↑          string
-        }
-
-        private struct NurseryStruct
-        {
-            public NurseryType type;    // 消息类型
-            public NurseryCode code;    // 操作结果
-            public string content;      // 消息内容
-        }
+        
 
         private struct SettingStruct
         {
@@ -64,7 +64,6 @@ namespace FancyServer.Nursery
             public string content;
         }
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static Thread senderThread;
         private static int threadSleepSpan = 1000;  // 更新信息时间间隔(ms)
 
@@ -83,7 +82,7 @@ namespace FancyServer.Nursery
                 switch (ns.type)
                 {
                     case NurseryType.Setting:
-                        DealWIthSetting(ns.content);
+                        DealWithSetting(ns.content);
                         break;
                     case NurseryType.Operation:
                         DealWithOperation(ns.content);
@@ -92,40 +91,36 @@ namespace FancyServer.Nursery
                     //case NurseryType.StandardOutput:; break;
                     //case NurseryType.StandardOError:; break;
                     default:
-                        DealWithErrorType();
+                        LoggingManager.Error($"Invalid nursery type. {content}");
                         break;
                 }
             }
             catch (JsonReaderException e)
             {
-                logger.Error(e.Message);
-                logger.Warn("[Nursery] Invalid message: {0}", content);
+                LoggingManager.Warn($"Deserialize NurseryStruct failed. {e.Message}");
             }
             catch (JsonSerializationException e)
             {
-                logger.Error(e.Message);
-                logger.Warn("[Nursery] Invalid message: {0}", content);
+                LoggingManager.Warn($"Deserialize NurseryStruct failed. {e.Message}");
             }
         }
 
 
-        private static void DealWIthSetting(string content)
+        private static void DealWithSetting(string content)
         {
             try
             {
                 SettingStruct ss = JsonConvert.DeserializeObject<SettingStruct>(content);
                 threadSleepSpan = ss.flushTime;
-                Send(PDU(ss, NurseryCode.OK));
+                Send(ss, NurseryCode.OK);
             }
             catch (JsonReaderException e)
             {
-                logger.Error(e.Message);
-                logger.Warn("[Nursery.Setting] Invalid message{0}", content);
+                LoggingManager.Warn($"Deserialize SettingStruct failed. {e.Message}");
             }
             catch (JsonSerializationException e)
             {
-                logger.Error(e.Message);
-                logger.Warn("[Nursery.Setting] Invalid message{0}", content);
+                LoggingManager.Warn($"Deserialize SettingStruct failed. {e.Message}");
             }
         }
 
@@ -136,7 +131,7 @@ namespace FancyServer.Nursery
                 OperationStruct os = JsonConvert.DeserializeObject<OperationStruct>(content);
                 if (os.add && os.remove)
                 {
-                    Send(PDU("添加与删除不能同时操作", NurseryCode.Failed));
+                    LoggingManager.Error("添加与删除不能同时操作");
                     return;
                 }
                 if (os.add)
@@ -159,20 +154,12 @@ namespace FancyServer.Nursery
             }
             catch (JsonReaderException e)
             {
-                logger.Warn(e.Message);
-                logger.Error("[Nursery.Operation] Invalid message{0}", content);
+                LoggingManager.Warn($"Deserialize OperationStruct failed. {e.Message}");
             }
             catch (JsonSerializationException e)
             {
-                logger.Warn(e.Message);
-                logger.Error("[Nursery.Operation] Invalid message{0}", content);
+                LoggingManager.Warn($"Deserialize OperationStruct failed. {e.Message}");
             }
-        }
-
-
-        private static void DealWithErrorType()
-        {
-            Send(PDU("Invalid nursery type.", NurseryCode.UnknownError));
         }
 
         public static void InitProcessInformationSender()
@@ -203,17 +190,17 @@ namespace FancyServer.Nursery
                             cpu = cpuCounter.NextValue(),
                             momory = (int)memCounter.NextValue() >> 10
                         });
-                        Console.Write("\rProcess {0} cpu {1:F} memory {2}",ps.ProcessName, cpuCounter.NextValue(), (int)memCounter.NextValue() >> 10);
+                        Console.Write($"\rProcess {ps.ProcessName} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
                     }
                 }
                 catch (InvalidOperationException e)
                 {
-                    logger.Error("Get processes' information error: {0}", e.Message);
+                    LoggingManager.Warn($"Get processes' information failed: {e.Message}", 2);
                 }
 
                 if (mlist.Count > 0)
                 {
-                    Send(PDU(mlist, NurseryCode.OK));
+                    Send(mlist, NurseryCode.OK);
                 }
                 Thread.Sleep(threadSleepSpan);
             }
@@ -221,7 +208,6 @@ namespace FancyServer.Nursery
         public static void CloseSender()
         {
             if (senderThread != null) { senderThread.Abort(); }
-            logger.Info("SenderThread closed");
         }
     }
 }

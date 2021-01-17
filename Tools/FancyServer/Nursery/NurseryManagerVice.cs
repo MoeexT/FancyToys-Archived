@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
+using FancyServer.Bridge;
+using System;
+
 namespace FancyServer.Nursery
 {
     partial class NurseryManager
@@ -10,12 +13,12 @@ namespace FancyServer.Nursery
         public static void AddProcess(string pathName, string args)
         {
             ProcessManager.Add(pathName, args);
-            NoForm.GetTheForm().AddItemToMenu(pathName);
+            NurseryToNoform.AddNurseryItem(pathName);
             OperationStruct os = new OperationStruct
             {
                 pathName = pathName,
             };
-            Send(PDU(os, NurseryCode.OK));
+            Send(os, NurseryCode.OK);
         }
         /// <summary>
         /// NurseryType: Operation
@@ -25,13 +28,13 @@ namespace FancyServer.Nursery
         public static void StartProcess(string pathName)
         {
             OperateProcessStruct ops = ProcessManager.Start(pathName);
-            NoForm.GetTheForm().SetNurseryItemCheckState(pathName, CheckState.Checked);
+            NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
             OperationStruct os = new OperationStruct
             {
                 pathName = pathName,
                 processName = ops.processName
             };
-            Send(PDU(os, ops.nurseryCode));
+            Send(os, ops.nurseryCode);
         }
 
         /// <summary>
@@ -51,14 +54,14 @@ namespace FancyServer.Nursery
         /// <param name="processName"></param>
         public static void OnProcessStopped(string pathName, string processName)
         {
-            NoForm.GetTheForm().SetNurseryItemCheckState(pathName, CheckState.Unchecked);
+            NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
             OperationStruct os = new OperationStruct
             {
                 remove = true,
                 pathName = pathName,
                 processName = processName
             };
-            Send(PDU(os, NurseryCode.StopUncertain));
+            Send(os, NurseryCode.StopUncertain);
         }
 
         /// <summary>
@@ -70,12 +73,12 @@ namespace FancyServer.Nursery
         public static void RemoveProcess(string pathName)
         {
             OperateProcessStruct ops = ProcessManager.Remove(pathName);
-            NoForm.GetTheForm().RemoveNurseryItem(pathName);
+            NurseryToNoform.RemoveNurseryItem(pathName);
             OperationStruct os = new OperationStruct
             {
                 pathName = pathName
             };
-            Send(PDU(os, ops.nurseryCode));
+            Send(os, ops.nurseryCode);
         }
 
         /// <summary>
@@ -91,8 +94,9 @@ namespace FancyServer.Nursery
                 type = StandardFileType.StandardOutput,
                 content = e.Data
             };
-            Send(PDU(sfs, NurseryCode.OK));
+            Send(sfs, NurseryCode.OK);
         }
+
         /// <summary>
         /// NurseryType: StandardFile
         /// 标准错误流
@@ -106,61 +110,43 @@ namespace FancyServer.Nursery
                 type = StandardFileType.StandardOutput,
                 content = e.Data
             };
-            Send(PDU(sfs, NurseryCode.OK));
+            Send(sfs, NurseryCode.OK);
         }
 
-        private static void Send(NurseryStruct pdu)
+        private static void Send(object sdu, NurseryCode nc)
         {
-            MessageManager.Send(MessageType.nursery, JsonConvert.SerializeObject(pdu));
+            NurseryStruct? pdu = null;
+            switch (sdu)
+            {
+                case SettingStruct ss:
+                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(ss));
+                    break;
+                case OperationStruct os:
+                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(os));
+                    break;
+                case List<InformationStruct> lis:
+                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(lis));
+                    break;
+                case StandardFileStruct sfs:
+                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(sfs));
+                    break;
+                default:
+                    LoggingManager.Error("Invalid nursery SDU type.", 2);
+                    break;
+            }
+            if (pdu != null)
+            {
+                MessageManager.Send(pdu);
+            }
         }
 
-        private static NurseryStruct PDU(SettingStruct sdu, NurseryCode nc)
+        private static NurseryStruct PDU(NurseryType nt, NurseryCode nc, string sdu)
         {
             NurseryStruct ns = new NurseryStruct
             {
                 type = NurseryType.Setting,
                 code = nc,
-                content = JsonConvert.SerializeObject(sdu)
-            };
-            return ns;
-        }
-        private static NurseryStruct PDU(OperationStruct sdu, NurseryCode nc)
-        {
-            NurseryStruct ns = new NurseryStruct
-            {
-                type = NurseryType.Operation,
-                code = nc,
-                content = JsonConvert.SerializeObject(sdu)
-            };
-            return ns;
-        }
-        private static NurseryStruct PDU(List<InformationStruct> sdu, NurseryCode nc)
-        {
-            NurseryStruct ns = new NurseryStruct
-            {
-                type = NurseryType.Information,
-                code = nc,
-                content = JsonConvert.SerializeObject(sdu)
-            };
-            return ns;
-        }
-        private static NurseryStruct PDU(StandardFileStruct sdu, NurseryCode nc)
-        {
-            NurseryStruct ns = new NurseryStruct
-            {
-                type = NurseryType.StandardFile,
-                code = nc,
-                content = JsonConvert.SerializeObject(sdu)
-            };
-            return ns;
-        }
-        private static NurseryStruct PDU(string ct, NurseryCode nc)
-        {
-            NurseryStruct ns = new NurseryStruct
-            {
-                type = NurseryType.Log,
-                code = nc,
-                content = ct
+                content = sdu
             };
             return ns;
         }

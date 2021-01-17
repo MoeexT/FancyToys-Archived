@@ -1,13 +1,8 @@
-﻿using NLog;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using FancyServer.Bridge;
 
 namespace FancyServer.Nursery
 {
@@ -26,6 +21,7 @@ namespace FancyServer.Nursery
         Forbidden = 403,        // 拒绝
         FileNotExist = 404,     // 该文件不存在
         ProcessNotExist = 406,  // 该进程不存在
+        ProcessAlreadyExists = 407,// 该进程不存在
         Failed = 500,           // 操作失败
         UnknownError = 501,     // 未知错误
     }
@@ -47,8 +43,6 @@ namespace FancyServer.Nursery
 
     partial class ProcessManager
     {
-
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         //private static Dictionary<string, FileStruct> files = new Dictionary<string, FileStruct>();
         private static Dictionary<string, ProcessStruct> processes = new Dictionary<string, ProcessStruct>();
         public static Dictionary<string, string> fpName = new Dictionary<string, string>();
@@ -63,16 +57,24 @@ namespace FancyServer.Nursery
             if (!File.Exists(pathName))
             {
                 ops.nurseryCode = NurseryCode.FileNotExist;
-                logger.Error("File doesn't exist: {0}", pathName);
+                LoggingManager.Error($"File doesn't exist: {pathName}");
                 return ops;
             }
-            if (processes.ContainsKey(pathName) && processes[pathName].isRunning)
+            if (processes.ContainsKey(pathName))
             {
-                ops.nurseryCode = NurseryCode.AlreadyRunning;
-                logger.Warn("Process has been running: {0}[{1}]", pathName, processes[pathName].process.Id);
+                if (processes[pathName].isRunning)
+                {
+                    ops.nurseryCode = NurseryCode.AlreadyRunning;
+                    LoggingManager.Warn($"Process has been running: {pathName}[{processes[pathName].process.Id}]");
+                }
+                else
+                {
+                    ops.nurseryCode = NurseryCode.ProcessAlreadyExists;
+                    LoggingManager.Warn($"Process already exists, click the switch to run: {pathName}");
+                }
                 return ops;
             }
-            GetProcess(pathName, args);
+            AddProcess(pathName, args);
             return ops;
         }
 
@@ -86,13 +88,13 @@ namespace FancyServer.Nursery
             if (!processes.ContainsKey(pathName))
             {
                 ops.nurseryCode = NurseryCode.ProcessNotExist;
-                logger.Error("Process doesn't not exist: {0}", pathName);
+                LoggingManager.Error($"Process doesn't not exist: {pathName}");
                 return ops;
             }
             if (processes.ContainsKey(pathName) && processes[pathName].isRunning)
             {
                 ops.nurseryCode = NurseryCode.AlreadyRunning;
-                logger.Warn("Process has been running: {0}[{1}]", pathName, processes[pathName].process.Id);
+                LoggingManager.Warn($"Process has been running: {pathName}[{processes[pathName].process.Id}]");
                 return ops;
             }
 
@@ -103,7 +105,7 @@ namespace FancyServer.Nursery
             if (!launchOK)
             {
                 ops.nurseryCode = NurseryCode.Failed;
-                logger.Info("Launch failed: {0}", pathName);
+                LoggingManager.Error($"Process launch failed: {pathName}");
                 return ops;
             }
             /* 发现同名进程
@@ -119,7 +121,7 @@ namespace FancyServer.Nursery
             ps.isRunning = true;
             processes[pathName] = ps;
             fpName[pathName] = child.ProcessName;
-            logger.Info("Launched successfully: {0}[{1}]", child.ProcessName, child.Id);
+            LoggingManager.Info($"Process launched successfully: {child.ProcessName}[{child.Id}]");
             ops.nurseryCode = NurseryCode.OK;
             ops.processName = processes[pathName].process.ProcessName;
             return ops;
@@ -134,7 +136,7 @@ namespace FancyServer.Nursery
             if (!processes.ContainsKey(pathName))
             {
                 ops.nurseryCode = NurseryCode.ProcessNotExist;
-                logger.Error("Process doesn't exist: {0}", pathName);
+                LoggingManager.Error($"Process doesn't exist: {pathName}");
                 return ops;
             }
             ProcessStruct ps = processes[pathName];
@@ -143,7 +145,7 @@ namespace FancyServer.Nursery
             if (ps.process.HasExited)
             {
                 ops.nurseryCode = NurseryCode.AlreadyStopped;
-                logger.Warn("Process had exited: {0}", pathName);
+                LoggingManager.Warn($"Process had exited: {pathName}");
             }
             ps.process.Kill();
             ps.isRunning = false;
@@ -157,7 +159,7 @@ namespace FancyServer.Nursery
             if (!processes.ContainsKey(pathName))
             {
                 ops.nurseryCode = NurseryCode.ProcessNotExist;
-                logger.Error("Process doesn't exist: {0}", pathName);
+                LoggingManager.Error($"Process doesn't exist: {pathName}");
                 return ops;
             }
             Process ps = processes[pathName].process;

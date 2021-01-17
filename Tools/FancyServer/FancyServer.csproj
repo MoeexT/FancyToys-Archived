@@ -84,14 +84,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageManagerVice.cs" />
+    <Compile Include="Bridge\LoggingManager.cs" />
+    <Compile Include="Bridge\MessageManagerVice.cs" />
+    <Compile Include="Bridge\SettingManager.cs" />
+    <Compile Include="Bridge\SettingManagerVice.cs" />
     <Compile Include="Messenger\PipeMessenger.cs" />
-    <Compile Include="MessageManager.cs" />
-    <Compile Include="ActionManager.cs" />
-    <Compile Include="NoForm.cs">
+    <Compile Include="Bridge\MessageManager.cs" />
+    <Compile Include="NotifyForm\ActionManager.cs" />
+    <Compile Include="NotifyForm\NoForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NoForm.Designer.cs">
+    <Compile Include="NotifyForm\NoForm.Designer.cs">
       <DependentUpon>NoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Nursery\NurseryManager.cs" />
@@ -100,7 +103,9 @@
     <Compile Include="Nursery\ProcessManagerVice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="NoForm.resx">
+    <Compile Include="Bridge\NoformToNursery.cs" />
+    <Compile Include="Bridge\NurseryToNoform.cs" />
+    <EmbeddedResource Include="NotifyForm\NoForm.resx">
       <DependentUpon>NoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -147,6 +152,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Persistence\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
