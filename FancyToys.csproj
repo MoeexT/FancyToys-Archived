@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FancyToys</RootNamespace>
     <AssemblyName>FancyToys</AssemblyName>
-    <DefaultLanguage>zh-cn</DefaultLanguage>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -18,6 +18,13 @@
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
+    <AppInstallerUri>C:\Users\Administrator\OneDrive\文档\Visual Studio 2019\FancyToys\publish</AppInstallerUri>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -120,17 +127,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Bridge\PipeBridge.cs" />
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\LoggingManager.cs" />
+    <Compile Include="Messenger\MessageManager.cs" />
+    <Compile Include="Pages\ActionManager.cs" />
     <Compile Include="Pages\Dialog\ConfirmCloseDialog.xaml.cs">
       <DependentUpon>ConfirmCloseDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Dialog\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Home\HomePage.xaml.cs">
-      <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Media\AVideoPage.xaml.cs">
       <DependentUpon>AVideoPage.xaml</DependentUpon>
@@ -144,14 +152,22 @@
     <Compile Include="Pages\Dialog\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Nursery\NurseryInitialization.cs" />
+    <Compile Include="Pages\Nursery\InformationClerk.cs" />
+    <Compile Include="Pages\Nursery\NurseryManager.cs" />
     <Compile Include="Pages\Nursery\NurseryPage.cs" />
     <Compile Include="Pages\Nursery\NurseryPage.xaml.cs">
       <DependentUpon>NurseryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Nursery\Utils.cs" />
-    <Compile Include="Pages\Setting\SettingPage.xaml.cs">
-      <DependentUpon>SettingPage.xaml</DependentUpon>
+    <Compile Include="Pages\Nursery\OperationClerk.cs" />
+    <Compile Include="Pages\Nursery\SettingClerk.cs" />
+    <Compile Include="Pages\Nursery\StandardFileClerk.cs" />
+    <Compile Include="Pages\Server\FancyServer.xaml.cs">
+      <DependentUpon>FancyServer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\SettingsClerk.cs" />
+    <Compile Include="Pages\Settings\SettingsManager.cs" />
+    <Compile Include="Pages\Settings\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -161,6 +177,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\DesertUnsplash.jpg" />
     <Content Include="Assets\Tools\Newtonsoft.Json.dll" />
     <Content Include="Assets\Tools\NurseryLauncher.exe" />
     <Content Include="Assets\Tools\NurseryMonitor.exe" />
@@ -174,7 +191,10 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Tools\puppet.exe" />
-    <Content Include="Tools\NurseryLauncher.exe" />
+    <Content Include="Tools\bin\FancyServer.exe" />
+    <Content Include="Tools\bin\FancyTool.exe" />
+    <Content Include="Tools\bin\Newtonsoft.Json.dll" />
+    <Content Include="Tools\bin\NLog.dll" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -212,7 +232,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -221,10 +241,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Dialog\MessageDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,13 +264,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Setting\SettingPage.xaml">
+    <Page Include="Pages\Server\FancyServer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\app.manifest" />
+    <None Include="Tools\bin\NLog.config" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="WindowsDesktop, Version=10.0.18362.0">

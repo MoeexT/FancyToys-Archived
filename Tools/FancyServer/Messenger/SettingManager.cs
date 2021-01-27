@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using FancyServer.NotifyForm;
 
-namespace FancyServer.Bridge
+namespace FancyServer.Messenger
 {
     enum SettingType
     {
@@ -14,8 +14,6 @@ namespace FancyServer.Bridge
     {
         OK = 0,
         Failed = 1,
-        Error = 2,
-        Unknown = 3,
     }
     struct SettingStruct 
     {
@@ -27,7 +25,7 @@ namespace FancyServer.Bridge
     {
         struct FormSettingStruct 
         {
-            public int calmSpan;
+            public int calmSpan; 
         }
         struct MessageSettingStruct { }
         struct LoggingSettingStruct
@@ -56,12 +54,7 @@ namespace FancyServer.Bridge
                         break;
                 }
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize SettingStruct failed.");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn(e.Message);
                 LoggingManager.Error("Deserialize SettingStruct failed.");
@@ -74,14 +67,9 @@ namespace FancyServer.Bridge
             {
                 FormSettingStruct fss = JsonConvert.DeserializeObject<FormSettingStruct>(sdu);
                 ActionManager.CalmSpan = fss.calmSpan;
-                Send(fss, SettingCode.Unknown);
+                Send(fss, SettingCode.OK);
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize FormSettingStruct failed.");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn(e.Message);
                 LoggingManager.Error("Deserialize FormSettingStruct failed.");
@@ -94,14 +82,9 @@ namespace FancyServer.Bridge
             {
                 MessageSettingStruct mss = JsonConvert.DeserializeObject<MessageSettingStruct>(sdu);
                 // TODO nothing
-                Send(mss, SettingCode.Unknown);
+                Send(mss, SettingCode.OK);
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize MessageSettingStruct failed.");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn(e.Message);
                 LoggingManager.Error("Deserialize MessageSettingStruct failed.");
@@ -116,12 +99,7 @@ namespace FancyServer.Bridge
                 LoggingManager.LoggingLevel = lss.level;
                 Send(lss, SettingCode.OK);
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize LoggingSettingStruct failed.");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn(e.Message);
                 LoggingManager.Error("Deserialize LoggingSettingStruct failed.");

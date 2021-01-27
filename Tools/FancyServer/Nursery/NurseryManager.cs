@@ -1,9 +1,11 @@
-﻿using FancyServer.Bridge;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
+using System.Diagnostics;
+using System.Collections.Generic;
+
+using Newtonsoft.Json;
+
+using FancyServer.Messenger;
 
 namespace FancyServer.Nursery
 {
@@ -18,7 +20,6 @@ namespace FancyServer.Nursery
     struct NurseryStruct
     {
         public NurseryType type;    // 消息类型
-        public NurseryCode code;    // 操作结果
         public string content;      // 消息内容
     }
 
@@ -28,20 +29,38 @@ namespace FancyServer.Nursery
     /// </summary>
     partial class NurseryManager
     {
-
-        
+        private enum SettingCode
+        {
+            OK = 1,
+            Failed = 2,
+        }
 
         private struct SettingStruct
         {
+            public SettingCode code;
             public int flushTime;       // 信息刷新时间
         }
+
+        enum OperationCode
+        {
+            OK = 1,
+            Failed = 2,
+        }
+
+        enum OperationType
+        {
+            Add = 1,
+            Remove = 2,
+            Start = 3,
+            Stop = 4,
+        }
+
         private struct OperationStruct
         {
-            public bool add;            // true: 添加进程；false: do nothing add, remove 不可同时为true
-            public bool remove;         // true: 删除进程；false: do nothing 
+            public OperationType type;
+            public OperationCode code;
             public string pathName;     // 要打开的文件
             public string args;         // 参数
-            public bool turn;           // true: 打开进程；false: 关闭进程
             public string processName;  // 打开后的进程名
         }
 
@@ -50,22 +69,25 @@ namespace FancyServer.Nursery
             public int pid;
             public string processName;
             public float cpu;
-            public int momory;
+            public int memory;
         }
         private enum StandardFileType
         {
             StandardIn = 0,
             StandardOutput = 1,
-            StandardError,
+            StandardError = 2,
         }
         private struct StandardFileStruct
         {
             public StandardFileType type;
+            public string processName;
             public string content;
         }
 
         private static Thread senderThread;
         private static int threadSleepSpan = 1000;  // 更新信息时间间隔(ms)
+
+        public static int ThreadSleepSpan { get => threadSleepSpan; set => threadSleepSpan = value; }
 
         /// <summary>
         /// 接受前端消息，只有`Operation`的操作，`Information`操作只能从后台发往前端
@@ -91,15 +113,11 @@ namespace FancyServer.Nursery
                     //case NurseryType.StandardOutput:; break;
                     //case NurseryType.StandardOError:; break;
                     default:
-                        LoggingManager.Error($"Invalid nursery type. {content}");
+                        LoggingManager.Warn($"Invalid nursery type. {content}");
                         break;
                 }
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn($"Deserialize NurseryStruct failed. {e.Message}");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn($"Deserialize NurseryStruct failed. {e.Message}");
             }
@@ -111,14 +129,11 @@ namespace FancyServer.Nursery
             try
             {
                 SettingStruct ss = JsonConvert.DeserializeObject<SettingStruct>(content);
-                threadSleepSpan = ss.flushTime;
-                Send(ss, NurseryCode.OK);
+                ThreadSleepSpan = ss.flushTime;
+                ss.code = SettingCode.OK;
+                // Send(ss);
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn($"Deserialize SettingStruct failed. {e.Message}");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn($"Deserialize SettingStruct failed. {e.Message}");
             }
@@ -129,34 +144,26 @@ namespace FancyServer.Nursery
             try
             {
                 OperationStruct os = JsonConvert.DeserializeObject<OperationStruct>(content);
-                if (os.add && os.remove)
+                switch (os.type)
                 {
-                    LoggingManager.Error("添加与删除不能同时操作");
-                    return;
-                }
-                if (os.add)
-                {
-                    AddProcess(os.pathName, os.args);
-                }
-                if (os.remove)
-                {
-                    RemoveProcess(os.pathName);
-                    return;
-                }
-                if (os.turn)
-                {
-                    StartProcess(os.pathName);
-                }
-                else
-                {
-                    StopProcess(os.pathName);
+                    case OperationType.Add:
+                        AddProcess(os.pathName);
+                        break;
+                    case OperationType.Remove:
+                        RemoveProcess(os.pathName);
+                        break;
+                    case OperationType.Start:
+                        StartProcess(os.pathName, os.args);
+                        break;
+                    case OperationType.Stop:
+                        StopProcess(os.pathName);
+                        break;
+                    default:
+                        LoggingManager.Warn("Invalid OperationType.");
+                        break;
                 }
             }
-            catch (JsonReaderException e)
-            {
-                LoggingManager.Warn($"Deserialize OperationStruct failed. {e.Message}");
-            }
-            catch (JsonSerializationException e)
+            catch (JsonException e)
             {
                 LoggingManager.Warn($"Deserialize OperationStruct failed. {e.Message}");
             }
@@ -177,32 +184,33 @@ namespace FancyServer.Nursery
             {
                 List<Process> plist = ProcessManager.GetProcesses();
                 List<InformationStruct> mlist = new List<InformationStruct>();
-                try
+
+                foreach (Process ps in plist)
                 {
-                    foreach (Process ps in plist)
+                    try
                     {
-                        PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", ps.ProcessName);
-                        PerformanceCounter memCounter = new PerformanceCounter("Process", "Working Set - Private", ps.ProcessName);
+                        string pn = ps.ProcessName;
+                        PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", pn);
+                        PerformanceCounter memCounter = new PerformanceCounter("Process", "Working Set - Private", pn);
                         mlist.Add(new InformationStruct
                         {
                             pid = ps.Id,
-                            processName = ps.ProcessName,
+                            processName = pn,
                             cpu = cpuCounter.NextValue(),
-                            momory = (int)memCounter.NextValue() >> 10
+                            memory = (int)memCounter.NextValue() >> 10
                         });
-                        Console.Write($"\rProcess {ps.ProcessName} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
+                        LoggingManager.Info($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        LoggingManager.Warn($"Process exited in unsuitable time, get its information failed: {e.Message}");
                     }
                 }
-                catch (InvalidOperationException e)
-                {
-                    LoggingManager.Warn($"Get processes' information failed: {e.Message}", 2);
-                }
-
                 if (mlist.Count > 0)
                 {
-                    Send(mlist, NurseryCode.OK);
+                    Send(mlist);
                 }
-                Thread.Sleep(threadSleepSpan);
+                Thread.Sleep(ThreadSleepSpan);
             }
         }
         public static void CloseSender()

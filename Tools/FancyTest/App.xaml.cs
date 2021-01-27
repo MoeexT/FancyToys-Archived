@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core.Preview;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -52,6 +53,7 @@ namespace FancyTest
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
+                    //ApplicationExecutionState.Terminated
                     //TODO: 从之前挂起的应用程序加载状态
                 }
 
@@ -68,6 +70,20 @@ namespace FancyTest
                     // 参数
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
+                SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += async (_s, _e) => {
+                    Deferral deferral = _e.GetDeferral();
+                    ContentDialog dialog = new ContentDialog
+                    {
+                        Title = "即将推退出应用",
+                        PrimaryButtonText = "退出",
+                        SecondaryButtonText = "取消"
+                    };
+                    if (await dialog.ShowAsync() == ContentDialogResult.Secondary)
+                    {
+                        _e.Handled = true;
+                    }
+                    deferral.Complete();
+                };
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
@@ -22,6 +22,9 @@ using Windows.Storage;
 using Windows.Security.Authentication.Web;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core.Preview;
+using Windows.UI.Popups;
+using System.Diagnostics;
+using System.Reflection;
 
 // https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
@@ -33,21 +36,32 @@ namespace FancyTest
     public sealed partial class MainPage : Page
     {
         private static NamedPipeServerStream server;
+        private static NamedPipeClientStream client;
         private static StreamReader reader;
         private static StreamWriter writer;
         private DateTime lastSentMessage;
         private bool waitingForReply;
 
+        private static MainPage mainPage;
+
+        public static MainPage GetMainPage()
+        {
+            return mainPage;
+        }
+
         public MainPage()
         {
             this.InitializeComponent();
+            MethodBase method = new StackTrace().GetFrame(1).GetMethod();
+            Debug.WriteLine($"---------------------{method.ReflectedType.Name}:{method.Name}------------------------");
+            mainPage = this;
             LaunchServer();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            Task.Run((Action)PipeServerThread);
+            Task.Run((Action)PipeClientThread);
         }
 
         private async void LaunchServer()
@@ -55,14 +69,16 @@ namespace FancyTest
             ApplicationData.Current.LocalSettings.Values["PackageSid"] = WebAuthenticationBroker.GetCurrentApplicationCallbackUri().Host.ToUpper();
             Monitor.Text = WebAuthenticationBroker.GetCurrentApplicationCallbackUri().Host.ToUpper();
             await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
-            SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += (_s, _e) => { 
-                
-            };
+            
         }
 
         private void PipeServerThread()
         {
-            server = new NamedPipeServerStream(@"LOCAL\NurseryPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+            server = new NamedPipeServerStream(
+                @"LOCAL\NurseryPipe", 
+                PipeDirection.InOut, 1, 
+                PipeTransmissionMode.Message, 
+                PipeOptions.Asynchronous);
 
             Log("Waiting for connection");
             server.WaitForConnection();
@@ -97,11 +113,36 @@ namespace FancyTest
             }
         }
 
-        private void SendButton_Click(object sender, RoutedEventArgs e)
+        private void PipeClientThread()
+        {
+            client = new NamedPipeClientStream(".", @"LOCAL\NurseryPipe",
+                PipeDirection.InOut, PipeOptions.Asynchronous);
+            client.Connect();
+
+            reader = new StreamReader(client);
+            writer = new StreamWriter(client);
+
+            while (true)
+            {
+                if (!client.IsConnected)
+                {
+                    client.Connect();
+                    Log("Conection re-established.");
+                }
+                string message = reader.ReadLine();
+                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Monitor.Text +=
+                $"Received: {message}{Environment.NewLine}").AsTask().Wait();
+            }
+        }
+
+        private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
             if (writer == null)
             {
-                Monitor.Text = "Waiting for connection...";
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Monitor.Text += "Waiting for connection...\n";
+                });
                 return;
             }
             lastSentMessage = DateTime.Now;

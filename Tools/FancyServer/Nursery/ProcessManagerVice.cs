@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
-using FancyServer.Bridge;
+using FancyServer.Messenger;
 
 namespace FancyServer.Nursery
 {
     partial class ProcessManager
     {
-        private static Process AddProcess(string pathName, string args)
+        private static Process AddProcess(string pathName)
         {
             // if (args == null) { args = string.Empty; }
 
@@ -17,7 +17,6 @@ namespace FancyServer.Nursery
             child.StartInfo.FileName = pathName;
             child.StartInfo.CreateNoWindow = true;
             child.StartInfo.UseShellExecute = false;
-            child.StartInfo.Arguments = args;
             child.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(pathName);
             child.EnableRaisingEvents = true;  // 这样才会引发 Process.Exited
             child.Exited += OnProcessExit;

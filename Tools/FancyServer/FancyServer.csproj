@@ -84,12 +84,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bridge\LoggingManager.cs" />
-    <Compile Include="Bridge\MessageManagerVice.cs" />
-    <Compile Include="Bridge\SettingManager.cs" />
-    <Compile Include="Bridge\SettingManagerVice.cs" />
-    <Compile Include="Messenger\PipeMessenger.cs" />
-    <Compile Include="Bridge\MessageManager.cs" />
+    <Compile Include="Messenger\LoggingManager.cs" />
+    <Compile Include="Messenger\MessageManagerVice.cs" />
+    <Compile Include="Messenger\SettingManager.cs" />
+    <Compile Include="Messenger\SettingManagerVice.cs" />
+    <Compile Include="Bridge\PipeBridge.cs" />
+    <Compile Include="Messenger\MessageManager.cs" />
     <Compile Include="NotifyForm\ActionManager.cs" />
     <Compile Include="NotifyForm\NoForm.cs">
       <SubType>Form</SubType>
@@ -103,8 +103,8 @@
     <Compile Include="Nursery\ProcessManagerVice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Bridge\NoformToNursery.cs" />
-    <Compile Include="Bridge\NurseryToNoform.cs" />
+    <Compile Include="Messenger\NoformToNursery.cs" />
+    <Compile Include="Messenger\NurseryToNoform.cs" />
     <EmbeddedResource Include="NotifyForm\NoForm.resx">
       <DependentUpon>NoForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -139,7 +139,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\Nursery32x32.ico" />
+    <Content Include="Assets\Nursery32x32.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

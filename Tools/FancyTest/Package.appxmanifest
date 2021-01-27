@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -6,13 +6,13 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  
-  IgnorableNamespaces="uap mp">
+  xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10"
+  IgnorableNamespaces="uap mp rescap iot desktop">
 
 	<Identity
 	  Name="05795fb2-e840-4d48-9fd5-64ed24f454f9"
 	  Publisher="CN=Administrator"
-	  Version="1.0.0.0" />
+	  Version="1.0.3.0" />
 
 	<mp:PhoneIdentity PhoneProductId="05795fb2-e840-4d48-9fd5-64ed24f454f9" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -44,9 +44,7 @@
 				<uap:SplashScreen Image="Assets\SplashScreen.png" />
 			</uap:VisualElements>
 			<Extensions>
-				<desktop:Extension Category="windows.fullTrustProcess"
-					Executable="tools\FancyServer.exe">
-				</desktop:Extension>
+				<desktop:Extension Category="windows.fullTrustProcess" Executable="tools\FancyServer.exe" />
 			</Extensions>
 		</Application>
 	</Applications>
@@ -54,5 +52,6 @@
 	<Capabilities>
 		<Capability Name="internetClient" />
 		<rescap:Capability Name="runFullTrust" />
+		<rescap:Capability Name="confirmAppClose" />
 	</Capabilities>
 </Package>

@@ -1,40 +1,45 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
-using FancyServer.Bridge;
-using System;
+using Newtonsoft.Json;
+
+using FancyServer.Messenger;
 
 namespace FancyServer.Nursery
 {
     partial class NurseryManager
     {
-        public static void AddProcess(string pathName, string args)
+        public static void AddProcess(string pathName)
         {
-            ProcessManager.Add(pathName, args);
-            NurseryToNoform.AddNurseryItem(pathName);
+            bool add = ProcessManager.Add(pathName);
+            bool success = NurseryToNoform.AddNurseryItem(pathName);
             OperationStruct os = new OperationStruct
             {
+                type = OperationType.Add,
+                code = add&&success ? OperationCode.OK : OperationCode.Failed,
                 pathName = pathName,
             };
-            Send(os, NurseryCode.OK);
+            Send(os);
         }
         /// <summary>
         /// NurseryType: Operation
         /// </summary>
         /// <param name="pathName"></param>
         /// <param name="args"></param>
-        public static void StartProcess(string pathName)
+        public static void StartProcess(string pathName, string args="")
         {
-            OperateProcessStruct ops = ProcessManager.Start(pathName);
-            NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
+            string processName = ProcessManager.Start(pathName, args);
+            NurseryToNoform.UpdateNurseryItem(pathName, processName);
+            bool success = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
             OperationStruct os = new OperationStruct
             {
+                type = OperationType.Start,
+                code = processName != null && success ? OperationCode.OK : OperationCode.Failed,
                 pathName = pathName,
-                processName = ops.processName
+                processName = processName
             };
-            Send(os, ops.nurseryCode);
+            Send(os);
         }
 
         /// <summary>
@@ -54,14 +59,14 @@ namespace FancyServer.Nursery
         /// <param name="processName"></param>
         public static void OnProcessStopped(string pathName, string processName)
         {
-            NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
-            OperationStruct os = new OperationStruct
+            bool success = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
+            Send(new OperationStruct
             {
-                remove = true,
+                type = OperationType.Stop,
+                code = OperationCode.OK,
                 pathName = pathName,
                 processName = processName
-            };
-            Send(os, NurseryCode.StopUncertain);
+            });
         }
 
         /// <summary>
@@ -72,13 +77,14 @@ namespace FancyServer.Nursery
         /// <param name="processName"></param>
         public static void RemoveProcess(string pathName)
         {
-            OperateProcessStruct ops = ProcessManager.Remove(pathName);
+            ProcessManager.Remove(pathName);
             NurseryToNoform.RemoveNurseryItem(pathName);
-            OperationStruct os = new OperationStruct
-            {
-                pathName = pathName
-            };
-            Send(os, ops.nurseryCode);
+            //Send(new OperationStruct
+            //{
+            //    type = OperationType.Remove,
+            //    code = success ? OperationCode.OK : OperationCode.Failed,
+            //    pathName = pathName
+            //});
         }
 
         /// <summary>
@@ -89,12 +95,13 @@ namespace FancyServer.Nursery
         /// <param name="e"></param>
         public static void SendStandardOutput(object sender, DataReceivedEventArgs e)
         {
-            StandardFileStruct sfs = new StandardFileStruct
+            Process s = sender as Process;
+            Send(new StandardFileStruct
             {
                 type = StandardFileType.StandardOutput,
+                processName = s.ProcessName,
                 content = e.Data
-            };
-            Send(sfs, NurseryCode.OK);
+            });
         }
 
         /// <summary>
@@ -105,33 +112,34 @@ namespace FancyServer.Nursery
         /// <param name="e"></param>
         public static void SendStandardError(object sender, DataReceivedEventArgs e)
         {
-            StandardFileStruct sfs = new StandardFileStruct
+            Process s = sender as Process;
+            Send(new StandardFileStruct
             {
-                type = StandardFileType.StandardOutput,
+                type = StandardFileType.StandardError,
+                processName = s.ProcessName,
                 content = e.Data
-            };
-            Send(sfs, NurseryCode.OK);
+            });
         }
 
-        private static void Send(object sdu, NurseryCode nc)
+        private static void Send(object sdu)
         {
             NurseryStruct? pdu = null;
             switch (sdu)
             {
                 case SettingStruct ss:
-                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(ss));
+                    pdu = PDU(NurseryType.Setting, JsonConvert.SerializeObject(ss));
                     break;
                 case OperationStruct os:
-                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(os));
+                    pdu = PDU(NurseryType.Operation, JsonConvert.SerializeObject(os));
                     break;
                 case List<InformationStruct> lis:
-                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(lis));
+                    pdu = PDU(NurseryType.Information, JsonConvert.SerializeObject(lis));
                     break;
                 case StandardFileStruct sfs:
-                    pdu = PDU(NurseryType.Setting, nc, JsonConvert.SerializeObject(sfs));
+                    pdu = PDU(NurseryType.StandardFile, JsonConvert.SerializeObject(sfs));
                     break;
                 default:
-                    LoggingManager.Error("Invalid nursery SDU type.", 2);
+                    LoggingManager.Warn("Invalid nursery SDU type.", 2);
                     break;
             }
             if (pdu != null)
@@ -140,12 +148,11 @@ namespace FancyServer.Nursery
             }
         }
 
-        private static NurseryStruct PDU(NurseryType nt, NurseryCode nc, string sdu)
+        private static NurseryStruct PDU(NurseryType nt, string sdu)
         {
             NurseryStruct ns = new NurseryStruct
             {
                 type = NurseryType.Setting,
-                code = nc,
                 content = sdu
             };
             return ns;

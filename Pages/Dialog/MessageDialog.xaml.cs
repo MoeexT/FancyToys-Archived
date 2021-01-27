@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -52,7 +53,7 @@ namespace FancyToys.Pages.Dialog
         {
             this.InitializeComponent();
         }
-        public MessageDialog(string title, string message, MessageType type)
+        public MessageDialog(string title, string message, string primaryText, MessageType type)
         {
             this.InitializeComponent();
 
@@ -61,7 +62,8 @@ namespace FancyToys.Pages.Dialog
             TitleText.Text = title;
             TheTextBlock.Text = message;
             TheTextBlock.TextWrapping = TextWrapping.WrapWholeWords;
-            DefaultButton = ContentDialogButton.Secondary;
+            PrimaryButtonText = primaryText;
+            DefaultButton = ContentDialogButton.Primary;
             TheImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/wj.jpg"));
         }
 
@@ -72,7 +74,7 @@ namespace FancyToys.Pages.Dialog
         public static async void CreateMessageDialog(MessageDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
         public static async Task CreateMessageDialogAsync(MessageDialog Dialog, bool awaitPreviousDialog) { await CreateDialog(Dialog, awaitPreviousDialog); }
         private static void ActiveDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args) { DialogAwaiter.SetResult(true); }
-        static async Task CreateDialog(ContentDialog Dialog, bool awaitPreviousDialog)
+        static async Task<bool> CreateDialog(ContentDialog Dialog, bool awaitPreviousDialog)
         {
             if (ActiveDialog != null)
             {
@@ -85,34 +87,43 @@ namespace FancyToys.Pages.Dialog
             }
             ActiveDialog = (MessageDialog)Dialog;
             ActiveDialog.Closed += ActiveDialog_Closed;
-            await ActiveDialog.ShowAsync();
+            ContentDialogResult result = await ActiveDialog.ShowAsync();
             ActiveDialog.Closed -= ActiveDialog_Closed;
+            if (result == ContentDialogResult.Primary)
+            {
+                return true;
+            }
+            return false;
         }
 
-        public static async Task Debug(string title, string message)
+        public static async Task<bool> Debug(string title, string message, string primary="确定")
         {
-            await CreateMessageDialogAsync(new MessageDialog(title, message, MessageType.Debug)
+            bool res = await CreateDialog(new MessageDialog(title, message, primary, MessageType.Debug)
             {
             }, awaitPreviousDialog: true);
+            return res;
         }
         //
-        public static async Task Info(string title, string message)
+        public static async Task<bool> Info(string title, string message, string primary = "确定")
         {
-            await CreateMessageDialogAsync(new MessageDialog(title, message, MessageType.Info)
+            bool res = await CreateDialog(new MessageDialog(title, message, primary, MessageType.Info)
             {
             }, awaitPreviousDialog: true);
+            return res;
         }
-        public static async Task Warn(string title, string message)
+        public static async Task<bool> Warn(string title, string message, string primary = "确定")
         {
-            await CreateMessageDialogAsync(new MessageDialog(title, message, MessageType.Warn)
+            bool res = await CreateDialog(new MessageDialog(title, message, primary, MessageType.Warn)
             {
             }, awaitPreviousDialog: true);
+            return res;
         }
-        public static async Task Error(string title, string message)
+        public static async Task<bool> Error(string title, string message, string primary = "确定")
         {
-            await CreateMessageDialogAsync(new MessageDialog(title, message, MessageType.Error)
+            bool res = await CreateDialog(new MessageDialog(title, message, primary, MessageType.Error)
             {
             }, awaitPreviousDialog: true);
+            return res;
         }
 
         private void DragImageOver(object sender, DragEventArgs e)
@@ -154,6 +165,16 @@ namespace FancyToys.Pages.Dialog
             {
                 defer.Complete();
             }
+        }
+
+        private void TheTextBlock_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            TextBlock tb = sender as TextBlock;
+            DataPackage package = new DataPackage();
+            package.SetText(tb.Text);
+            Clipboard.Clear();
+            Clipboard.SetContent(package);
+            System.Diagnostics.Debug.WriteLine($"已写入剪贴板：{tb.Text}");
         }
     }
 }

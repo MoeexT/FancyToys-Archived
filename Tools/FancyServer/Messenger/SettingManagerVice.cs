@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
-namespace FancyServer.Bridge
+namespace FancyServer.Messenger
 {
     partial class SettingManager
     {

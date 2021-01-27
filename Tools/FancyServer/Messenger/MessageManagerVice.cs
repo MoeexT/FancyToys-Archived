@@ -1,16 +1,10 @@
-﻿using FancyServer.Messenger;
+using Newtonsoft.Json;
+
 using FancyServer.NotifyForm;
 using FancyServer.Nursery;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using FancyServer.Bridge;
 
-namespace FancyServer.Bridge
+namespace FancyServer.Messenger
 {
     partial class MessageManager
     {

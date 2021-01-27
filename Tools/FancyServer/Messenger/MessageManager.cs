@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -9,11 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using FancyServer.NotifyForm;
+using FancyServer.Bridge;
 using FancyServer.Nursery;
-using FancyServer.Messenger;
+using FancyServer.NotifyForm;
 
-namespace FancyServer.Bridge
+namespace FancyServer.Messenger
 {
 
     enum MessageType
@@ -65,15 +65,9 @@ namespace FancyServer.Bridge
                         break;
                 }
             }
-            catch (JsonReaderException e)
+            catch (JsonException e)
             {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize MessageSettingStruct failed.");
-            }
-            catch (JsonSerializationException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize MessageSettingStruct failed.");
+                LoggingManager.Warn($"Deserialize MessageSettingStruct failed: {e.Message}");
             }
         }
 

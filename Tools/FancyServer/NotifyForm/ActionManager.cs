@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
-using NLog;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Forms;
 
-using FancyServer.Bridge;
-using System.Reflection;
+using Newtonsoft.Json;
+
+using FancyServer.Messenger;
+using System.Threading;
 
 namespace FancyServer.NotifyForm
 {
@@ -21,12 +17,14 @@ namespace FancyServer.NotifyForm
     }
     class ActionManager
     {
-        
 
-        public static bool IsShown = true;
-        public static float CalmSpan = 1.5f;
+        private static bool isShown = true;
+        private static float calmSpan = 1.5f;
         private static DateTime lastReversedShowState = DateTime.Now;
 
+        public static float CalmSpan { get => calmSpan; set => calmSpan = value; }
+        public static bool IsShown { get => isShown; set => isShown = value; }
+        public static DateTime LastReversedShowState { get => lastReversedShowState; set => lastReversedShowState = value; }
 
         public static void Deal(string message)
         {
@@ -37,24 +35,16 @@ namespace FancyServer.NotifyForm
                 {
                     ExitApp();
                 }
+                if (!ac.showWindow)
+                {
+                    IsShown = false;
+                }
             }
-            catch(JsonReaderException e)
+            catch(JsonException e)
             {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize ActionStruct failed.");
-            }
-            catch (JsonSerializationException e)
-            {
-                LoggingManager.Warn(e.Message);
-                LoggingManager.Error("Deserialize ActionStruct failed.");
+                LoggingManager.Warn($"Deserialize ActionStruct failed: {e.Message}");
             }
 
-        }
-
-        public static void ExitApp()
-        {
-            MessageManager.CloseServer();
-            Application.Exit();
         }
 
         /// <summary>
@@ -62,29 +52,35 @@ namespace FancyServer.NotifyForm
         /// </summary>
         public static void ReverseShown()
         {
-            TimeSpan span = DateTime.Now - lastReversedShowState;
-            lastReversedShowState = DateTime.Now;
-            LoggingManager.Debug($"span: {span.TotalSeconds}");
+            TimeSpan span = DateTime.Now - LastReversedShowState;
+            LastReversedShowState = DateTime.Now;
+            LoggingManager.Debug($"Reverse shown span: {span.TotalSeconds}");
             if (span.TotalSeconds < CalmSpan)
             {
                 LoggingManager.Dialog("你点的太快了");
             }
-            Send(PDU(!IsShown, false));
+            IsShown = !IsShown;
+            Send(IsShown, false);
         }
 
         /// <summary>
         /// 退出应用
         /// </summary>
-        public static void SendExit()
+        public static void TryExitApp()
         {
-            Send(PDU(false, true));
-            ExitApp();
+            Send(false, true);
+            MessageManager.CloseServer();
+            Application.Exit();
+        }
+        
+        private static void ExitApp()
+        {
+            MessageManager.CloseServer();
+            Thread.Sleep(5000);
+            Application.Exit();
         }
 
-        private static void Send(ActionStruct pdu)
-        {
-            MessageManager.Send(pdu);
-        }
+
 
         /// <summary>
         /// Input   exit    show    eApp    sWin
@@ -99,17 +95,17 @@ namespace FancyServer.NotifyForm
         ///   T     exit    show    exit    show&&!exit
         ///      
         /// </summary>
-        /// <param name="show"></param>
-        /// <param name="exit"></param>
+        /// <param name="show">show UWP</param>
+        /// <param name="exit">tell UWP to exit application</param>
         /// <returns></returns>
-        private static ActionStruct PDU(bool show, bool exit)
-        {   
-            ActionStruct os = new ActionStruct
+        private static void Send(bool show, bool exit)
+        {
+            ActionStruct pdu = new ActionStruct
             {
                 showWindow = show && !exit,
                 exitApp = exit
             };
-            return os;
+            MessageManager.Send(pdu);
         }
 
 
@@ -123,24 +119,23 @@ namespace FancyServer.NotifyForm
             ToolStripMenuItem item = new ToolStripMenuItem()
             {
                 Text = processName,
-                Tag = pathName,
-                CheckOnClick = true,
+                // Tag = pathName,
+                AutoToolTip = true,
+                ToolTipText = pathName,
+                CheckOnClick = false,
                 BackColor = Color.White,
                 CheckState = CheckState.Unchecked
             };
-            item.Click += new EventHandler((_s, _e) => {
-                ToolStripMenuItem i = (ToolStripMenuItem)_s;
-                //Console.WriteLine("{0}, {1}", i.Checked, i.CheckState);
-                // 这里有不懂的地方(bug)：`i.CheckState`理应为Unchecked，却总是为Checked
+            item.Click += new EventHandler((s, e) => {
+                ToolStripMenuItem i = s as ToolStripMenuItem;
+                // 这里有不懂的地方(bug)：`i.CheckState`理应为Unchecked，却总是为Checked 现在没了
                 if (i.CheckState == CheckState.Checked)
                 {
-                    NoformToNursery.StartProcess((string)i.Tag);
-                    //i.CheckState = CheckState.Checked;
+                    NoformToNursery.StopProcess(i.ToolTipText);
                 }
                 else
                 {
-                    NoformToNursery.StopProcess((string)i.Tag);
-                    //i.CheckState = CheckState.Unchecked;
+                    NoformToNursery.StartProcess(i.ToolTipText);
                 }
             });
             return item;

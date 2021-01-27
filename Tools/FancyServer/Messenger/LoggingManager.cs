@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyServer.Bridge
+namespace FancyServer.Messenger
 {
     enum LogType
     {
@@ -28,7 +28,7 @@ namespace FancyServer.Bridge
     }
     class LoggingManager
     {
-
+        public static bool consoleDebug = true;
         public static int LoggingLevel = 1;
         private static readonly Logger logger = NLog.LogManager.GetCurrentClassLogger();
 

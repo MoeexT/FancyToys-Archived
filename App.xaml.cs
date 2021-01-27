@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System;
 using Windows.UI;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
+using Windows.Foundation;
+using Windows.UI.Core.Preview;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+using Windows.ApplicationModel;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.Activation;
+
+using FancyToys.Bridge;
+using FancyToys.Pages;
+using FancyToys.Pages.Dialog;
+using Windows.Security.Authentication.Web;
+using System.Diagnostics;
+using Windows.Storage;
 
 namespace FancyToys
 {
@@ -72,7 +71,9 @@ namespace FancyToys
                     // 参数
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
-                
+
+                Initlalize();
+
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }
@@ -102,5 +103,38 @@ namespace FancyToys
             deferral.Complete();
         }
 
+        private void Initlalize()
+        {
+            ApplicationView.PreferredLaunchViewSize = new Size(820, 520);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
+            // 扩展标题栏
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            coreTitleBar.ExtendViewIntoTitleBar = true;
+            /// 将亚克力效果应用到标题栏
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+
+            PipeBridge.LaunchThenConnectServer();
+
+            // 退出确认
+            SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += async (s, _e) => {
+                Deferral deferral = _e.GetDeferral();
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "即将推退出应用",
+                    PrimaryButtonText = "退出",
+                    SecondaryButtonText = "取消"
+                };
+                _e.Handled = true;
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    _e.Handled = false;
+                    ActionManager.TryExitApp();
+                }
+                deferral.Complete();
+            };
+        }
     }
 }

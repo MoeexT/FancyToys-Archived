@@ -1,4 +1,4 @@
-﻿
+
 namespace FancyServer.NotifyForm
 {
     partial class NoForm
@@ -57,7 +57,7 @@ namespace FancyServer.NotifyForm
             this.NurseryMenu,
             this.ExitMenu});
             this.TheMenu.Name = "TheMenu";
-            this.TheMenu.Size = new System.Drawing.Size(211, 80);
+            this.TheMenu.Size = new System.Drawing.Size(136, 52);
             // 
             // NurseryMenu
             // 
@@ -66,14 +66,14 @@ namespace FancyServer.NotifyForm
             this.NurseryAddFileItem,
             this.NurserySeparatorItem});
             this.NurseryMenu.Name = "NurseryMenu";
-            this.NurseryMenu.Size = new System.Drawing.Size(210, 24);
+            this.NurseryMenu.Size = new System.Drawing.Size(135, 24);
             this.NurseryMenu.Text = "Nursery";
             // 
             // NurseryAddFileItem
             // 
             this.NurseryAddFileItem.BackColor = System.Drawing.Color.White;
             this.NurseryAddFileItem.Name = "NurseryAddFileItem";
-            this.NurseryAddFileItem.Size = new System.Drawing.Size(224, 26);
+            this.NurseryAddFileItem.Size = new System.Drawing.Size(132, 26);
             this.NurseryAddFileItem.Text = "Open";
             this.NurseryAddFileItem.Click += new System.EventHandler(this.NurseryAddFileItem_Click);
             // 
@@ -82,13 +82,13 @@ namespace FancyServer.NotifyForm
             this.NurserySeparatorItem.BackColor = System.Drawing.Color.Black;
             this.NurserySeparatorItem.ForeColor = System.Drawing.SystemColors.Control;
             this.NurserySeparatorItem.Name = "NurserySeparatorItem";
-            this.NurserySeparatorItem.Size = new System.Drawing.Size(221, 6);
+            this.NurserySeparatorItem.Size = new System.Drawing.Size(129, 6);
             // 
             // ExitMenu
             // 
             this.ExitMenu.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ExitMenu.Name = "ExitMenu";
-            this.ExitMenu.Size = new System.Drawing.Size(210, 24);
+            this.ExitMenu.Size = new System.Drawing.Size(135, 24);
             this.ExitMenu.Text = "Exit";
             this.ExitMenu.Click += new System.EventHandler(this.ExitMenu_Click);
             // 

@@ -1,21 +1,12 @@
-﻿using NLog;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using FancyServer.Bridge;
+using FancyServer.Messenger;
 
 namespace FancyServer.NotifyForm
 {
-    
+
     public partial class NoForm : Form
     {
         delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
@@ -66,22 +57,22 @@ namespace FancyServer.NotifyForm
         /// <param name="e"></param>
         private void ExitMenu_Click(object sender, EventArgs e)
         {
-            ActionManager.SendExit();
+            ActionManager.TryExitApp();
         }
 
-        public void AddItemToMenu(string pathName)
+        public bool AddNurseryItem(string pathName)
         {
             /* 
              *  NurseryMenu.DropDownItems ---------> ToolStripItemCollection<ToolStripItem>
-             *                                                    ↑
-             * ToolStripItem ---> ToolStripSeparator  ------------|
-             *          ↓                                         |
-             * ToolStripDropDownItem -----------------------------|
+             *                                                                     ↑
+             * ToolStripItem ---> ToolStripSeparator  -----------------------------|
+             *          ↓                                                          |
+             * ToolStripDropDownItem ----------------------------------------------|
              */
             bool hasThisPS = false;
             foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.Tag != null && item.Tag.Equals(pathName)) { hasThisPS = true; }
+                if (item.ToolTipText != null && item.ToolTipText.Equals(pathName)) { hasThisPS = true; }
             }
             if (!hasThisPS)
             {
@@ -91,15 +82,15 @@ namespace FancyServer.NotifyForm
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
                 }));
-                return;
             }
+            return !hasThisPS;
         }
 
-        public void SetNurseryItemCheckState(string pathName, CheckState checkState)
+        public bool SetNurseryItemCheckState(string pathName, CheckState checkState)
         {
             foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.Tag!= null && item.Tag.Equals(pathName))
+                if (item.ToolTipText!= null && item.ToolTipText.Equals(pathName))
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {
@@ -107,25 +98,46 @@ namespace FancyServer.NotifyForm
 
                     }));
                     LoggingManager.Info($"Set menu item {item.Text} check state: {checkState}");
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
 
-        public void RemoveNurseryItem(string processName)
+        public bool UpdateNurseryItem(string pathName, string processName)
         {
             foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
             {
-                if (item.Text.Equals(processName))
+                if (item.ToolTipText.Equals(pathName))
+                {
+                    BeginInvoke(new CrossThreadDelegate(() =>
+                    {
+                        item.Text = processName;
+                    }));
+                    LoggingManager.Info($"Updated menu item: {pathName}");
+                    return true;
+                }
+            }
+            LoggingManager.Warn($"Menu item not exit while updating it: {pathName}");
+            return false;
+        }
+
+        public bool RemoveNurseryItem(string pathName)
+        {
+            foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
+            {
+                if (item.ToolTipText.Equals(pathName))
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {
                         NurseryMenu.DropDownItems.Remove(item);
                     }));
-                    LoggingManager.Info($"Removed menu item: {processName}");
-                    return;
+                    LoggingManager.Info($"Removed menu item: {pathName}");
+                    return true;
                 }
             }
+            LoggingManager.Warn($"Menu item not exit while removing it: {pathName}");
+            return false;
         }
 
         private void NurseryAddFileItem_Click(object sender, EventArgs e)
