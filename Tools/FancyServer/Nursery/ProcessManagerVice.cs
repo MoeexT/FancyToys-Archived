@@ -37,6 +37,9 @@ namespace FancyServer.Nursery
         {
             Process ps = sender as Process;
             string pathName = ps.StartInfo.FileName;
+            ProcessStruct pst = processes[pathName];
+            pst.isRunning = false;
+            processes[pathName] = pst;
             NurseryManager.OnProcessStopped(pathName, fpName[pathName]);
             LoggingManager.Info($"Process {fpName[pathName]} exited");
         }

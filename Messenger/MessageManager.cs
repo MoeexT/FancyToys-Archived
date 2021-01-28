@@ -80,7 +80,7 @@ namespace FancyToys.Pages
             }
             if (pdu != null)
             {
-                PipeBridge.Post(JsonConvert.SerializeObject(pdu));
+                PipeBridge.Bridge.Post(JsonConvert.SerializeObject(pdu));
             }
         }
 

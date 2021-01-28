@@ -12,34 +12,32 @@ namespace FancyServer.Nursery
     {
         public static void AddProcess(string pathName)
         {
-            bool add = ProcessManager.Add(pathName);
+            bool ac = ProcessManager.Add(pathName);
             bool success = NurseryToNoform.AddNurseryItem(pathName);
-            OperationStruct os = new OperationStruct
+            Send(new OperationStruct
             {
                 type = OperationType.Add,
-                code = add&&success ? OperationCode.OK : OperationCode.Failed,
+                code = ac && success ? OperationCode.OK : OperationCode.Failed,
                 pathName = pathName,
-            };
-            Send(os);
+            });
         }
         /// <summary>
         /// NurseryType: Operation
         /// </summary>
         /// <param name="pathName"></param>
         /// <param name="args"></param>
-        public static void StartProcess(string pathName, string args="")
+        public static void StartProcess(string pathName, string args = "")
         {
             string processName = ProcessManager.Start(pathName, args);
-            NurseryToNoform.UpdateNurseryItem(pathName, processName);
-            bool success = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
-            OperationStruct os = new OperationStruct
+            bool uni = NurseryToNoform.UpdateNurseryItem(pathName, processName);
+            bool scics = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
+            Send(new OperationStruct
             {
                 type = OperationType.Start,
-                code = processName != null && success ? OperationCode.OK : OperationCode.Failed,
+                code = processName != null && uni && scics ? OperationCode.OK : OperationCode.Failed,
                 pathName = pathName,
                 processName = processName
-            };
-            Send(os);
+            });
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace FancyServer.Nursery
         /// <param name="processName"></param>
         public static void OnProcessStopped(string pathName, string processName)
         {
-            bool success = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
+            NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
             Send(new OperationStruct
             {
                 type = OperationType.Stop,
@@ -78,13 +76,13 @@ namespace FancyServer.Nursery
         public static void RemoveProcess(string pathName)
         {
             ProcessManager.Remove(pathName);
-            NurseryToNoform.RemoveNurseryItem(pathName);
-            //Send(new OperationStruct
-            //{
-            //    type = OperationType.Remove,
-            //    code = success ? OperationCode.OK : OperationCode.Failed,
-            //    pathName = pathName
-            //});
+            bool success = NurseryToNoform.RemoveNurseryItem(pathName);
+            Send(new OperationStruct
+            {
+                type = OperationType.Remove,
+                code = success ? OperationCode.OK : OperationCode.Failed,
+                pathName = pathName
+            });
         }
 
         /// <summary>
@@ -152,7 +150,7 @@ namespace FancyServer.Nursery
         {
             NurseryStruct ns = new NurseryStruct
             {
-                type = NurseryType.Setting,
+                type = nt,
                 content = sdu
             };
             return ns;

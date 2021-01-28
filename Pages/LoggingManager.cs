@@ -13,6 +13,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using FancyToys.Pages.Server;
 using Windows.UI;
+using Windows.UI.Xaml;
 
 namespace FancyToys.Pages
 {
@@ -45,34 +46,16 @@ namespace FancyToys.Pages
             { LogType.Error, Colors.PaleVioletRed},
             { LogType.Fatal, Colors.DarkRed}
         };
+
+        LoggingManager()
+        {
+            
+        }
+
         public static void Deal(string message)
         {
             LoggingStruct ls = JsonConvert.DeserializeObject<LoggingStruct>(message);
-
-            switch (ls.type)
-            {
-                case LogType.Dialog:
-                    Dialog(ls.content);
-                    break;
-                case LogType.Trace:
-                    Trace(ls.content);
-                    break;
-                case LogType.Info:
-                    Info(ls.content);
-                    break;
-                case LogType.Debug:
-                    Debug(ls.content);
-                    break;
-                case LogType.Warn:
-                    Warn(ls.content);
-                    break;
-                case LogType.Error:
-                    Error(ls.content);
-                    break;
-                case LogType.Fatal:
-                    Fatal(ls.content);
-                    break;
-            }
+            PrintToPage(ls.type, $"FancyServer: {ls.content}");
         }
 
         public static async void Dialog(string message)
@@ -113,11 +96,11 @@ namespace FancyToys.Pages
             PrintToPage(LogType.Fatal, CallerName(depth + 1) + msg);
         }
 
-        private static async void PrintToPage(LogType type, string message)
+        private static void PrintToPage(LogType type, string message)
         {
             Color color = Colors.White;
 
-            FancyServer page = FancyServer.GetThis();
+            FancyServer page = FancyServer.Page;
             // System.NullReferenceException:“Object reference not set to an instance of an object.”
             // page: null
             if (page == null)
@@ -130,24 +113,24 @@ namespace FancyToys.Pages
             }
             else
             {
-                if (logCache.Count > 0)
-                {
-                    while (logCache.Count > 0)
-                    {
-                        LoggingStruct ls = logCache.Dequeue();
-                        await CoreApplication.MainView.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal, () =>
-                            {
-                                page.UpdateLog(logColor[ls.type], ls.content);
-                            });
-                    }
-                }
-                await CoreApplication.MainView.Dispatcher.RunAsync(
+                _ = CoreApplication.MainView.Dispatcher.RunAsync(
                     CoreDispatcherPriority.Normal, () =>
                     {
-                        page.UpdateLog(logColor[type], message);
+                        page.PrintLog(logColor[type], message);
                     });
-            } 
+            }
+        }
+
+        public static void FlushLogCache()
+        {
+            while(logCache.Count > 0)
+            {
+                LoggingStruct ls = logCache.Dequeue();
+                _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                 {
+                     FancyServer.Page.PrintLog(logColor[ls.type], ls.content);
+                 });
+            }
         }
 
         private static string CallerName(int depth)

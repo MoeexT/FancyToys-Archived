@@ -25,16 +25,18 @@ namespace FancyToys.Pages.Server
     /// </summary>
     public sealed partial class FancyServer : Page
     {
-        public static FancyServer sp;
-        public static FancyServer GetThis() { return sp; }
+        private static FancyServer page;
+
+        public static FancyServer Page { get => page; set => page = value; }
+
         public FancyServer()
         {
             this.InitializeComponent();
-            sp = this;
+            page = this;
         }
 
         
-        public void UpdateLog(Color color, string message)
+        public void PrintLog(Color color, string message)
         {
             Paragraph paragraph = new Paragraph
             {
@@ -51,41 +53,39 @@ namespace FancyToys.Pages.Server
             });
         }
 
+        private void ServerAbout(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void SmallerFontSize(object sender, RoutedEventArgs e)
         {
-            LogPanel.FontSize--;
+            LogPanel.FontSize -= 0.5;
         }
         private void LargerFontSize(object sender, RoutedEventArgs e)
         {
-            LogPanel.FontSize++;
-        }
-
-        private void CopySelectedLog(object sender, RoutedEventArgs e)
-        {
-
+            LogPanel.FontSize += 0.5;
         }
 
         private void Menu_Opening(object sender, object e)
         {
             CommandBarFlyout thisFlyout = sender as CommandBarFlyout;
             if (thisFlyout.Target == LogPanel)
-            {
-                
-            }
+            { }
         }
 
 
         private void LogPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            LoggingManager.Warn($"{LogPanel.SelectionFlyout == null}");
-            LogPanel.SelectionFlyout.Opening += Menu_Opening;
-            LogPanel.ContextFlyout.Opening += Menu_Opening;
+            LoggingManager.FlushLogCache();
+            //LogPanel.SelectionFlyout.Opening += Menu_Opening;
+            //LogPanel.ContextFlyout.Opening += Menu_Opening;
         }
 
         private void LogPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            LogPanel.SelectionFlyout.Opening -= Menu_Opening;
-            LogPanel.ContextFlyout.Opening -= Menu_Opening;
+            //LogPanel.SelectionFlyout.Opening -= Menu_Opening;
+            //LogPanel.ContextFlyout.Opening -= Menu_Opening;
         }
     }
 }

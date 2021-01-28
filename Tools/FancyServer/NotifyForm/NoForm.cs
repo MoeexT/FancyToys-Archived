@@ -10,15 +10,16 @@ namespace FancyServer.NotifyForm
     public partial class NoForm : Form
     {
         delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
-        private static readonly NoForm TheForm = new NoForm();
-        static bool once = false;
+        private static NoForm form = new NoForm();
+
+        public static NoForm Form => form;
+
         private NoForm()
         {
             InitializeComponent();
             Init();
             MessageManager.Init();
         }
-        public static NoForm GetTheForm() { return TheForm; }
 
         private void Init()
         {
@@ -37,15 +38,7 @@ namespace FancyServer.NotifyForm
             MouseEventArgs _e = e as MouseEventArgs;
             if (_e.Button == MouseButtons.Left)
             {
-                if (!once)
-                {
-                    once = true;
-                    // TODO: delete test code.
-                    NoformToNursery.AddProcess(@"C:\puppet.exe");
-                    LoggingManager.Trace("trace");
-                }
-
-                ActionManager.ReverseShown();
+                ActionManager.ShowWindow();
                 LoggingManager.Debug("NotifyIcon MouseClick");
             }
         }
@@ -76,12 +69,12 @@ namespace FancyServer.NotifyForm
             }
             if (!hasThisPS)
             {
-                LoggingManager.Info($"Added {pathName} to menu item.");
                 var newItem = ActionManager.GetItem(pathName);
                 BeginInvoke(new CrossThreadDelegate(() =>
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
                 }));
+                LoggingManager.Info($"Added {pathName} to menu item.");
             }
             return !hasThisPS;
         }
@@ -106,9 +99,9 @@ namespace FancyServer.NotifyForm
 
         public bool UpdateNurseryItem(string pathName, string processName)
         {
-            foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
+            foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.ToolTipText.Equals(pathName))
+                if (item.ToolTipText != null && item.ToolTipText.Equals(pathName))
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {
@@ -124,9 +117,9 @@ namespace FancyServer.NotifyForm
 
         public bool RemoveNurseryItem(string pathName)
         {
-            foreach (ToolStripMenuItem item in NurseryMenu.DropDownItems)
+            foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.ToolTipText.Equals(pathName))
+                if (item.ToolTipText != null && item.ToolTipText.Equals(pathName))
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {

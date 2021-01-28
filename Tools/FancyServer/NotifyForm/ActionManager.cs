@@ -50,17 +50,13 @@ namespace FancyServer.NotifyForm
         /// <summary>
         /// Server控制 显示/隐藏前端页面
         /// </summary>
-        public static void ReverseShown()
+        public static void ShowWindow()
         {
             TimeSpan span = DateTime.Now - LastReversedShowState;
-            LastReversedShowState = DateTime.Now;
             LoggingManager.Debug($"Reverse shown span: {span.TotalSeconds}");
-            if (span.TotalSeconds < CalmSpan)
-            {
-                LoggingManager.Dialog("你点的太快了");
-            }
-            IsShown = !IsShown;
-            Send(IsShown, false);
+            LastReversedShowState = DateTime.Now;
+            IsShown = true;
+            Send(true, false);
         }
 
         /// <summary>

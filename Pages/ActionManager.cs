@@ -53,7 +53,7 @@ namespace FancyToys.Pages
 
         private static void ExitApp()
         {
-            PipeBridge.CLosePipe();
+            PipeBridge.Bridge.CLosePipe();
             CoreApplication.Exit();
         }
 
@@ -65,7 +65,7 @@ namespace FancyToys.Pages
         public static void TryExitApp()
         {
             Send(false, true);
-            PipeBridge.CLosePipe();
+            PipeBridge.Bridge.CLosePipe();
             CoreApplication.Exit();
         }
 

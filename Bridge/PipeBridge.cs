@@ -17,50 +17,84 @@ namespace FancyToys.Bridge
 {
     class PipeBridge
     {
-        private static NamedPipeClientStream client;
-        private static StreamReader reader;
-        private static StreamWriter writer;
+        private NamedPipeClientStream client;
+        private StreamReader reader;
+        private StreamWriter writer;
 
-        public static async void LaunchThenConnectServer()
+        public delegate void PipeOpenedEventHandler(object sender, PipeOpenedEventArgs e);
+        public delegate void PipeClosedEventHandler(object sender, PipeClosedEventArgs e);
+
+        public event PipeOpenedEventHandler PipeOpened;
+        public event PipeClosedEventHandler PipeClosed;
+
+        public class PipeOpenedEventArgs: EventArgs
+        { }
+        public class PipeClosedEventArgs: EventArgs
+        { }
+
+        protected virtual void OnPipeOpened(PipeOpenedEventArgs e)
+        {
+            LoggingManager.Info("FancyServer已连接");
+            PipeOpened?.Invoke(this, e);
+        }
+        protected virtual void OnPipeClosed(PipeClosedEventArgs e)
+        {
+            LoggingManager.Info("FancyServer已断开");
+            PipeClosed?.Invoke(this, e);
+        }
+
+        private static PipeBridge bridge = new PipeBridge();
+
+        public static PipeBridge Bridge { get => bridge; }
+
+        private PipeBridge()
+        {
+        }
+
+        public async void LaunchThenConnectServer()
         {
             ApplicationData.Current.LocalSettings.Values["PackageSid"] = WebAuthenticationBroker.GetCurrentApplicationCallbackUri().Host.ToUpper();
             await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             await Task.Run((Action)PipeClientThread);
         }
 
-        private static void PipeClientThread()
+        private void PipeClientThread()
         {
             client = new NamedPipeClientStream(".", @"LOCAL\NurseryPipe",
                 PipeDirection.InOut, PipeOptions.Asynchronous);
             LoggingManager.Info("等待FancyServer");
             client.Connect();
-            LoggingManager.Info("FancyServer已连接");
+            OnPipeOpened(new PipeOpenedEventArgs());
 
             reader = new StreamReader(client);
             writer = new StreamWriter(client);
 
             while (true)
             {
-                if (client.IsConnected)
+                if (!client.IsConnected)
                 {
-                    string message = reader.ReadLine();
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        MessageManager.Receive(message);
-                    }
+                    OnPipeClosed(new PipeClosedEventArgs());
+                    client.Connect();
+                    OnPipeOpened(new PipeOpenedEventArgs());
+                }
+                string message = reader.ReadLine();
+                if (!string.IsNullOrEmpty(message))
+                {
+                    MessageManager.Receive(message);
                 }
             }
         }
 
-        public static bool Post(string message)
+        public bool Post(string message)
         {
-            if (writer == null) { return false; }
+            if (!client.IsConnected) { return false; }
             writer.WriteLine(message);
             writer.Flush();
+            LoggingManager.Trace($"发送了：{message}");
             return true;
         }
 
-        public static void CLosePipe()
+        public void CLosePipe()
         {
             if (client.IsConnected && writer != null) { writer.Close(); }
             if (client.IsConnected && reader != null) { reader.Close(); }

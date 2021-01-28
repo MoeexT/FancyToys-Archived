@@ -19,6 +19,7 @@ namespace FancyServer.Nursery
 
     struct NurseryStruct
     {
+        //public uint seq;            // 序列号
         public NurseryType type;    // 消息类型
         public string content;      // 消息内容
     }
@@ -199,7 +200,7 @@ namespace FancyServer.Nursery
                             cpu = cpuCounter.NextValue(),
                             memory = (int)memCounter.NextValue() >> 10
                         });
-                        LoggingManager.Info($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
+                        Console.WriteLine($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
                     }
                     catch (InvalidOperationException e)
                     {

@@ -17,13 +17,13 @@ namespace FancyToys.Pages.Nursery
     
     struct NurseryStruct
     {
+        //public uint seq;            // 序列号
         public NurseryType type;    // 消息类型
         public string content;      // 消息内容
     }
 
     partial class NurseryManager
     {
-        private static Action senderThread;
         private static int threadSleepSpan = 1000;  // 更新信息时间间隔(ms)
 
         public static void Deal(string message)

@@ -30,6 +30,8 @@ using FancyToys.Pages.Media;
 using FancyToys.Pages.Nursery;
 using FancyToys.Pages.Server;
 using FancyToys.Pages.Settings;
+using FancyToys.Bridge;
+using Windows.UI.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 namespace FancyToys.Pages
@@ -50,6 +52,9 @@ namespace FancyToys.Pages
         public MainPage()
         {
             InitializeComponent();
+            ContentFrame.CacheSize = 64;
+            PipeBridge.Bridge.PipeOpened += OnServerConnected;
+            PipeBridge.Bridge.PipeClosed += OnServerDisconnected;
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -58,18 +63,6 @@ namespace FancyToys.Pages
             NavView.SelectedItem = NavView.MenuItems[0];
             NavView_Navigate("nursery", new EntranceNavigationTransitionInfo());
 
-            var goBack = new KeyboardAccelerator { Key = Windows.System.VirtualKey.GoBack };
-            goBack.Invoked += BackInvoked;
-            this.KeyboardAccelerators.Add(goBack);
-
-            // ALT routes here
-            var altLeft = new KeyboardAccelerator
-            {
-                Key = Windows.System.VirtualKey.Left,
-                Modifiers = Windows.System.VirtualKeyModifiers.Menu
-            };
-            altLeft.Invoked += BackInvoked;
-            this.KeyboardAccelerators.Add(altLeft);
         }
 
         private void NavView_ItemInvoked(muxc.NavigationView sender, muxc.NavigationViewItemInvokedEventArgs args)
@@ -119,36 +112,10 @@ namespace FancyToys.Pages
             }
         }
 
-        private void NavView_BackRequested(muxc.NavigationView sender,
-                                   muxc.NavigationViewBackRequestedEventArgs args)
-        {
-            On_BackRequested();
-        }
-
-        private void BackInvoked(KeyboardAccelerator sender,
-                                 KeyboardAcceleratorInvokedEventArgs args)
-        {
-            On_BackRequested();
-            args.Handled = true;
-        }
-
-        private bool On_BackRequested()
-        {
-            if (!ContentFrame.CanGoBack)
-                return false;
-
-            // Don't go back if the nav pane is overlayed.
-            if (NavView.IsPaneOpen &&
-                (NavView.DisplayMode == muxc.NavigationViewDisplayMode.Compact ||
-                 NavView.DisplayMode == muxc.NavigationViewDisplayMode.Minimal))
-                return false;
-
-            ContentFrame.GoBack();
-            return true;
-        }
 
         private void On_Navigated(object sender, NavigationEventArgs e)
         {
+            //NavView.IsBackEnabled = ContentFrame.CanGoBack;
             if (ContentFrame.SourcePageType == typeof(SettingsPage))
             {
                 // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
@@ -164,22 +131,29 @@ namespace FancyToys.Pages
             }
         }
 
-        public void OnServerConnected(object sender, EventArgs e)
+        private void OnServerConnected(object sender, PipeBridge.PipeOpenedEventArgs e)
         {
-            FancyServer.Icon = new FontIcon
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                Glyph = "\uE703",
-                Foreground = new SolidColorBrush(Colors.Aqua)
-            };
+                FancyServer.Icon = new FontIcon
+                {
+                    Glyph = "\uE703",
+                    Foreground = new SolidColorBrush(Colors.LightGreen)
+                };
+            });
+            
         }
         
-        public void OnServerDisconnected(object sender, EventArgs e)
+        private void OnServerDisconnected(object sender, PipeBridge.PipeClosedEventArgs e)
         {
-            FancyServer.Icon = new FontIcon
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                Glyph = "\uEA6A",
-                Foreground = new SolidColorBrush(Colors.Aqua)
-            };
+                FancyServer.Icon = new FontIcon
+                {
+                    Glyph = "\uEA6A",
+                    Foreground = new SolidColorBrush(Colors.OrangeRed)
+                };
+            });
         }
     }
 }

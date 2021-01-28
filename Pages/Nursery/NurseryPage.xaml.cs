@@ -24,15 +24,16 @@ namespace FancyToys.Pages.Nursery
     /// </summary>
     public sealed partial class NurseryPage : Page
     {
-        public static NurseryPage nurseryPage;
-        public static NurseryPage GetThis() { return nurseryPage; }
+        private static NurseryPage page;
+
+        public static NurseryPage Page { get => page; private set => page = value; }
+
 
         public NurseryPage()
         {
             this.InitializeComponent();
-            nurseryPage = this;
-            MethodBase method = new StackTrace().GetFrame(1).GetMethod();
-            Debug.WriteLine($"---------------------{method.ReflectedType.Name}:{method.Name}------------------------");
+            Page = this;
+            LoggingManager.Debug($"调用了NurseryPage", 2);
         }
 
         /// <summary>
@@ -82,11 +83,11 @@ namespace FancyToys.Pages.Nursery
 
                 if (tswitch.IsOn == true)
                 {
-                    OperationClerk.StartProcess(pathName, fargs[pathName]);
+                    OperationClerk.TryStart(pathName, fargs[pathName]);
                 }
                 else
                 {
-                    OperationClerk.StopProcess(pathName);
+                    OperationClerk.TryStop(pathName);
                 }
                 return;
             }
@@ -169,7 +170,7 @@ namespace FancyToys.Pages.Nursery
             }
             if (rts != null && confirm)
             { 
-                OperationClerk.RemoveProcess(ri.Tag as string);
+                OperationClerk.TryRemove(ri.Tag as string);
             }
         }
 

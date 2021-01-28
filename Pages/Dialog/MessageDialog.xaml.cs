@@ -64,7 +64,7 @@ namespace FancyToys.Pages.Dialog
             TheTextBlock.TextWrapping = TextWrapping.WrapWholeWords;
             PrimaryButtonText = primaryText;
             DefaultButton = ContentDialogButton.Primary;
-            TheImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/wj.jpg"));
+            TheImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/allef.jpg"));
         }
 
 

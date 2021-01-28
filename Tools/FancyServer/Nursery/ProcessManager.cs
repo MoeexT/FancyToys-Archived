@@ -95,13 +95,6 @@ namespace FancyServer.Nursery
                 LoggingManager.Error($"Process launch failed: {pathName}");
                 return null;
             }
-            /* 发现同名进程
-            if (!launchStatus && Process.GetProcessesByName(processes[pathName].process.ProcessName).Length > 1)
-            {
-                Console.WriteLine("重用了");
-                // TODO: Change tool-tip-menu-item's state
-                return StatusCode.AlreadyRunning;
-            }*/
             try
             {
                 child.BeginOutputReadLine();

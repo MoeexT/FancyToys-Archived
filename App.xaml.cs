@@ -57,7 +57,7 @@ namespace FancyToys
                 {
                     //TODO: 从之前挂起的应用程序加载状态
                 }
-                
+                Initlalize();
                 // 将框架放在当前窗口中
                 Window.Current.Content = rootFrame;
             }
@@ -72,7 +72,6 @@ namespace FancyToys
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
 
-                Initlalize();
 
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
@@ -116,8 +115,7 @@ namespace FancyToys
             titleBar.ButtonBackgroundColor = Colors.Transparent;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
-            PipeBridge.LaunchThenConnectServer();
-
+            PipeBridge.Bridge.LaunchThenConnectServer();
             // 退出确认
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += async (s, _e) => {
                 Deferral deferral = _e.GetDeferral();

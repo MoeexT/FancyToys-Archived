@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace FancyToys.Pages.Nursery
@@ -46,19 +48,23 @@ namespace FancyToys.Pages.Nursery
                     case OperationType.Add:
                         if (os.code == OperationCode.OK)
                         {
-                            Add(os.pathName);
+                            ConfirmAdd(os.pathName);
                         }
                         break;
                     case OperationType.Remove:
+                        if (os.code == OperationCode.OK)
+                        {
+                            ConfirmRemove(os.pathName);
+                        }
                         break;
                     case OperationType.Start:
                         if (os.code == OperationCode.OK)
                         {
-                            Start(os.pathName, os.processName);
+                            ConfirmStart(os.pathName, os.processName);
                         }
                         break;
                     case OperationType.Stop:
-                        Stop(os.pathName);
+                        ConfirmStop(os.pathName);
                         break;
                     default:
                         LoggingManager.Warn("Invalid OperationType.");
@@ -71,28 +77,28 @@ namespace FancyToys.Pages.Nursery
             }
         }
 
-        private static void Add(string pathName)
+        private static void ConfirmAdd(string pathName)
         {
-            // 拿到NurseryPage对象，调用
-            NurseryPage.GetThis().AddSwitch(pathName);
-
+            NurseryPage.Page.AddSwitch(pathName);
         }
 
-        private static void Start(string pathName, string processName)
+        private static void ConfirmStart(string pathName, string processName)
         {
-            NurseryPage.GetThis().UpdateSwitch(pathName, processName);
+            NurseryPage.Page.UpdateSwitch(pathName, processName);
         }
 
-        private static void Stop(string pathName)
+        private static void ConfirmStop(string pathName)
         {
             recentStop.Add(pathName);
-            NurseryPage.GetThis().TogglSwitch(pathName, false);
+            NurseryPage.Page.TogglSwitch(pathName, false);
         }
 
-        [Obsolete]
-        private static void Remove(string pathName) { return; }
+        private static void ConfirmRemove(string pathName) 
+        {
+            NurseryPage.Page.RemoveSwitch(pathName);
+        }
 
-        public static void AddProcess(string pathName)
+        public static void TryAdd(string pathName)
         {
             NurseryManager.Send(new OperationStruct
             {
@@ -101,7 +107,7 @@ namespace FancyToys.Pages.Nursery
             });
         }
 
-        public static void RemoveProcess(string pathName)
+        public static void TryRemove(string pathName)
         {
             NurseryManager.Send(new OperationStruct
             {
@@ -110,7 +116,7 @@ namespace FancyToys.Pages.Nursery
             });
         }
 
-        public static void StartProcess(string pathName, string args)
+        public static void TryStart(string pathName, string args)
         {
             NurseryManager.Send(new OperationStruct
             {
@@ -120,7 +126,7 @@ namespace FancyToys.Pages.Nursery
             });
         }
 
-        public static void StopProcess(string pathName)
+        public static void TryStop(string pathName)
         {
             if (!recentStop.Contains(pathName))
             {

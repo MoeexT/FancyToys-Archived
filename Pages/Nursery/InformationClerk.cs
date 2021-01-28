@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 
 namespace FancyToys.Pages.Nursery
 {
@@ -22,7 +23,7 @@ namespace FancyToys.Pages.Nursery
             {
                 List<InformationStruct> ins = JsonConvert.DeserializeObject<List<InformationStruct>>(message);
                 ins.Sort((x, y) => x.pid.CompareTo(y.pid));
-                NurseryPage.GetThis().UpdateProcessInformation(ins);
+                NurseryPage.Page.UpdateProcessInformation(ins);
             }
             catch (JsonException e)
             {

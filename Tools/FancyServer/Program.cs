@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace FancyServer
         {
             Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(true);
-            Application.Run(NoForm.GetTheForm());
+            Application.Run(NoForm.Form);
         }
     }
 }

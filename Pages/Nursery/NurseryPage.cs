@@ -26,81 +26,91 @@ namespace FancyToys.Pages.Nursery
 {
     public partial class NurseryPage
     {
-        private static readonly string MemoryUnit = "KB";
-        private static readonly string CPUnit = "%";
+        //private static readonly string MemoryUnit = "KB";
+        //private static readonly string CPUnit = "%";
         // 进程信息数据源
-        public ObservableCollection<InformationStruct> InfoList { get; set; }
-        private static Dictionary<string, ToggleSwitch> switchCache = new Dictionary<string, ToggleSwitch>();
+        public ObservableCollection<InformationStruct> InfoList = new ObservableCollection<InformationStruct>();
+        //private static Dictionary<string, ToggleSwitch> switchCache = new Dictionary<string, ToggleSwitch>();
         private static Dictionary<string, string> fargs = new Dictionary<string, string>();
 
 
         private async void TryAddFile(string pathName)
         {
-            OperationClerk.AddProcess(pathName);
-            if (switchCache.ContainsKey(pathName))
+            if (fargs.ContainsKey(pathName))
             {
                 await MessageDialog.Info("文件已存在", pathName);
                 return;
             }
-            ToggleSwitch ts = NewSwitch(pathName);
-            ProcessListBox.Items.Add(ts);
-            switchCache[pathName] = ts;
-            fargs[pathName] = "";
+            else
+            {
+                fargs[pathName] = "";
+                OperationClerk.TryAdd(pathName);
+            }
+            //ToggleSwitch ts = NewSwitch(pathName);
+            // ProcessListBox.Items.Add(ts);
+            //switchCache[pathName] = ts;
         }
 
         public void AddSwitch(string pathName)
         {
-            string processName = Path.GetFileNameWithoutExtension(pathName);
-            if (!switchCache.ContainsKey(pathName))
-            {
-                LoggingManager.Error("The process has started, but its ToggleSwitch can't be found.");
-            }
-            ToggleSwitch ts = switchCache[pathName];
-            switchCache.Remove(pathName);
-            fargs.Remove(pathName);
-            ts.OnContent = processName + " is Running";
-            ts.OffContent = processName + " is Stopped";
-            ProcessListBox.Items.Add(ts);
+            string processName = "UpdateSwitchTesting"; //Path.GetFileNameWithoutExtension(pathName);
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+              {
+                ToggleSwitch ts = NewSwitch(pathName);
+                ts.OnContent = processName + " is Running";
+                ts.OffContent = processName + " is Stopped";
+                ProcessListBox.Items.Add(ts);
+              });
+            
         }
 
         public void UpdateSwitch(string pathName, string processName)
         {
-            foreach(ToggleSwitch ts in ProcessListBox.Items)
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (ts.Tag.Equals(pathName))
+                foreach (ToggleSwitch ts in ProcessListBox.Items)
                 {
-                    // TODO: 不一定能改
-                    ts.OnContent = processName + " is Running";
-                    ts.OffContent = processName + " is Stopped";
+                    if (ts.Tag.Equals(pathName))
+                    {
+                        // TODO: 不一定能改
+                            ts.OnContent = processName + " is Running";
+                            ts.OffContent = processName + " is Stopped";
+                    }
                 }
-            }
+            });
         }
 
         public void TogglSwitch(string pathName, bool isOn)
         {
-            foreach (ToggleSwitch ts in ProcessListBox.Items)
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (ts.Tag.Equals(pathName))
+                foreach (ToggleSwitch ts in ProcessListBox.Items)
                 {
-                    ts.IsOn = isOn;
+                    if (ts.Tag.Equals(pathName))
+                    {
+                            ts.IsOn = isOn;
+                    }
                 }
-            }
+            });
         }
 
         public void RemoveSwitch(string pathName)
         {
-            ToggleSwitch ds = null;
-            foreach (ToggleSwitch ts in ProcessListBox.Items)
+            _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (ts.Tag.Equals(pathName))
+                ToggleSwitch ds = null;
+                foreach (ToggleSwitch ts in ProcessListBox.Items)
                 {
-                    ds = ts;
+                    if (ts.Tag.Equals(pathName))
+                    {
+                        ds = ts;
+                    }
                 }
-            }
-            if (ds != null)
-            {
-                ProcessListBox.Items.Remove(ds);
-            }
+                if (ds != null)
+                {
+                    ProcessListBox.Items.Remove(ds);
+                }
+            });
         }
 
         private ToggleSwitch NewSwitch(string pathName)
@@ -140,19 +150,15 @@ namespace FancyToys.Pages.Nursery
 
         public void UpdateProcessInformation(List<InformationStruct> ins)
         {
-            InfoList.Clear();
-            foreach(InformationStruct ifs in ins)
-            {
-                InfoList.Add(ifs);
-            }
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
               {
+                InfoList.Clear();
+                foreach (InformationStruct ifs in ins)
+                {
+                    InfoList.Add(ifs);
+                }
                   ProcessInformationDataGrid.ItemsSource = InfoList;
               });
-            //CoreApplication.MainView.Dispatcher.AwaitableRunAsync(() =>
-            //{
-            //    ProcessInformationDataGrid.ItemsSource = InfoList;
-            //});
         }
     }
 

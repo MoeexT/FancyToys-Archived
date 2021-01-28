@@ -7,13 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
+    NavigationCacheMode="Required"
     Background="{ThemeResource BackgroundAcrylicBrush}">
-
-
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="120" />
+            <RowDefinition Height="100" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -27,25 +25,14 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Text="FancyServer" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
-                <TextBlock Grid.Row="1" Text="doing everything for FancyToys. &#x0a;" TextWrapping="Wrap" FontSize="16" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Margin="20,0,0,0" />
+                <TextBlock Grid.Row="1" Text="doing everything for FancyToys. &#x0a;" TextWrapping="Wrap" FontSize="15" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Margin="20,0,0,0" />
             </Grid>
             <Grid Grid.Column="1">
-                <TextBlock Text="Here are some basic conditions of FancyServer." TextWrapping="Wrap"/>
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="36" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Log Panel" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Grid Grid.Column="1">
-                    <muxc:MenuBar>
+                <Grid>
+                    <muxc:MenuBar VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,10,0,0">
+                        <muxc:MenuBarItem Title="Server">
+                            <MenuFlyoutItem Text="About" Click="ServerAbout" />
+                        </muxc:MenuBarItem>
                         <muxc:MenuBarItem Title="Font Size">
                             <MenuFlyoutItem Text="Smaller" FontSize="9" Click="SmallerFontSize" />
                             <MenuFlyoutItem Text="Larger" FontSize="12" Click="LargerFontSize" />
@@ -53,23 +40,23 @@
                     </muxc:MenuBar>
                 </Grid>
             </Grid>
-            <Grid Grid.Row="1">
-                <Border CornerRadius="1"
-                    BorderThickness="1"
-                    BorderBrush="LightGray">
-                    <ScrollViewer Width="auto" >
-                        <RichTextBlock
-                            x:Name="LogPanel"
-                            FontSize="13"
-                            CanBeScrollAnchor="True"
-                            TextWrapping="Wrap"
-                            Loaded="LogPanel_Loaded"
-                            Unloaded="LogPanel_Unloaded">
-                            <Paragraph Foreground="Aqua">你好</Paragraph>
-                        </RichTextBlock>
-                    </ScrollViewer>
-                </Border>
-            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Border CornerRadius="1"
+                BorderThickness="1"
+                BorderBrush="LightGray">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <RichTextBlock
+                        x:Name="LogPanel"
+                        FontSize="13"
+                        CanBeScrollAnchor="True"
+                        TextWrapping="Wrap"
+                        Loaded="LogPanel_Loaded"
+                        Unloaded="LogPanel_Unloaded ">
+                        <Paragraph Foreground="Aqua">你好</Paragraph>
+                    </RichTextBlock>
+                </ScrollViewer>
+            </Border>
         </Grid>
     </Grid>
 </Page>
