@@ -53,7 +53,7 @@
                         <muxc:RadioMenuFlyoutItem Text="🧔Large" Tag="50" Click="SetSizeFlyoutItem_Click" GroupName="SizeGroup"/>
                     </muxc:MenuBarItem>
 
-                    <muxc:MenuBarItem Title="🖐Help">
+                    <muxc:MenuBarItem Title="⚡Flush">
                         <MenuFlyoutItem Text="How to use..." Click="HelpFlyoutItem_Click" FontSize="14" FontFamily="Microsoft YaHei UI Light"/>
                         <MenuFlyoutSeparator/>
                         <MenuFlyoutItem Text="About" Click="AboutFlyoutItem_Click" FontSize="14" FontFamily="Microsoft YaHei UI Light">
@@ -112,10 +112,10 @@
                 >
                 <!--https://blog.lindexi.com/post/win10-uwp-dataGrid.html-->
                 <mtuc:DataGrid.Columns>
-                    <mtuc:DataGridTextColumn Header="Process" Binding="{Binding processName}" Tag="process"/>
-                    <mtuc:DataGridTextColumn Header="PID" Binding="{Binding pid}" Tag="pid"/>
-                    <mtuc:DataGridTextColumn Header="CPU" Binding="{Binding cpu}" Tag="cpu"/>
-                    <mtuc:DataGridTextColumn Header="Memory" Binding="{Binding memory}" Tag="memory"/>
+                    <mtuc:DataGridTextColumn FontSize="12" Header="Process" Binding="{Binding ProcessName}" Tag="ProcessName"/>
+                    <mtuc:DataGridTextColumn FontSize="12" Header="PID" Binding="{Binding PID}" Tag="PID"/>
+                    <mtuc:DataGridTextColumn FontSize="12" Header="CPU" Binding="{Binding CPU}" Tag="CPU"/>
+                    <mtuc:DataGridTextColumn FontSize="12" Header="Memory" Binding="{Binding Memory}" Tag="Memory"/>
                 </mtuc:DataGrid.Columns>
             </mtuc:DataGrid>
         </Grid>

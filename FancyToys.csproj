@@ -177,11 +177,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\allef.jpg" />
+    <Content Include="Assets\bra.jpg" />
     <Content Include="Assets\DesertUnsplash.jpg" />
     <Content Include="Assets\Tools\Newtonsoft.Json.dll" />
     <Content Include="Assets\Tools\NurseryLauncher.exe" />
     <Content Include="Assets\Tools\NurseryMonitor.exe" />
-    <Content Include="Assets\wj.jpg" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

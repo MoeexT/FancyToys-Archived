@@ -89,7 +89,6 @@ namespace FancyToys.Pages.Nursery
 
         private static void ConfirmStop(string pathName)
         {
-            recentStop.Add(pathName);
             NurseryPage.Page.TogglSwitch(pathName, false);
         }
 
@@ -128,18 +127,11 @@ namespace FancyToys.Pages.Nursery
 
         public static void TryStop(string pathName)
         {
-            if (!recentStop.Contains(pathName))
+            NurseryManager.Send(new OperationStruct
             {
-                NurseryManager.Send(new OperationStruct
-                {
-                    type = OperationType.Stop,
-                    pathName = pathName
-                });
-            }
-            else
-            {
-                recentStop.Remove(pathName);
-            }
+                type = OperationType.Stop,
+                pathName = pathName
+            });
         }
     }
 }

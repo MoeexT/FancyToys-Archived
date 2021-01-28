@@ -114,10 +114,10 @@ namespace FancyToys.Pages
             else
             {
                 _ = CoreApplication.MainView.Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal, () =>
-                    {
-                        page.PrintLog(logColor[type], message);
-                    });
+                CoreDispatcherPriority.Normal, () =>
+                {
+                    page.PrintLog(logColor[type], message);
+                });
             }
         }
 

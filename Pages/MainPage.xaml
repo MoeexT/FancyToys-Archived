@@ -64,7 +64,7 @@
 
                     <muxc:NavigationViewItem Content="FancyServer" Tag="fancyServer" x:Name="FancyServer" FontFamily="Microsoft YaHei UI Light">
                         <muxc:NavigationViewItem.Icon>
-                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE95a;" Foreground="Red"/>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE703;" Foreground="Red"/>
                         </muxc:NavigationViewItem.Icon>
                     </muxc:NavigationViewItem>
                     

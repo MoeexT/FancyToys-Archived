@@ -200,7 +200,7 @@ namespace FancyServer.Nursery
                             cpu = cpuCounter.NextValue(),
                             memory = (int)memCounter.NextValue() >> 10
                         });
-                        Console.WriteLine($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
+                        Console.Write($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
                     }
                     catch (InvalidOperationException e)
                     {

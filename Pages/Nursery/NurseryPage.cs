@@ -29,7 +29,7 @@ namespace FancyToys.Pages.Nursery
         //private static readonly string MemoryUnit = "KB";
         //private static readonly string CPUnit = "%";
         // 进程信息数据源
-        public ObservableCollection<InformationStruct> InfoList = new ObservableCollection<InformationStruct>();
+        public ObservableCollection<ProcessInformation> InfoList = new ObservableCollection<ProcessInformation>();
         //private static Dictionary<string, ToggleSwitch> switchCache = new Dictionary<string, ToggleSwitch>();
         private static Dictionary<string, string> fargs = new Dictionary<string, string>();
 
@@ -53,15 +53,15 @@ namespace FancyToys.Pages.Nursery
 
         public void AddSwitch(string pathName)
         {
-            string processName = "UpdateSwitchTesting"; //Path.GetFileNameWithoutExtension(pathName);
+            string processName = Path.GetFileNameWithoutExtension(pathName);
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
               {
-                ToggleSwitch ts = NewSwitch(pathName);
-                ts.OnContent = processName + " is Running";
-                ts.OffContent = processName + " is Stopped";
-                ProcessListBox.Items.Add(ts);
+                  ToggleSwitch ts = NewSwitch(pathName);
+                  ts.OnContent = processName + " is Running";
+                  ts.OffContent = processName + " is Stopped";
+                  ProcessListBox.Items.Add(ts);
               });
-            
+
         }
 
         public void UpdateSwitch(string pathName, string processName)
@@ -73,8 +73,8 @@ namespace FancyToys.Pages.Nursery
                     if (ts.Tag.Equals(pathName))
                     {
                         // TODO: 不一定能改
-                            ts.OnContent = processName + " is Running";
-                            ts.OffContent = processName + " is Stopped";
+                        ts.OnContent = processName + " is Running";
+                        ts.OffContent = processName + " is Stopped";
                     }
                 }
             });
@@ -88,7 +88,7 @@ namespace FancyToys.Pages.Nursery
                 {
                     if (ts.Tag.Equals(pathName))
                     {
-                            ts.IsOn = isOn;
+                        ts.IsOn = isOn;
                     }
                 }
             });
@@ -119,6 +119,7 @@ namespace FancyToys.Pages.Nursery
             {
                 IsOn = false,
                 Tag = pathName,
+                FontSize = 12,
             };
             twitch.Toggled += Switch_Toggled;
             twitch.ContextFlyout = NewMenu(pathName);
@@ -152,26 +153,32 @@ namespace FancyToys.Pages.Nursery
         {
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
               {
-                InfoList.Clear();
-                foreach (InformationStruct ifs in ins)
-                {
-                    InfoList.Add(ifs);
-                }
+                  InfoList.Clear();
+                  foreach (InformationStruct ifs in ins)
+                  {
+                      InfoList.Add(new ProcessInformation
+                      {
+                          ProcessName = ifs.processName,
+                          PID = $"{ifs.pid}",
+                          CPU = $"{ifs.cpu:F}%",
+                          Memory = ifs.memory < Math.Pow(2, 30) ? $"{ifs.memory:N0}KB" : $"{ifs.memory >> 10:N0}MB",
+                      });
+                  }
                   ProcessInformationDataGrid.ItemsSource = InfoList;
               });
         }
     }
 
-    //public class ProcessInformation
-    //{
-    //    public string PID { get; set; }
-    //    public string ProcessName { get; set; }
-    //    public string CPU { get; set; }
-    //    public string Memory { get; set; }
+    public class ProcessInformation
+    {
+        public string PID { get; set; }
+        public string ProcessName { get; set; }
+        public string CPU { get; set; }
+        public string Memory { get; set; }
 
-    //    public override string ToString()
-    //    {
-    //        return $"{{{ProcessName}, {PID}, {CPU}, {Memory}}}";
-    //    }
-    //}
+        public override string ToString()
+        {
+            return $"{{{ProcessName}, {PID}, {CPU}, {Memory}}}";
+        }
+    }
 }

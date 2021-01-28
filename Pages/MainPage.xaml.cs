@@ -135,11 +135,7 @@ namespace FancyToys.Pages
         {
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                FancyServer.Icon = new FontIcon
-                {
-                    Glyph = "\uE703",
-                    Foreground = new SolidColorBrush(Colors.LightGreen)
-                };
+                FancyServer.Icon.Foreground = new SolidColorBrush(Colors.LightGreen);
             });
             
         }
@@ -148,11 +144,7 @@ namespace FancyToys.Pages
         {
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                FancyServer.Icon = new FontIcon
-                {
-                    Glyph = "\uEA6A",
-                    Foreground = new SolidColorBrush(Colors.OrangeRed)
-                };
+                FancyServer.Icon.Foreground = new SolidColorBrush(Colors.OrangeRed);
             });
         }
     }
