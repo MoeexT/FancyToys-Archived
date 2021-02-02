@@ -16,6 +16,7 @@ using FancyToys.Pages.Dialog;
 using Windows.Security.Authentication.Web;
 using System.Diagnostics;
 using Windows.Storage;
+using FancyToys.Pages.Settings;
 
 namespace FancyToys
 {
@@ -104,8 +105,8 @@ namespace FancyToys
 
         private void Initlalize()
         {
-            ApplicationView.PreferredLaunchViewSize = new Size(820, 520);
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            //ApplicationView.PreferredLaunchViewSize = new Size(820, 520);
+            //ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
             // 扩展标题栏
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
@@ -116,6 +117,7 @@ namespace FancyToys
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
             PipeBridge.Bridge.LaunchThenConnectServer();
+
             // 退出确认
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += async (s, _e) => {
                 Deferral deferral = _e.GetDeferral();

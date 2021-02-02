@@ -32,7 +32,7 @@
             Stretch="Uniform"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
-            ToolTipService.ToolTip="点击以更换图片" Source="/Assets/DesertUnsplash.jpg"
+            Source="/Assets/DesertUnsplash.jpg"
             AllowDrop="True"
             DragOver="DragImageOver"
             Drop="DropImageIn" Grid.ColumnSpan="2" Margin="43,0,0,0"

@@ -23,9 +23,6 @@ namespace FancyToys.Pages.Nursery
 
     class StandardFileClerk
     {
-        private static Color outputColor = Colors.Aqua;
-        private static Color errorColor = Colors.Red;
-
         public static void Deal(string message)
         {
             try
@@ -36,10 +33,10 @@ namespace FancyToys.Pages.Nursery
                     case StandardFileType.StandardIn:
                         break;
                     case StandardFileType.StandardOutput:
-                        Print(outputColor, sfs.content);
+                        LoggingManager.Info($"{sfs.processName}: {sfs.content}", source: LogSource.Process);
                         break;
                     case StandardFileType.StandardError:
-                        Print(errorColor, sfs.content);
+                        LoggingManager.Error($"{sfs.processName}: {sfs.content}", source: LogSource.Process);
                         break;
                     default:
                         LoggingManager.Warn($"Invalid StandardFileType: {sfs.type}");
@@ -51,11 +48,5 @@ namespace FancyToys.Pages.Nursery
                 LoggingManager.Warn($"Deserialize NurseryStandardFileStruct failed. {e.Message}");
             }
         }
-
-        private static void Print(Color color, string message)
-        {
-
-        }
-
     }
 }

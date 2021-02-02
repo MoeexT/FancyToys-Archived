@@ -1,5 +1,5 @@
 <Page
-    x:Class="FancyToys.Pages.Server.FancyServer"
+    x:Class="FancyToys.Pages.Server.ServerPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:FancyToys.Pages.Server"
@@ -7,9 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
-    NavigationCacheMode="Required"
-    Background="{ThemeResource BackgroundAcrylicBrush}">
-    <Grid>
+    Background="{StaticResource BackgroundAcrylicBrush}"
+    NavigationCacheMode="Required">
+    
+    <Grid Margin="1,0,1,1" x:Name="FancyServerPageGrid">
+        <Grid.BackgroundTransition>
+            <BrushTransition />
+        </Grid.BackgroundTransition>
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
             <RowDefinition Height="*" />
@@ -30,29 +34,36 @@
             <Grid Grid.Column="1">
                 <Grid>
                     <muxc:MenuBar VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,10,0,0">
-                        <muxc:MenuBarItem Title="Server">
-                            <MenuFlyoutItem Text="About" Click="ServerAbout" />
-                        </muxc:MenuBarItem>
                         <muxc:MenuBarItem Title="Font Size">
                             <MenuFlyoutItem Text="Smaller" FontSize="9" Click="SmallerFontSize" />
                             <MenuFlyoutItem Text="Larger" FontSize="12" Click="LargerFontSize" />
+                        </muxc:MenuBarItem>
+                        <muxc:MenuBarItem Title="LoggingTest">
+                            <MenuFlyoutItem Text="Trace" Click="TestLogLevel"/>
+                            <MenuFlyoutItem Text="Info" Click="TestLogLevel"/>
+                            <MenuFlyoutItem Text="Debug" Click="TestLogLevel"/>
+                            <MenuFlyoutItem Text="Warn" Click="TestLogLevel"/>
+                            <MenuFlyoutItem Text="Error" Click="TestLogLevel"/>
+                            <MenuFlyoutItem Text="Fatal" Click="TestLogLevel"/>
                         </muxc:MenuBarItem>
                     </muxc:MenuBar>
                 </Grid>
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
-            <Border CornerRadius="1"
+            <Border CornerRadius="2"
                 BorderThickness="1"
-                BorderBrush="LightGray">
+                BorderBrush="Gray">
+                <Border.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.50"/>
+                </Border.Background>
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <RichTextBlock
                         x:Name="LogPanel"
                         FontSize="13"
                         CanBeScrollAnchor="True"
                         TextWrapping="Wrap"
-                        Loaded="LogPanel_Loaded"
-                        Unloaded="LogPanel_Unloaded ">
+                        Loaded="LogPanel_Loaded">
                         <Paragraph Foreground="Aqua">你好</Paragraph>
                     </RichTextBlock>
                 </ScrollViewer>

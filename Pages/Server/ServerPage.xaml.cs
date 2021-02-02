@@ -1,3 +1,4 @@
+using FancyToys.Pages.Dialog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,13 +24,13 @@ namespace FancyToys.Pages.Server
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class FancyServer : Page
+    public sealed partial class ServerPage : Page
     {
-        private static FancyServer page;
+        private static ServerPage page;
 
-        public static FancyServer Page { get => page; set => page = value; }
+        public static ServerPage Page { get => page; set => page = value; }
 
-        public FancyServer()
+        public ServerPage()
         {
             this.InitializeComponent();
             page = this;
@@ -53,11 +54,6 @@ namespace FancyToys.Pages.Server
             });
         }
 
-        private void ServerAbout(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void SmallerFontSize(object sender, RoutedEventArgs e)
         {
             LogPanel.FontSize -= 0.5;
@@ -67,25 +63,37 @@ namespace FancyToys.Pages.Server
             LogPanel.FontSize += 0.5;
         }
 
-        private void Menu_Opening(object sender, object e)
-        {
-            CommandBarFlyout thisFlyout = sender as CommandBarFlyout;
-            if (thisFlyout.Target == LogPanel)
-            { }
-        }
-
-
         private void LogPanel_Loaded(object sender, RoutedEventArgs e)
         {
             LoggingManager.FlushLogCache();
-            //LogPanel.SelectionFlyout.Opening += Menu_Opening;
-            //LogPanel.ContextFlyout.Opening += Menu_Opening;
         }
-
-        private void LogPanel_Unloaded(object sender, RoutedEventArgs e)
+        
+        private void TestLogLevel(object sender, RoutedEventArgs e)
         {
-            //LogPanel.SelectionFlyout.Opening -= Menu_Opening;
-            //LogPanel.ContextFlyout.Opening -= Menu_Opening;
+            switch((sender as MenuFlyoutItem).Text)
+            {
+                case "Trace":
+                    LoggingManager.Trace("Trace");
+                    break;
+                case "Info": 
+                    LoggingManager.Info("Info");
+                    break;
+                case "Debug": 
+                    LoggingManager.Debug("Debug");
+                    break;
+                case "Warn": 
+                    LoggingManager.Warn("Warn");
+                    break;
+                case "Error": 
+                    LoggingManager.Error("Error");
+                    break;
+                case "Fatal": 
+                    LoggingManager.Fatal("Fatal");
+                    break;
+                default:
+                    _ = MessageDialog.Error("Error happened while testing log level", "Invalid LogType");
+                    break;
+            }
         }
     }
 }

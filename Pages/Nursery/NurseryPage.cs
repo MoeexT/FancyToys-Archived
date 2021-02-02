@@ -158,27 +158,74 @@ namespace FancyToys.Pages.Nursery
                   {
                       InfoList.Add(new ProcessInformation
                       {
-                          ProcessName = ifs.processName,
+                          Process = ifs.processName,
                           PID = $"{ifs.pid}",
                           CPU = $"{ifs.cpu:F}%",
                           Memory = ifs.memory < Math.Pow(2, 30) ? $"{ifs.memory:N0}KB" : $"{ifs.memory >> 10:N0}MB",
                       });
                   }
-                  ProcessInformationDataGrid.ItemsSource = InfoList;
+                  // ProcessGrid.ItemsSource = InfoList;
               });
         }
     }
 
-    public class ProcessInformation
+    public class ProcessInformation: INotifyPropertyChanged
     {
-        public string PID { get; set; }
-        public string ProcessName { get; set; }
-        public string CPU { get; set; }
-        public string Memory { get; set; }
+        private string pid;
+        private string process;
+        private string cpu;
+        private string memory;
+        public string PID
+        {
+            get { return pid; }
+            set
+            {
+                pid = value;
+                RaisePropertyChanged(nameof(PID));
+            } 
+        }
+        public string Process
+        {
+            get { return process; }
+            set
+            {
+                process = value;
+                RaisePropertyChanged(nameof(Process));
+            }
+        }
+        public string CPU
+        {
+            get { return cpu; }
+            set
+            {
+                cpu = value;
+                RaisePropertyChanged(nameof(CPU));
+            }
+        }
+        public string Memory
+        {
+            get { return memory; }
+            set
+            {
+                memory = value;
+                RaisePropertyChanged(nameof(Memory));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void RaisePropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
 
         public override string ToString()
         {
-            return $"{{{ProcessName}, {PID}, {CPU}, {Memory}}}";
+            return $"{{{Process}, {PID}, {CPU}, {Memory}}}";
         }
     }
 }

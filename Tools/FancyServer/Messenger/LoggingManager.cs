@@ -29,7 +29,7 @@ namespace FancyServer.Messenger
     class LoggingManager
     {
         public static bool consoleDebug = true;
-        public static int LoggingLevel = 1;
+        public static LogType LoggingLevel = LogType.Trace;
         private static readonly Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static void Dialog(string message)
@@ -81,7 +81,7 @@ namespace FancyServer.Messenger
 
         private static void Send(LogType lt, string message)
         {
-            if ((int)lt >= LoggingLevel)
+            if (lt >= LoggingLevel)
             {
                 MessageManager.Send(PDU(lt, message));
             }

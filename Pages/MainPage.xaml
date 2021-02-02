@@ -10,7 +10,7 @@
     Background="{ThemeResource BackgroundAcrylicBrush}" 
     FontFamily="Microsoft YaHei UI Light" MinWidth="800" MinHeight="500" >
 
-    <Grid>
+    <Grid x:Name="MainPageGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
@@ -26,22 +26,22 @@
 
         <Grid x:Name="AllContent" Grid.Row="1">
             <muxc:NavigationView x:Name="NavView" 
-            PaneDisplayMode="Left"
-            PaneTitle="Fancy Toys"
-            ExpandedModeThresholdWidth="150"
-            IsPaneOpen="True"
-            IsBackButtonVisible="Collapsed"
-            IsPaneToggleButtonVisible="True"
-            OpenPaneLength="160"
-            SelectionFollowsFocus="Enabled"
-            IsSettingsVisible="True" 
-            FontFamily="Microsoft YaHei UI Light" 
-            FontSize="12" 
-            FontStyle="Normal" 
-            FontWeight="Normal" 
-            ItemInvoked="NavView_ItemInvoked"
-            Loaded="NavView_Loaded"
-            SelectionChanged="NavView_SelectionChanged" >
+                PaneDisplayMode="Left"
+                PaneTitle="Fancy Toys"
+                ExpandedModeThresholdWidth="150"
+                IsPaneOpen="True"
+                IsBackButtonVisible="Collapsed"
+                IsPaneToggleButtonVisible="True"
+                OpenPaneLength="160"
+                SelectionFollowsFocus="Enabled"
+                IsSettingsVisible="True" 
+                FontFamily="Microsoft YaHei UI Light" 
+                FontSize="12" 
+                FontStyle="Normal" 
+                FontWeight="Normal" 
+                ItemInvoked="NavView_ItemInvoked"
+                Loaded="NavView_Loaded"
+                SelectionChanged="NavView_SelectionChanged">
 
                 <muxc:NavigationView.MenuItems>
                     <muxc:NavigationViewItem Content="Nursery" Tag="nursery" x:Name="NurseryItem" FontFamily="Microsoft YaHei UI Light">

@@ -23,14 +23,11 @@ namespace FancyServer.Messenger
     }
     partial class SettingManager
     {
-        struct FormSettingStruct 
-        {
-            public int calmSpan; 
-        }
+        struct FormSettingStruct { }
         struct MessageSettingStruct { }
         struct LoggingSettingStruct
         {
-            public int level;
+            public LogType level;
         }
 
         public static void Deal(string message)
@@ -66,7 +63,7 @@ namespace FancyServer.Messenger
             try
             {
                 FormSettingStruct fss = JsonConvert.DeserializeObject<FormSettingStruct>(sdu);
-                ActionManager.CalmSpan = fss.calmSpan;
+                // DO nothing
                 Send(fss, SettingCode.OK);
             }
             catch (JsonException e)
@@ -81,7 +78,7 @@ namespace FancyServer.Messenger
             try
             {
                 MessageSettingStruct mss = JsonConvert.DeserializeObject<MessageSettingStruct>(sdu);
-                // TODO nothing
+                // DO nothing
                 Send(mss, SettingCode.OK);
             }
             catch (JsonException e)

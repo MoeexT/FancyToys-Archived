@@ -19,10 +19,7 @@ namespace FancyServer.NotifyForm
     {
 
         private static bool isShown = true;
-        private static float calmSpan = 1.5f;
         private static DateTime lastReversedShowState = DateTime.Now;
-
-        public static float CalmSpan { get => calmSpan; set => calmSpan = value; }
         public static bool IsShown { get => isShown; set => isShown = value; }
         public static DateTime LastReversedShowState { get => lastReversedShowState; set => lastReversedShowState = value; }
 

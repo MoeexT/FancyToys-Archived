@@ -46,7 +46,7 @@ namespace FancyToys.Pages
             ("nursery", typeof(NurseryPage)),
             ("trimage", typeof(TrimagePage)),
             ("avideo", typeof(AVideoPage)),
-            ("fancyServer", typeof(FancyServer)),
+            ("fancyServer", typeof(ServerPage)),
         };
 
         public MainPage()
@@ -55,6 +55,7 @@ namespace FancyToys.Pages
             ContentFrame.CacheSize = 64;
             PipeBridge.Bridge.PipeOpened += OnServerConnected;
             PipeBridge.Bridge.PipeClosed += OnServerDisconnected;
+            SettingsClerk.Clerk.InitlailzeLocalSettings();
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

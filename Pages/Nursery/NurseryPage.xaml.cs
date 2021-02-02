@@ -174,10 +174,16 @@ namespace FancyToys.Pages.Nursery
             }
         }
 
-        private void SetSizeFlyoutItem_Click(object sender, RoutedEventArgs e)
+        private void ListBoxSize_Click(object sender, RoutedEventArgs e)
         {
-            ProcessListBox.ItemContainerStyle = SetStyle(HeightProperty, ((RadioMenuFlyoutItem)sender).Tag);
+            ProcessListBox.ItemContainerStyle = SetStyle(HeightProperty, ((MenuFlyoutItem)sender).Tag);
         }
+
+        private void DataGridSize_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         /// <summary>
         /// 动态改变switchToggle的样式
         /// From https://blog.csdn.net/lindexi_gd/article/details/104992276

@@ -128,6 +128,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bridge\PipeBridge.cs" />
+    <Compile Include="IManager.cs" />
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -161,8 +162,8 @@
     <Compile Include="Pages\Nursery\OperationClerk.cs" />
     <Compile Include="Pages\Nursery\SettingClerk.cs" />
     <Compile Include="Pages\Nursery\StandardFileClerk.cs" />
-    <Compile Include="Pages\Server\FancyServer.xaml.cs">
-      <DependentUpon>FancyServer.xaml</DependentUpon>
+    <Compile Include="Pages\Server\ServerPage.xaml.cs">
+      <DependentUpon>ServerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Settings\SettingsClerk.cs" />
     <Compile Include="Pages\Settings\SettingsManager.cs" />
@@ -265,7 +266,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Server\FancyServer.xaml">
+    <Page Include="Pages\Server\ServerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

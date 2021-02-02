@@ -14,9 +14,17 @@ using Windows.UI.Core;
 using FancyToys.Pages.Server;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.Storage;
+using FancyToys.Pages.Settings;
 
 namespace FancyToys.Pages
 {
+    public enum LogSource
+    {
+        FancyToys = 0,
+        FancyServer = 1,
+        Process = 2,
+    }
     public enum LogType
     {
         Trace = 1,
@@ -55,81 +63,132 @@ namespace FancyToys.Pages
         public static void Deal(string message)
         {
             LoggingStruct ls = JsonConvert.DeserializeObject<LoggingStruct>(message);
-            PrintToPage(ls.type, $"FancyServer: {ls.content}");
-        }
-
-        public static async void Dialog(string message)
-        {
-            await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-             {
-                 await MessageDialog.Info(message, "");
-             });
-        }
-
-        public static void Trace(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Trace, CallerName(depth + 1) + msg);
-        }
-
-        public static void Info(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Info, CallerName(depth + 1) + msg);
-        }
-
-        public static void Debug(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Debug, CallerName(depth + 1) + msg);
-        }
-
-        public static void Warn(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Warn, CallerName(depth + 1) + msg);
-        }
-
-        public static void Error(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Error, CallerName(depth + 1) + msg);
-        }
-
-        public static void Fatal(string msg, int depth = 1)
-        {
-            PrintToPage(LogType.Fatal, CallerName(depth + 1) + msg);
-        }
-
-        private static void PrintToPage(LogType type, string message)
-        {
-            Color color = Colors.White;
-
-            FancyServer page = FancyServer.Page;
-            // System.NullReferenceException:“Object reference not set to an instance of an object.”
-            // page: null
-            if (page == null)
+            if (ls.type == LogType.Dialog)
             {
-                logCache.Enqueue(new LoggingStruct
-                {
-                    type = type,
-                    content = message
-                });
+                Dialog(ls.content, LogSource.FancyServer);
             }
             else
             {
-                _ = CoreApplication.MainView.Dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal, () =>
+                PrintToPage(LogSource.FancyServer, ls.type, ls.content);
+            }
+        }
+
+        private static async void Dialog(string message, LogSource source=LogSource.FancyToys)
+        {
+            await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+             {
+                 await MessageDialog.Info(source.ToString(), message);
+             });
+        }
+
+        public static void Trace(string msg, int depth = 1, LogSource source=LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Trace, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Trace, msg);
+            }
+        }
+
+        public static void Info(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Info, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Info, msg);
+            }
+        }
+
+        public static void Debug(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Debug, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Debug, msg);
+            }
+        }
+
+        public static void Warn(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Warn, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Warn, msg);
+            }
+        }
+
+        public static void Error(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Error, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Error, msg);
+            }
+        }
+
+        public static void Fatal(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
+        {
+            if (source == LogSource.FancyToys)
+            {
+                PrintToPage(source, LogType.Fatal, CallerName(depth + 1) + msg);
+            }
+            else
+            {
+                PrintToPage(source, LogType.Fatal, msg);
+            }
+        }
+
+        private static void PrintToPage(LogSource source, LogType type, string message)
+        {
+            if (type >= SettingsClerk.Clerk.LogLevel)
+            {
+                ServerPage page = ServerPage.Page;
+                if (page == null)
                 {
-                    page.PrintLog(logColor[type], message);
-                });
+                    logCache.Enqueue(new LoggingStruct
+                    {
+                        type = type,
+                        content = message
+                    });
+                }
+                else
+                {
+                    _ = CoreApplication.MainView.Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal, () =>
+                    {
+                        page.PrintLog(logColor[type], message);
+                    });
+                }
             }
         }
 
         public static void FlushLogCache()
         {
-            while(logCache.Count > 0)
+            while (logCache.Count > 0)
             {
                 LoggingStruct ls = logCache.Dequeue();
-                _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                 {
-                     FancyServer.Page.PrintLog(logColor[ls.type], ls.content);
-                 });
+                if (ls.type >= SettingsClerk.Clerk.LogLevel)
+                {
+                    _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                     {
+                         ServerPage.Page.PrintLog(logColor[ls.type], ls.content);
+                     });
+                }
             }
         }
 
