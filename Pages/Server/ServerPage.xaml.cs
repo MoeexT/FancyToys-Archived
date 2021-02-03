@@ -1,6 +1,8 @@
 using FancyToys.Pages.Dialog;
+using FancyToys.Pages.Settings;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -24,11 +26,27 @@ namespace FancyToys.Pages.Server
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class ServerPage : Page
+    public sealed partial class ServerPage : Page, INotifyPropertyChanged
     {
+        public static ServerPage Page { get => page; set => page = value; }
+
         private static ServerPage page;
 
-        public static ServerPage Page { get => page; set => page = value; }
+        private double logPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
+        public double LogPanelOpacity {
+            get => logPanelOpacity;
+            set
+            {
+                logPanelOpacity = value;
+                RaisePropertyChanged("LogPanelOpacity");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
         public ServerPage()
         {
@@ -54,6 +72,17 @@ namespace FancyToys.Pages.Server
             });
         }
 
+        private void LogPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoggingManager.FlushLogCache();
+            SettingsClerk.Clerk.OpacityChanged += () =>
+            {
+                LogPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
+                
+                //this.Bindings.Update();
+            };
+        }
+
         private void SmallerFontSize(object sender, RoutedEventArgs e)
         {
             LogPanel.FontSize -= 0.5;
@@ -61,11 +90,6 @@ namespace FancyToys.Pages.Server
         private void LargerFontSize(object sender, RoutedEventArgs e)
         {
             LogPanel.FontSize += 0.5;
-        }
-
-        private void LogPanel_Loaded(object sender, RoutedEventArgs e)
-        {
-            LoggingManager.FlushLogCache();
         }
         
         private void TestLogLevel(object sender, RoutedEventArgs e)
@@ -75,11 +99,11 @@ namespace FancyToys.Pages.Server
                 case "Trace":
                     LoggingManager.Trace("Trace");
                     break;
-                case "Info": 
-                    LoggingManager.Info("Info");
-                    break;
                 case "Debug": 
                     LoggingManager.Debug("Debug");
+                    break;
+                case "Info": 
+                    LoggingManager.Info("Info");
                     break;
                 case "Warn": 
                     LoggingManager.Warn("Warn");
@@ -94,6 +118,16 @@ namespace FancyToys.Pages.Server
                     _ = MessageDialog.Error("Error happened while testing log level", "Invalid LogType");
                     break;
             }
+        }
+
+        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogPanel.Blocks.Clear();
+        }
+
+        private void ShowLogLevel_Click(object sender, RoutedEventArgs e)
+        {
+            PrintLog(Colors.Azure, $"{SettingsClerk.Clerk.STLogLevel}");
         }
     }
 }

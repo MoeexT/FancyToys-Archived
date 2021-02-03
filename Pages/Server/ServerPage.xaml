@@ -5,57 +5,54 @@
     xmlns:local="using:FancyToys.Pages.Server"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
-    Background="{StaticResource BackgroundAcrylicBrush}"
     NavigationCacheMode="Required">
     
-    <Grid Margin="1,0,1,1" x:Name="FancyServerPageGrid">
+    <Grid Margin="1,0,1,1">
         <Grid.BackgroundTransition>
             <BrushTransition />
         </Grid.BackgroundTransition>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="FancyServer" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
-                <TextBlock Grid.Row="1" Text="doing everything for FancyToys. &#x0a;" TextWrapping="Wrap" FontSize="15" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Margin="20,0,0,0" />
-            </Grid>
-            <Grid Grid.Column="1">
-                <Grid>
-                    <muxc:MenuBar VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,10,0,0">
-                        <muxc:MenuBarItem Title="Font Size">
-                            <MenuFlyoutItem Text="Smaller" FontSize="9" Click="SmallerFontSize" />
-                            <MenuFlyoutItem Text="Larger" FontSize="12" Click="LargerFontSize" />
-                        </muxc:MenuBarItem>
-                        <muxc:MenuBarItem Title="LoggingTest">
-                            <MenuFlyoutItem Text="Trace" Click="TestLogLevel"/>
-                            <MenuFlyoutItem Text="Info" Click="TestLogLevel"/>
-                            <MenuFlyoutItem Text="Debug" Click="TestLogLevel"/>
-                            <MenuFlyoutItem Text="Warn" Click="TestLogLevel"/>
-                            <MenuFlyoutItem Text="Error" Click="TestLogLevel"/>
-                            <MenuFlyoutItem Text="Fatal" Click="TestLogLevel"/>
-                        </muxc:MenuBarItem>
-                    </muxc:MenuBar>
-                </Grid>
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Border CornerRadius="2"
+
+        <controls:DockPanel >
+
+            <TextBlock controls:DockPanel.Dock="Top" Text="FancyServer" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="10,0,0,0" />
+            <TextBlock controls:DockPanel.Dock="Top" Text="doing everything for FancyToys." TextWrapping="Wrap" FontSize="15" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Padding="20,0,0,0" />
+
+            <StackPanel controls:DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right">
+                <muxc:MenuBar VerticalAlignment="Top">
+                    <muxc:MenuBarItem Title="Font Size">
+                        <MenuFlyoutItem Text="Smaller" FontSize="9" Click="SmallerFontSize" />
+                        <MenuFlyoutItem Text="Larger" FontSize="12" Click="LargerFontSize" />
+                    </muxc:MenuBarItem>
+                    <muxc:MenuBarItem Title="LoggingTest">
+                        <MenuFlyoutItem Text="Trace" Click="TestLogLevel"/>
+                        <MenuFlyoutItem Text="Debug" Click="TestLogLevel"/>
+                        <MenuFlyoutItem Text="Info" Click="TestLogLevel"/>
+                        <MenuFlyoutItem Text="Warn" Click="TestLogLevel"/>
+                        <MenuFlyoutItem Text="Error" Click="TestLogLevel"/>
+                        <MenuFlyoutItem Text="Fatal" Click="TestLogLevel"/>
+                    </muxc:MenuBarItem>
+                </muxc:MenuBar>
+                <AppBarSeparator/>
+                <Button Content="Log Level" Click="ShowLogLevel_Click" Height="40" CornerRadius="0" >
+                    <Button.Background>
+                        <SolidColorBrush Color="#33000000" Opacity="0"/>
+                    </Button.Background>
+                </Button>
+                <Button Content="Clear Log" Click="ClearLogButton_Click" Height="40" CornerRadius="0" >
+                    <Button.Background>
+                        <SolidColorBrush Color="#33000000" Opacity="0"/>
+                    </Button.Background>
+                </Button>
+            </StackPanel>
+            
+            <Border
+                CornerRadius="2"
                 BorderThickness="1"
                 BorderBrush="Gray">
                 <Border.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.50"/>
+                    <SolidColorBrush Color="Black" Opacity="{x:Bind LogPanelOpacity, Mode=TwoWay}"/>
                 </Border.Background>
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <RichTextBlock
@@ -68,6 +65,6 @@
                     </RichTextBlock>
                 </ScrollViewer>
             </Border>
-        </Grid>
+        </controls:DockPanel>
     </Grid>
 </Page>

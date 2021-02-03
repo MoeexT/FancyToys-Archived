@@ -9,23 +9,33 @@
     NavigationCacheMode="Required">
 
     <Grid Margin="20,0,0,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <TextBlock Text="Theme" FontSize="24" Height="35" />
-            <muxc:RadioButtons>
-                <RadioButton Content="Light" Checked="ChangeTheme" />
-                <RadioButton Content="Dark" Checked="ChangeTheme" />
-                <RadioButton Content="System" Checked="ChangeTheme" />
-            </muxc:RadioButtons>
-            <HyperlinkButton Content="Windows color settings" NavigateUri="ms-settings:colors"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Margin="0,10,0,0" >
-            <TextBlock Text="Log" FontSize="24" Height="35" />
-            <ComboBox ItemsSource="{x:Bind LogLevels}" Header="Log Level" SelectedIndex="0" SelectionChanged="LogLevelChanged" />
+
+        <StackPanel>
+            <StackPanel>
+                <TextBlock Text="Theme" FontSize="24" Height="35" />
+                <muxc:RadioButtons>
+                    <RadioButton Content="Light" Checked="ChangeTheme" />
+                    <RadioButton Content="Dark" Checked="ChangeTheme" />
+                    <RadioButton Content="System" Checked="ChangeTheme" />
+                </muxc:RadioButtons>
+                <HyperlinkButton Content="Windows color settings" NavigateUri="ms-settings:colors"/>
+            </StackPanel>
+            <StackPanel Margin="0,10,0,0" >
+                <TextBlock Text="Log" FontSize="24" Height="35" />
+                <ComboBox ItemsSource="{x:Bind LogLevels}" Header="Log Level" SelectedIndex="0" SelectionChanged="LogLevelChanged" />
+                <StackPanel Orientation="Horizontal" >
+                    <Slider x:Name="OpatitySlider" Header="Background Opacity" Width="200" HorizontalAlignment="Left" Padding="0,10,0,0"
+                            Minimum="0" Maximum="1"
+                            StepFrequency="0.025" TickFrequency="0.05" Value="0.5"
+                            ValueChanged="OpatitySlider_ValueChanged"/>
+                    <Border x:Name="ColorSample" Width="66" Height="Auto" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1">
+                        <Border.Background>
+                            <SolidColorBrush Color="Black" Opacity="{x:Bind OpatitySlider.Value, Mode=OneWay}" />
+                        </Border.Background>
+                        <TextBlock Text="Opacity" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

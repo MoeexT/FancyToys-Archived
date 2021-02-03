@@ -28,14 +28,12 @@ namespace FancyToys.Pages.Settings
         private HashSet<LogType> LogLevels = new HashSet<LogType>
         {
             LogType.Trace,
-            LogType.Info,
             LogType.Debug,
+            LogType.Info,
             LogType.Warn,
             LogType.Error,
             LogType.Fatal,
         };
-        
-
 
         public SettingsPage()
         {
@@ -68,7 +66,11 @@ namespace FancyToys.Pages.Settings
         {
             ComboBox logLevelSelector = sender as ComboBox;
             SettingsClerk.Clerk.SetLogLevel((LogType)logLevelSelector.SelectedValue);
+        }
 
+        private void OpatitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            SettingsClerk.Clerk.STLogPanelOpacity = (sender as Slider).Value;
         }
     }
 }

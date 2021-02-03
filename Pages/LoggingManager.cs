@@ -155,7 +155,7 @@ namespace FancyToys.Pages
 
         private static void PrintToPage(LogSource source, LogType type, string message)
         {
-            if (type >= SettingsClerk.Clerk.LogLevel)
+            if (type >= SettingsClerk.Clerk.STLogLevel)
             {
                 ServerPage page = ServerPage.Page;
                 if (page == null)
@@ -182,7 +182,7 @@ namespace FancyToys.Pages
             while (logCache.Count > 0)
             {
                 LoggingStruct ls = logCache.Dequeue();
-                if (ls.type >= SettingsClerk.Clerk.LogLevel)
+                if (ls.type >= SettingsClerk.Clerk.STLogLevel)
                 {
                     _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                      {

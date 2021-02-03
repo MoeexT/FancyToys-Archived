@@ -18,21 +18,30 @@ namespace FancyToys.Pages.Settings
 
     class SettingsClerk
     {
-        private static readonly SettingsClerk clerk = new SettingsClerk();
         public static SettingsClerk Clerk { get => clerk; }
-        public LogType LogLevel
+        private static readonly SettingsClerk clerk = new SettingsClerk();
+        private ApplicationDataContainer LSettings = ApplicationData.Current.LocalSettings;
+        public delegate void OpacityChangedHandler();
+        public event OpacityChangedHandler OpacityChanged;
+
+        protected virtual void OnOpacityChanged()
+        {
+            OpacityChanged?.Invoke();
+        }
+
+        public LogType STLogLevel
         {
             set
             {
-                ApplicationData.Current.LocalSettings.Values["LogLevel"] = value.ToString();
+                LSettings.Values["LogLevel"] = value.ToString();
             }
             get
             {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue("LogLevel", out object val))
+                if (LSettings.Values.TryGetValue("LogLevel", out object val))
                 {
                     return ParseEnum<LogType>(val as string);
                 }
-                _ = MessageDialog.Error("Error while setting Log Level", "Setting not found.");
+                _ = MessageDialog.Error("Error while setting Log Level", "Setting not found. Default log level `Info` setted.");
                 return LogType.Info;
             }
         }
@@ -45,18 +54,36 @@ namespace FancyToys.Pages.Settings
             return (T)Enum.Parse(typeof(T), value.ToString());
         }
 
+        public double STLogPanelOpacity
+        {
+            set
+            {
+                LSettings.Values["LogPanelOpacity"] = value;
+                OnOpacityChanged();
+            }
+            get
+            {
+                if (LSettings.Values.TryGetValue("LogPanelOpacity", out object opacity))
+                {
+                    return (double)opacity;
+                }
+                _ = MessageDialog.Error("Error while setting Log Panel Opacity", "Setting not found. Default opacity `0.5` setted.");
+                return 0.5;
+            }
+        }
+
 
         private SettingsClerk() { }
 
         public void InitlailzeLocalSettings()
         {
-            LogLevel = LogType.Trace;
+            STLogLevel = LogType.Trace;
+            STLogPanelOpacity = 0.5;
         }
 
         public void SetLogLevel(LogType level)
         {
-            LogLevel = level;
-            LoggingManager.Debug($"{LogLevel}");
+            STLogLevel = level;
 
             LoggingSettingStruct lss = new LoggingSettingStruct
             {
