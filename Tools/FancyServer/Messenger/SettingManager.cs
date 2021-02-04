@@ -27,7 +27,7 @@ namespace FancyServer.Messenger
         struct MessageSettingStruct { }
         struct LoggingSettingStruct
         {
-            public LogType level;
+            public LogLevel level;
         }
 
         public static void Deal(string message)

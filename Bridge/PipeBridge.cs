@@ -87,7 +87,7 @@ namespace FancyToys.Bridge
 
         public bool Post(string message)
         {
-            if (!client.IsConnected) { return false; }
+            if (client == null || !client.IsConnected) { return false; }
             writer.WriteLine(message);
             writer.Flush();
             LoggingManager.Trace($"发送了：{message}");

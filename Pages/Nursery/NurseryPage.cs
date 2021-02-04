@@ -177,7 +177,7 @@ namespace FancyToys.Pages.Nursery
         private string memory;
         public string PID
         {
-            get { return pid; }
+            get => pid;
             set
             {
                 pid = value;
@@ -186,7 +186,7 @@ namespace FancyToys.Pages.Nursery
         }
         public string Process
         {
-            get { return process; }
+            get => process;
             set
             {
                 process = value;
@@ -195,7 +195,7 @@ namespace FancyToys.Pages.Nursery
         }
         public string CPU
         {
-            get { return cpu; }
+            get => cpu;
             set
             {
                 cpu = value;
@@ -204,28 +204,15 @@ namespace FancyToys.Pages.Nursery
         }
         public string Memory
         {
-            get { return memory; }
+            get => memory;
             set
             {
                 memory = value;
                 RaisePropertyChanged(nameof(Memory));
             }
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void RaisePropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
-
-        public override string ToString()
-        {
-            return $"{{{Process}, {PID}, {CPU}, {Memory}}}";
-        }
+        protected void RaisePropertyChanged(string name) { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); }
+        public override string ToString() { return $"{{{Process}, {PID}, {CPU}, {Memory}}}"; }
     }
 }

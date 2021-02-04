@@ -29,16 +29,15 @@ namespace FancyToys.Pages.Server
     public sealed partial class ServerPage : Page, INotifyPropertyChanged
     {
         public static ServerPage Page { get => page; set => page = value; }
-
         private static ServerPage page;
 
         private double logPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
-        public double LogPanelOpacity {
+        private double LogPanelOpacity {
             get => logPanelOpacity;
             set
             {
                 logPanelOpacity = value;
-                RaisePropertyChanged("LogPanelOpacity");
+                RaisePropertyChanged(nameof(LogPanelOpacity));
             }
         }
 
@@ -55,15 +54,15 @@ namespace FancyToys.Pages.Server
         }
 
         
-        public void PrintLog(Color color, string message)
+        public void PrintLog(string message, Color foreground, Color background=default)
         {
             Paragraph paragraph = new Paragraph
             {
-                Foreground = new SolidColorBrush(color),
+                Foreground = new SolidColorBrush(foreground),
             };
             Run run = new Run() 
             {
-                Text = message
+                Text = message,
             };
             paragraph.Inlines.Add(run);
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -78,8 +77,6 @@ namespace FancyToys.Pages.Server
             SettingsClerk.Clerk.OpacityChanged += () =>
             {
                 LogPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
-                
-                //this.Bindings.Update();
             };
         }
 
@@ -127,7 +124,7 @@ namespace FancyToys.Pages.Server
 
         private void ShowLogLevel_Click(object sender, RoutedEventArgs e)
         {
-            PrintLog(Colors.Azure, $"{SettingsClerk.Clerk.STLogLevel}");
+            PrintLog($"{SettingsClerk.Clerk.STLogLevel}", Colors.Azure);
         }
     }
 }

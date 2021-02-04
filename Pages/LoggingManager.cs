@@ -25,7 +25,14 @@ namespace FancyToys.Pages
         FancyServer = 1,
         Process = 2,
     }
+
     public enum LogType
+    {
+        Normal = 1,
+        Dialog = 2,
+    }
+
+    public enum LogLevel
     {
         Trace = 1,
         Debug = 2,
@@ -33,26 +40,26 @@ namespace FancyToys.Pages
         Warn = 4,
         Error = 5,
         Fatal = 6,
-        Dialog = 7,     // 用于在前端的提示
 
     }
     public struct LoggingStruct
     {
         public LogType type;
+        public LogLevel level;
         public string content;
     }
 
     class LoggingManager
     {
         private static Queue<LoggingStruct> logCache = new Queue<LoggingStruct>();
-        private static readonly Dictionary<LogType, Color> logColor = new Dictionary<LogType, Color>()
+        public static readonly Dictionary<LogLevel, Color> LogForegroundColors = new Dictionary<LogLevel, Color>()
         {
-            { LogType.Trace, Colors.LightGray },
-            { LogType.Debug, Colors.LightBlue },
-            { LogType.Info, Colors.LightGreen },
-            { LogType.Warn, Colors.Yellow },
-            { LogType.Error, Colors.PaleVioletRed},
-            { LogType.Fatal, Colors.DarkRed}
+            { LogLevel.Trace, Colors.Gray },
+            { LogLevel.Debug, Colors.Cyan },
+            { LogLevel.Info, Colors.MediumSpringGreen },
+            { LogLevel.Warn, Colors.Yellow },
+            { LogLevel.Error, Colors.DeepPink},
+            { LogLevel.Fatal, Colors.Red}
         };
 
         LoggingManager()
@@ -69,7 +76,7 @@ namespace FancyToys.Pages
             }
             else
             {
-                PrintToPage(LogSource.FancyServer, ls.type, ls.content);
+                PrintToPage(LogSource.FancyServer, ls.level, ls.content);
             }
         }
 
@@ -85,11 +92,11 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Trace, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Trace, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Trace, msg);
+                PrintToPage(source, LogLevel.Trace, msg);
             }
         }
 
@@ -97,11 +104,11 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Info, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Info, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Info, msg);
+                PrintToPage(source, LogLevel.Info, msg);
             }
         }
 
@@ -109,11 +116,11 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Debug, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Debug, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Debug, msg);
+                PrintToPage(source, LogLevel.Debug, msg);
             }
         }
 
@@ -121,11 +128,11 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Warn, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Warn, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Warn, msg);
+                PrintToPage(source, LogLevel.Warn, msg);
             }
         }
 
@@ -133,11 +140,11 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Error, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Error, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Error, msg);
+                PrintToPage(source, LogLevel.Error, msg);
             }
         }
 
@@ -145,24 +152,24 @@ namespace FancyToys.Pages
         {
             if (source == LogSource.FancyToys)
             {
-                PrintToPage(source, LogType.Fatal, CallerName(depth + 1) + msg);
+                PrintToPage(source, LogLevel.Fatal, CallerName(depth + 1) + msg);
             }
             else
             {
-                PrintToPage(source, LogType.Fatal, msg);
+                PrintToPage(source, LogLevel.Fatal, msg);
             }
         }
 
-        private static void PrintToPage(LogSource source, LogType type, string message)
+        private static void PrintToPage(LogSource source, LogLevel level, string message)
         {
-            if (type >= SettingsClerk.Clerk.STLogLevel)
+            if (level >= SettingsClerk.Clerk.STLogLevel)
             {
                 ServerPage page = ServerPage.Page;
                 if (page == null)
                 {
                     logCache.Enqueue(new LoggingStruct
                     {
-                        type = type,
+                        level = level,
                         content = message
                     });
                 }
@@ -171,7 +178,7 @@ namespace FancyToys.Pages
                     _ = CoreApplication.MainView.Dispatcher.RunAsync(
                     CoreDispatcherPriority.Normal, () =>
                     {
-                        page.PrintLog(logColor[type], message);
+                        page.PrintLog(message, LogForegroundColors[level]);
                     });
                 }
             }
@@ -182,11 +189,11 @@ namespace FancyToys.Pages
             while (logCache.Count > 0)
             {
                 LoggingStruct ls = logCache.Dequeue();
-                if (ls.type >= SettingsClerk.Clerk.STLogLevel)
+                if (ls.level >= SettingsClerk.Clerk.STLogLevel)
                 {
                     _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                      {
-                         ServerPage.Page.PrintLog(logColor[ls.type], ls.content);
+                         ServerPage.Page.PrintLog(ls.content, LogForegroundColors[ls.level]);
                      });
                 }
             }

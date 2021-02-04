@@ -17,7 +17,7 @@
         <controls:DockPanel >
 
             <TextBlock controls:DockPanel.Dock="Top" Text="FancyServer" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="10,0,0,0" />
-            <TextBlock controls:DockPanel.Dock="Top" Text="doing everything for FancyToys." TextWrapping="Wrap" FontSize="15" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Padding="20,0,0,0" />
+            <TextBlock controls:DockPanel.Dock="Top" Text="does everything for FancyToys." TextWrapping="Wrap" FontSize="15" FontFamily="Microsoft YaHei UI Light" FontStyle="Normal" Padding="20,0,0,0" />
 
             <StackPanel controls:DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right">
                 <muxc:MenuBar VerticalAlignment="Top">

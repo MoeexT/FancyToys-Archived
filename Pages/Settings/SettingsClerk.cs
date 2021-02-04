@@ -1,10 +1,12 @@
 using FancyToys.Pages.Dialog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Xaml;
 
 namespace FancyToys.Pages.Settings
 {
@@ -13,14 +15,14 @@ namespace FancyToys.Pages.Settings
 
     struct LoggingSettingStruct
     {
-        public LogType level;
+        public LogLevel level;
     }
 
     class SettingsClerk
     {
         public static SettingsClerk Clerk { get => clerk; }
         private static readonly SettingsClerk clerk = new SettingsClerk();
-        private ApplicationDataContainer LSettings = ApplicationData.Current.LocalSettings;
+        private ApplicationDataContainer lSettings = ApplicationData.Current.LocalSettings;
         public delegate void OpacityChangedHandler();
         public event OpacityChangedHandler OpacityChanged;
 
@@ -29,47 +31,47 @@ namespace FancyToys.Pages.Settings
             OpacityChanged?.Invoke();
         }
 
-        public LogType STLogLevel
+        private class SettingsKeyEnum
+        {
+            public static string ApplicationTheme = "ApplicationTheme";
+            public static string LogPanelOpacity = "LogPanelOpacity";
+            public static string LogLevel = "LogLevel";
+        }
+        public ElementTheme STApplicationTheme
         {
             set
             {
-                LSettings.Values["LogLevel"] = value.ToString();
-            }
-            get
-            {
-                if (LSettings.Values.TryGetValue("LogLevel", out object val))
+                if (Window.Current.Content is FrameworkElement framework)
                 {
-                    return ParseEnum<LogType>(val as string);
+                    framework.RequestedTheme = value;
+                    lSettings.Values[SettingsKeyEnum.ApplicationTheme] = value.ToString();
                 }
-                _ = MessageDialog.Error("Error while setting Log Level", "Setting not found. Default log level `Info` setted.");
-                return LogType.Info;
             }
-        }
-        T ParseEnum<T>(object value)
-        {
-            if (value == null)
-            {
-                return default;
-            }
-            return (T)Enum.Parse(typeof(T), value.ToString());
+            get => LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
         }
 
         public double STLogPanelOpacity
         {
             set
             {
-                LSettings.Values["LogPanelOpacity"] = value;
+                lSettings.Values[SettingsKeyEnum.LogPanelOpacity] = value;
                 OnOpacityChanged();
             }
-            get
+            get => LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.5);
+        }
+
+        public LogLevel STLogLevel
+        {
+            set
             {
-                if (LSettings.Values.TryGetValue("LogPanelOpacity", out object opacity))
+                lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
+                LoggingSettingStruct lss = new LoggingSettingStruct
                 {
-                    return (double)opacity;
-                }
-                _ = MessageDialog.Error("Error while setting Log Panel Opacity", "Setting not found. Default opacity `0.5` setted.");
-                return 0.5;
+                    level = value
+                };
+                SettingsManager.Send(lss);
             }
+            get => LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
         }
 
 
@@ -77,19 +79,50 @@ namespace FancyToys.Pages.Settings
 
         public void InitlailzeLocalSettings()
         {
-            STLogLevel = LogType.Trace;
-            STLogPanelOpacity = 0.5;
+            STLogLevel = LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
+            STLogPanelOpacity = LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.5);
+            STApplicationTheme = LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
         }
 
-        public void SetLogLevel(LogType level)
+
+        private T LoadSetting<T>(string sKey, object dValue)
         {
-            STLogLevel = level;
-
-            LoggingSettingStruct lss = new LoggingSettingStruct
+            if (lSettings.Values.TryGetValue(sKey, out object value))
             {
-                level = level
-            };
-            SettingsManager.Send(lss);
+                return (T)value;
+            }
+            else
+            {
+                LoggingManager.Info($"Load default setting: {(T)dValue}");
+                return (T)dValue;
+            }
         }
+
+        private T LoadEnumSetting<T>(string sKey, object dValue)
+        {
+            if (lSettings.Values.TryGetValue(sKey, out object value))
+            {
+                /* A TERRIBLE BUG !!! 
+                 * After uncomment this line, the program whill fall into endless loop.
+                 * I tried to find the reason but failed. 
+                LoggingManager.Debug($"Load setting: {(value as string)}");*/
+                return ParseEnum<T>(value as string);
+            }
+            else
+            {
+                LoggingManager.Info($"Load default setting: {(T)dValue}");
+                return (T)dValue;
+            }
+        }
+
+        private T ParseEnum<T>(object value)
+        {
+            if (value == null)
+            {
+                return default;
+            }
+            return (T)Enum.Parse(typeof(T), value.ToString());
+        }
+        
     }
 }

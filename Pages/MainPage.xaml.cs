@@ -45,7 +45,7 @@ namespace FancyToys.Pages
         {
             ("nursery", typeof(NurseryPage)),
             ("trimage", typeof(TrimagePage)),
-            ("avideo", typeof(AVideoPage)),
+            //("avideo", typeof(AVideoPage)),
             ("fancyServer", typeof(ServerPage)),
         };
 

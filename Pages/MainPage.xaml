@@ -56,11 +56,11 @@
                         </muxc:NavigationViewItem.Icon>
                     </muxc:NavigationViewItem>
                     
-                    <muxc:NavigationViewItem Content="AVideo" x:Name="VideoItem" ToolTipService.ToolTip="修剪视频、音频" Tag="avideo">
+                    <!--<muxc:NavigationViewItem Content="AVideo" x:Name="VideoItem" ToolTipService.ToolTip="修剪视频、音频" Tag="avideo">
                         <muxc:NavigationViewItem.Icon>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA69;"/>
                         </muxc:NavigationViewItem.Icon>
-                    </muxc:NavigationViewItem>
+                    </muxc:NavigationViewItem>-->
 
                     <muxc:NavigationViewItem Content="FancyServer" Tag="fancyServer" x:Name="FancyServer" FontFamily="Microsoft YaHei UI Light">
                         <muxc:NavigationViewItem.Icon>

@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 using FancyToys.Pages.Dialog;
+using System.ComponentModel;
+using System.Diagnostics;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -23,54 +25,114 @@ namespace FancyToys.Pages.Settings
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class SettingsPage : Page
+    public sealed partial class SettingsPage : Page, INotifyPropertyChanged
     {
-        private HashSet<LogType> LogLevels = new HashSet<LogType>
+        public static SettingsPage Page { private set; get; }
+        public double OpacitySliderValue {
+            get => SettingsClerk.Clerk.STLogPanelOpacity;
+            set
+            {
+                SettingsClerk.Clerk.STLogPanelOpacity = value;
+                RaisePropertyChanged(nameof(OpacitySliderValue));
+            }
+        }
+
+        private List<ComboBoxItem> LogLevelList
         {
-            LogType.Trace,
-            LogType.Debug,
-            LogType.Info,
-            LogType.Warn,
-            LogType.Error,
-            LogType.Fatal,
-        };
+            get
+            {
+                Array levelArr = Enum.GetValues(typeof(LogLevel));
+                List<ComboBoxItem> levels = new List<ComboBoxItem>();
+                foreach(LogLevel level in levelArr)
+                {
+                    ComboBoxItem item = new ComboBoxItem
+                    {
+                        Content = level,
+                        Foreground = new SolidColorBrush(LoggingManager.LogForegroundColors[level]),
+                    };
+                    levels.Add(item);
+                }
+                return levels;
+            }
+        }
+
 
         public SettingsPage()
         {
             this.InitializeComponent();
+            Page = this;
+            InitializeControls();
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
 
         private void ChangeTheme(object sender, RoutedEventArgs e)
         {
-            if (Window.Current.Content is FrameworkElement framework)
+            switch ((sender as RadioButton).Content)
             {
-                switch ((sender as RadioButton).Content)
-                {
-                    case "Light":
-                        framework.RequestedTheme = ElementTheme.Light;
-                        break;
-                    case "Dark":
-                        framework.RequestedTheme = ElementTheme.Dark;
-                        break;
-                    case "System":
-                        framework.RequestedTheme = ElementTheme.Default;
-                        break;
-                    default:
-                        _ = MessageDialog.Error("Error happened while changing theme", "Invalid theme mode");
-                        break;
-                }
+                case "Light":
+                    SettingsClerk.Clerk.STApplicationTheme = ElementTheme.Light;
+                    break;
+                case "Dark":
+                    SettingsClerk.Clerk.STApplicationTheme = ElementTheme.Dark;
+                    break;
+                case "System":
+                    SettingsClerk.Clerk.STApplicationTheme = ElementTheme.Default;
+                    break;
+                default:
+                    _ = MessageDialog.Error("Error happened while changing theme", "Invalid theme mode");
+                    break;
             }
         }
 
         private void LogLevelChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox logLevelSelector = sender as ComboBox;
-            SettingsClerk.Clerk.SetLogLevel((LogType)logLevelSelector.SelectedValue);
+            ComboBox cs = sender as ComboBox;
+            var item = cs.SelectedValue as ComboBoxItem;
+            var eb = (cs.Header as TextBlock).Foreground;
+            cs.Foreground = item.Foreground;
+            (cs.Header as TextBlock).Foreground = eb;
+            SettingsClerk.Clerk.STLogLevel = (LogLevel)item.Content;
         }
 
         private void OpatitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             SettingsClerk.Clerk.STLogPanelOpacity = (sender as Slider).Value;
+        }
+
+        private int IndexOfLogLevels()
+        {
+            for (int i = 0; i < LogLevelList.Count; i++)
+            {
+                if ((LogLevel)LogLevelList[i].Content == SettingsClerk.Clerk.STLogLevel) {
+                    return i;
+                }
+            }
+            LoggingManager.Warn("Can't find right log level.");
+            return 0;
+        }
+
+        private void InitializeControls()
+        {
+            // set app theme
+            switch (SettingsClerk.Clerk.STApplicationTheme)
+            {
+                case ElementTheme.Light:
+                    LightButton.IsChecked = true;
+                    break;
+                case ElementTheme.Dark:
+                    DarkButton.IsChecked = true;
+                    break;
+                case ElementTheme.Default:
+                    SystemButton.IsChecked = true;
+                    break;
+                default: break;
+            }
         }
     }
 }
