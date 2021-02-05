@@ -68,8 +68,7 @@
 
             <Grid Grid.Row="1">
                 <ListBox x:Name="ProcessListBox"
-                         Background="{ThemeResource BackgroundAcrylicBrush}"
-                         ItemsSource="{Binding SwitchList}">
+                         Background="{ThemeResource BackgroundAcrylicBrush}">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Height" Value="32" />
@@ -81,6 +80,7 @@
                             <AddDeleteThemeTransition />
                         </TransitionCollection>
                     </ListBox.ItemContainerTransitions>
+                    
                 </ListBox>
             </Grid>
 
@@ -106,23 +106,38 @@
                     Margin="31,73,19,93" 
                     FontSize="36" 
                     FontFamily="Microsoft YaHei UI Light" Height="44" 
-                    Foreground="#FF888888" Canvas.ZIndex="-1" FontStyle="Normal"
-                    />
+                    Foreground="#FF888888" Canvas.ZIndex="-1" FontStyle="Normal" />
             </Grid>
         </Grid>
         <Grid Grid.Column="1">
             <Grid.Resources>
-                
+                <DataTemplate x:Key="ProcessDetailsTemplate">
+                    <StackPanel Orientation="Horizontal">
+                        
+                    </StackPanel>
+                </DataTemplate>
             </Grid.Resources>
             <mtuc:DataGrid 
-                
                 x:Name="ProcessGrid"
                 IsReadOnly="True"
-                ItemsSource="{x:Bind InfoList}"
+                ItemsSource="{x:Bind InfoList, Mode=OneWay}"
+                GridLinesVisibility="Vertical"
+                RowDetailsTemplate="{StaticResource ProcessDetailsTemplate}"
+                RowDetailsVisibilityMode="VisibleWhenSelected"
                 >
+                <mtuc:DataGrid.RowStyle>
+                    <Style TargetType="mtuc:DataGridRow">
+                        <Setter Property="FontSize" Value="12" />
+                    </Style>
+                </mtuc:DataGrid.RowStyle>
+                <mtuc:DataGrid.Transitions>
+                    <TransitionCollection>
+                        <AddDeleteThemeTransition />
+                    </TransitionCollection>
+                </mtuc:DataGrid.Transitions>
                 <!--https://blog.lindexi.com/post/win10-uwp-dataGrid.html-->
                 <!--<mtuc:DataGrid.Columns>
-                    <mtuc:DataGridTextColumn FontSize="12" Header="Process" Binding="{Binding ProcessName}" Tag="ProcessName"/>
+                    <mtuc:DataGridTextColumn FontSize="12" Header="Process" Binding="{Binding Process}" Tag="ProcessName"/>
                     <mtuc:DataGridTextColumn FontSize="12" Header="PID" Binding="{Binding PID}" Tag="PID"/>
                     <mtuc:DataGridTextColumn FontSize="12" Header="CPU" Binding="{Binding CPU}" Tag="CPU"/>
                     <mtuc:DataGridTextColumn FontSize="12" Header="Memory" Binding="{Binding Memory}" Tag="Memory"/>

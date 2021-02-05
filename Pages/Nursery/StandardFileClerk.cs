@@ -33,10 +33,10 @@ namespace FancyToys.Pages.Nursery
                     case StandardFileType.StandardIn:
                         break;
                     case StandardFileType.StandardOutput:
-                        LoggingManager.Info($"{sfs.processName}: {sfs.content}", source: LogSource.Process);
+                        LoggingManager.StandardOutput(sfs.processName, sfs.content);
                         break;
                     case StandardFileType.StandardError:
-                        LoggingManager.Error($"{sfs.processName}: {sfs.content}", source: LogSource.Process);
+                        LoggingManager.StandardError(sfs.processName, sfs.content);
                         break;
                     default:
                         LoggingManager.Warn($"Invalid StandardFileType: {sfs.type}");

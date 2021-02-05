@@ -33,7 +33,7 @@ namespace FancyToys.Pages.Nursery
         {
             this.InitializeComponent();
             Page = this;
-            LoggingManager.Debug($"调用了NurseryPage", 2);
+            LoggingManager.Debug($"Created a NurseryPage instance", 2);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace FancyToys.Pages.Nursery
         private async void ArgsButton_Click(object sender, RoutedEventArgs e)
         {
             MenuFlyoutItem ai = sender as MenuFlyoutItem;
-            InputDialog inputDialog = new InputDialog("为它输入参数", fargs[ai.Tag as string]);
+            InputDialog inputDialog = new InputDialog("Nursery", "输入参数", fargs[ai.Tag as string]);
             await inputDialog.ShowAsync();
             if (inputDialog.isSaved)
             {
@@ -169,7 +169,8 @@ namespace FancyToys.Pages.Nursery
                 }
             }
             if (rts != null && confirm)
-            { 
+            {
+                OperationClerk.TryStop(ri.Tag as string);
                 OperationClerk.TryRemove(ri.Tag as string);
             }
         }

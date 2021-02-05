@@ -52,10 +52,10 @@ namespace FancyToys.Pages.Nursery
                         }
                         break;
                     case OperationType.Remove:
-                        if (os.code == OperationCode.OK)
+                        /*if (os.code == OperationCode.OK)
                         {
                             ConfirmRemove(os.pathName);
-                        }
+                        }*/
                         break;
                     case OperationType.Start:
                         if (os.code == OperationCode.OK)
@@ -108,6 +108,7 @@ namespace FancyToys.Pages.Nursery
 
         public static void TryRemove(string pathName)
         {
+            ConfirmRemove(pathName);
             NurseryManager.Send(new OperationStruct
             {
                 type = OperationType.Remove,

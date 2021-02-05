@@ -34,12 +34,12 @@ namespace FancyToys.Bridge
 
         protected virtual void OnPipeOpened(PipeOpenedEventArgs e)
         {
-            LoggingManager.Info("FancyServer已连接");
+            LoggingManager.Info("FancyServer connected");
             PipeOpened?.Invoke(this, e);
         }
         protected virtual void OnPipeClosed(PipeClosedEventArgs e)
         {
-            LoggingManager.Info("FancyServer已断开");
+            LoggingManager.Info("FancyServer disconnected");
             PipeClosed?.Invoke(this, e);
         }
 
@@ -62,7 +62,7 @@ namespace FancyToys.Bridge
         {
             client = new NamedPipeClientStream(".", @"LOCAL\NurseryPipe",
                 PipeDirection.InOut, PipeOptions.Asynchronous);
-            LoggingManager.Info("等待FancyServer");
+            LoggingManager.Info("Waiting for FancyServer");
             client.Connect();
             OnPipeOpened(new PipeOpenedEventArgs());
 

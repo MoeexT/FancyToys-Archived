@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,9 +31,10 @@ namespace FancyToys.Pages.Dialog
             this.InitializeComponent();
             DialogText.Text = text;
         }
-        public InputDialog(string text, string dargs)
+        public InputDialog(string title, string text, string dargs)
         {
             this.InitializeComponent();
+            Title = title;
             DialogText.Text = text;
             DialogInput.Text = dargs;
         }

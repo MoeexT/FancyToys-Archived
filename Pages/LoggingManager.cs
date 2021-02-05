@@ -46,21 +46,30 @@ namespace FancyToys.Pages
     {
         public LogType type;
         public LogLevel level;
+        public string source;
         public string content;
     }
 
     class LoggingManager
     {
-        private static Queue<LoggingStruct> logCache = new Queue<LoggingStruct>();
+        private struct LogCache
+        {
+            public string source;
+            public string content;
+            public Color color;
+        }
+        private static Queue<LogCache> cacheQueue = new Queue<LogCache>();
         public static readonly Dictionary<LogLevel, Color> LogForegroundColors = new Dictionary<LogLevel, Color>()
         {
             { LogLevel.Trace, Colors.Gray },
             { LogLevel.Debug, Colors.Cyan },
             { LogLevel.Info, Colors.MediumSpringGreen },
             { LogLevel.Warn, Colors.Yellow },
-            { LogLevel.Error, Colors.DeepPink},
-            { LogLevel.Fatal, Colors.Red}
+            { LogLevel.Error, Colors.DeepPink },
+            { LogLevel.Fatal, Colors.Red }
         };
+        private static readonly Color outputColor = Colors.Aquamarine;
+        private static readonly Color errorColor = Colors.Firebrick;
 
         LoggingManager()
         {
@@ -76,7 +85,7 @@ namespace FancyToys.Pages
             }
             else
             {
-                PrintToPage(LogSource.FancyServer, ls.level, ls.content);
+                PrintLog(ls.level, $"{LogSource.FancyServer}.{ls.source}", ls.content);
             }
         }
 
@@ -88,121 +97,87 @@ namespace FancyToys.Pages
              });
         }
 
+        public static void StandardOutput(string processName, string msg)
+        {
+            Print(processName, msg, outputColor);
+        }
+        
+        public static void StandardError(string processName, string msg)
+        {
+            Print(processName, msg, errorColor);
+        }
+
         public static void Trace(string msg, int depth = 1, LogSource source=LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Trace, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Trace, msg);
-            }
+            PrintLog(LogLevel.Trace, $"{source}.{CallerName(depth + 1)}", msg);
         }
-
         public static void Info(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Info, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Info, msg);
-            }
+            PrintLog(LogLevel.Info, $"{source}.{CallerName(depth + 1)}", msg);
         }
-
         public static void Debug(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Debug, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Debug, msg);
-            }
+            PrintLog(LogLevel.Debug, $"{source}.{CallerName(depth + 1)}", msg);
         }
-
         public static void Warn(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Warn, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Warn, msg);
-            }
+            PrintLog(LogLevel.Warn, $"{source}.{CallerName(depth + 1)}", msg);
         }
-
         public static void Error(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Error, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Error, msg);
-            }
+            PrintLog(LogLevel.Error, $"{source}.{CallerName(depth + 1)}", msg);
         }
-
         public static void Fatal(string msg, int depth = 1, LogSource source = LogSource.FancyToys)
         {
-            if (source == LogSource.FancyToys)
-            {
-                PrintToPage(source, LogLevel.Fatal, CallerName(depth + 1) + msg);
-            }
-            else
-            {
-                PrintToPage(source, LogLevel.Fatal, msg);
-            }
+            PrintLog(LogLevel.Fatal, $"{source}.{CallerName(depth + 1)}", msg);
         }
 
-        private static void PrintToPage(LogSource source, LogLevel level, string message)
+        private static void PrintLog(LogLevel level, string source, string content)
         {
             if (level >= SettingsClerk.Clerk.STLogLevel)
             {
-                ServerPage page = ServerPage.Page;
-                if (page == null)
+                Print(source, content, LogForegroundColors[level]);
+            }
+        }
+
+        private static void Print(string src, string cnt, Color clr)
+        {
+            ServerPage page = ServerPage.Page;
+            if (page == null)
+            {
+                cacheQueue.Enqueue(new LogCache
                 {
-                    logCache.Enqueue(new LoggingStruct
-                    {
-                        level = level,
-                        content = message
-                    });
-                }
-                else
+                    source = src,
+                    content = cnt,
+                    color = clr,
+                });
+            }
+            else
+            {
+                _ = CoreApplication.MainView.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal, () =>
                 {
-                    _ = CoreApplication.MainView.Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal, () =>
-                    {
-                        page.PrintLog(message, LogForegroundColors[level]);
-                    });
-                }
+                    page.PrintLog(src, cnt, clr);
+                });
             }
         }
 
         public static void FlushLogCache()
         {
-            while (logCache.Count > 0)
+            while (cacheQueue.Count > 0)
             {
-                LoggingStruct ls = logCache.Dequeue();
-                if (ls.level >= SettingsClerk.Clerk.STLogLevel)
+                LogCache lc = cacheQueue.Dequeue();
+                _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    _ = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                     {
-                         ServerPage.Page.PrintLog(ls.content, LogForegroundColors[ls.level]);
-                     });
-                }
+                    ServerPage.Page.PrintLog(lc.source, lc.content, lc.color);
+                });
             }
         }
 
         private static string CallerName(int depth)
         {
             MethodBase method = new StackTrace().GetFrame(depth).GetMethod();
-            return $"[{method.ReflectedType.Name}.{method.Name}] ";
+            return $"{method.ReflectedType.Name}.{method.Name}";
         }
     }
 }

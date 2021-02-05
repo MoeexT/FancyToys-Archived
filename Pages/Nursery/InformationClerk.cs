@@ -22,7 +22,7 @@ namespace FancyToys.Pages.Nursery
             try
             {
                 List<InformationStruct> ins = JsonConvert.DeserializeObject<List<InformationStruct>>(message);
-                ins.Sort((x, y) => x.pid.CompareTo(y.pid));
+                ins.Sort((x, y) => -x.pid.CompareTo(y.pid));
                 NurseryPage.Page.UpdateProcessInformation(ins);
             }
             catch (JsonException e)

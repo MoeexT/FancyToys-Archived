@@ -72,10 +72,10 @@ namespace FancyToys.Pages.Nursery
                 {
                     if (ts.Tag.Equals(pathName))
                     {
-                        // TODO: 不一定能改
-                        ts.OnContent = processName + " is Running";
-                        ts.OffContent = processName + " is Stopped";
+                        ts.OnContent = processName + " is running";
+                        ts.OffContent = processName + " stopped";
                     }
+                    break;
                 }
             });
         }
@@ -96,6 +96,7 @@ namespace FancyToys.Pages.Nursery
 
         public void RemoveSwitch(string pathName)
         {
+            fargs.Remove(pathName);
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 ToggleSwitch ds = null;
@@ -119,7 +120,7 @@ namespace FancyToys.Pages.Nursery
             {
                 IsOn = false,
                 Tag = pathName,
-                FontSize = 12,
+                FontSize = 14,
             };
             twitch.Toggled += Switch_Toggled;
             twitch.ContextFlyout = NewMenu(pathName);
@@ -152,67 +153,73 @@ namespace FancyToys.Pages.Nursery
         public void UpdateProcessInformation(List<InformationStruct> ins)
         {
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-              {
-                  InfoList.Clear();
-                  foreach (InformationStruct ifs in ins)
-                  {
-                      InfoList.Add(new ProcessInformation
-                      {
-                          Process = ifs.processName,
-                          PID = $"{ifs.pid}",
-                          CPU = $"{ifs.cpu:F}%",
-                          Memory = ifs.memory < Math.Pow(2, 30) ? $"{ifs.memory:N0}KB" : $"{ifs.memory >> 10:N0}MB",
-                      });
-                  }
-                  // ProcessGrid.ItemsSource = InfoList;
-              });
-        }
-    }
+            {
+                InfoList.Clear();
+                foreach (InformationStruct ifs in ins)
+                {
+                    InfoList.Add(new ProcessInformation(ifs));
+                }
 
-    public class ProcessInformation: INotifyPropertyChanged
-    {
-        private string pid;
-        private string process;
-        private string cpu;
-        private string memory;
-        public string PID
-        {
-            get => pid;
-            set
-            {
-                pid = value;
-                RaisePropertyChanged(nameof(PID));
-            } 
+                // ProcessGrid.ItemsSource = InfoList;
+            });
         }
-        public string Process
+
+        public class ProcessInformation : INotifyPropertyChanged
         {
-            get => process;
-            set
+            private string process;
+            private string pid;
+            private string cpu;
+            private string memory;
+            public string Process
             {
-                process = value;
-                RaisePropertyChanged(nameof(Process));
+                get => process;
+                set
+                {
+                    process = value;
+                    RaisePropertyChanged(nameof(Process));
+                }
             }
-        }
-        public string CPU
-        {
-            get => cpu;
-            set
+            public string PID
             {
-                cpu = value;
-                RaisePropertyChanged(nameof(CPU));
+                get => pid;
+                set
+                {
+                    pid = value;
+                    RaisePropertyChanged(nameof(PID));
+                }
             }
-        }
-        public string Memory
-        {
-            get => memory;
-            set
+            public string CPU
             {
-                memory = value;
-                RaisePropertyChanged(nameof(Memory));
+                get => cpu;
+                set
+                {
+                    cpu = value;
+                    RaisePropertyChanged(nameof(CPU));
+                }
             }
+            public string Memory
+            {
+                get => memory;
+                set
+                {
+                    memory = value;
+                    RaisePropertyChanged(nameof(Memory));
+                }
+            }
+
+            private static readonly double GBSize = Math.Pow(2, 30);
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            protected void RaisePropertyChanged(string name) { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); }
+            public ProcessInformation() { }
+            public ProcessInformation(InformationStruct ifs)
+            {
+                this.PID = $"{ifs.pid}";
+                this.Process = ifs.processName;
+                this.CPU = $"{ifs.cpu:F}%";
+                this.Memory = ifs.memory < GBSize ? $"{ifs.memory:N0}KB" : $"{ifs.memory >> 10:N0}MB";
+            }
+            public override string ToString() { return $"{{{Process}, {PID}, {CPU}, {Memory}}}"; }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void RaisePropertyChanged(string name) { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); }
-        public override string ToString() { return $"{{{Process}, {PID}, {CPU}, {Memory}}}"; }
     }
 }

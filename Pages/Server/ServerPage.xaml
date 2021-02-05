@@ -61,7 +61,7 @@
                         CanBeScrollAnchor="True"
                         TextWrapping="Wrap"
                         Loaded="LogPanel_Loaded">
-                        <Paragraph Foreground="Aqua">你好</Paragraph>
+                        <Paragraph Foreground="Aquamarine">Hello World!</Paragraph>
                     </RichTextBlock>
                 </ScrollViewer>
             </Border>

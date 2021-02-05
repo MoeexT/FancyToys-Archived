@@ -17,15 +17,15 @@
                 <muxc:RadioButtons>
                     <RadioButton x:Name="LightButton" Content="Light" Checked="ChangeTheme" />
                     <RadioButton x:Name="DarkButton" Content="Dark" Checked="ChangeTheme" />
-                    <RadioButton x:Name="SystemButton" Content="System" Checked="ChangeTheme" ToolTipService.ToolTip="This alternative havn't been implemented yet." />
+                    <RadioButton x:Name="SystemButton" Content="System" Checked="ChangeTheme" IsEnabled="False" />
                 </muxc:RadioButtons>
-                <HyperlinkButton Content="Windows color settings" NavigateUri="ms-settings:colors"/>
+                <HyperlinkButton Content="Windows color settings" NavigateUri="ms-settings:colors" ToolTipService.ToolTip="System theme havn't been implemented yet."/>
             </StackPanel>
             <StackPanel Margin="0,10,0,0" >
                 <TextBlock Text="Log" FontSize="24" Height="35" />
                 <ComboBox x:Name="LogLevelCombox" ItemsSource="{x:Bind LogLevelList}" SelectedIndex="{x:Bind IndexOfLogLevels()}" SelectionChanged="LogLevelChanged">
                     <ComboBox.Header>
-                        <TextBlock Text="Log Level" />
+                        <TextBlock Text="Log Level" ToolTipService.ToolTip="Minimum log level print to screen." />
                     </ComboBox.Header>
                 </ComboBox>
                 <StackPanel Orientation="Horizontal" >

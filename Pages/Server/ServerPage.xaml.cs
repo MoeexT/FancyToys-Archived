@@ -54,17 +54,21 @@ namespace FancyToys.Pages.Server
         }
 
         
-        public void PrintLog(string message, Color foreground, Color background=default)
+        public void PrintLog(string source, string content, Color foreground, Color background=default)
         {
-            Paragraph paragraph = new Paragraph
+            Paragraph paragraph = new Paragraph();
+            Run src = new Run() 
             {
                 Foreground = new SolidColorBrush(foreground),
+                Text = $"{source}> ",
             };
-            Run run = new Run() 
+            Run msg = new Run()
             {
-                Text = message,
+                Text = content,
+                Foreground = new SolidColorBrush(Colors.Black),
             };
-            paragraph.Inlines.Add(run);
+            paragraph.Inlines.Add(src);
+            paragraph.Inlines.Add(msg);
             _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 LogPanel.Blocks.Add(paragraph);
@@ -124,7 +128,7 @@ namespace FancyToys.Pages.Server
 
         private void ShowLogLevel_Click(object sender, RoutedEventArgs e)
         {
-            PrintLog($"{SettingsClerk.Clerk.STLogLevel}", Colors.Azure);
+            PrintLog($"{LogSource.FancyToys}", $"{SettingsClerk.Clerk.STLogLevel}", Colors.Azure);
         }
     }
 }

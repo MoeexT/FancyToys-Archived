@@ -29,6 +29,7 @@ namespace FancyServer.Messenger
     {
         public LogType type;
         public LogLevel level;
+        public string source;
         public string content;
     }
     class LoggingManager
@@ -39,66 +40,61 @@ namespace FancyServer.Messenger
 
         public static void Dialog(string message, LogLevel level=LogLevel.Info)
         {
-            Send(LogType.Dialog, level, message);
+            Send(LogType.Dialog, level, 2, message);
         }
 
         public static void Trace(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Trace(message);
-            Send(LogType.Normal, LogLevel.Trace, message);
+            logger.Trace(msg);
+            Send(LogType.Normal, LogLevel.Trace, depth + 1, msg);
         }
 
         public static void Debug(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Debug(message);
-            Send(LogType.Normal, LogLevel.Debug, message);
+            logger.Debug(msg);
+            Send(LogType.Normal, LogLevel.Debug, depth + 1, msg);
         }
 
         public static void Info(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Info(message);
-            Send(LogType.Normal, LogLevel.Info, message);
+            logger.Info(msg);
+            Send(LogType.Normal, LogLevel.Info, depth + 1, msg);
         }
 
         public static void Warn(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Warn(message);
-            Send(LogType.Normal, LogLevel.Warn, message);
+            logger.Warn(msg);
+            Send(LogType.Normal, LogLevel.Warn, depth + 1, msg);
         }
 
         public static void Error(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Error(message);
-            Send(LogType.Normal, LogLevel.Error, message);
+            logger.Error(msg);
+            Send(LogType.Normal, LogLevel.Error, depth + 1, msg);
         }
 
         public static void Fatal(string msg, int depth = 1)
         {
-            string message = CallerName(depth + 1) + msg;
-            logger.Fatal(message);
-            Send(LogType.Normal, LogLevel.Fatal, message);
+            logger.Fatal(msg);
+            Send(LogType.Normal, LogLevel.Fatal, depth + 1, msg);
         }
 
-        private static void Send(LogType lt, LogLevel ll, string message)
+        private static void Send(LogType lt, LogLevel ll, int depth, string message)
         {
             if (ll >= LoggingLevel)
             {
-                MessageManager.Send(PDU(lt, ll, message));
+                MessageManager.Send(PDU(lt, ll, CallerName(depth+1), message));
             }
         }
 
-        private static LoggingStruct PDU(LogType lt, LogLevel ll, string message)
+        private static LoggingStruct PDU(LogType lt, LogLevel ll, string source, string content)
         {
             LoggingStruct pdu = new LoggingStruct
             {
                 type = lt,
                 level = ll,
-                content = message
+                source = source,
+                content = content,
             };
             return pdu;
         }
@@ -106,7 +102,7 @@ namespace FancyServer.Messenger
         private static string CallerName(int depth)
         {
             MethodBase method = new StackTrace().GetFrame(depth).GetMethod();
-            return $"[{method.ReflectedType.Name}.{method.Name}] ";
+            return $"{method.ReflectedType.Name}.{method.Name}";
         }
     }
 }

@@ -181,6 +181,7 @@ namespace FancyServer.Nursery
 
         private static void NurseryInformationThread()
         {
+            bool Clear = true;
             while (true)
             {
                 List<Process> plist = ProcessManager.GetProcesses();
@@ -207,9 +208,18 @@ namespace FancyServer.Nursery
                         LoggingManager.Warn($"Process exited in unsuitable time, get its information failed: {e.Message}");
                     }
                 }
-                if (mlist.Count > 0)
+                if (mlist.Count > 0) // TODO 
                 {
                     Send(mlist);
+                    Clear = true;
+                }
+                else
+                {
+                    if (Clear)
+                    {
+                        Send(mlist);
+                        Clear = false;
+                    }
                 }
                 Thread.Sleep(ThreadSleepSpan);
             }
