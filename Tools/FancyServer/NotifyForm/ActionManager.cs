@@ -49,9 +49,6 @@ namespace FancyServer.NotifyForm
         /// </summary>
         public static void ShowWindow()
         {
-            TimeSpan span = DateTime.Now - LastReversedShowState;
-            LoggingManager.Debug($"Reverse shown span: {span.TotalSeconds}");
-            LastReversedShowState = DateTime.Now;
             IsShown = true;
             Send(true, false);
         }

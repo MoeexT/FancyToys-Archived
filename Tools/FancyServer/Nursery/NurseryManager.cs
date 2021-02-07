@@ -74,9 +74,9 @@ namespace FancyServer.Nursery
         }
         private enum StandardFileType
         {
-            StandardIn = 0,
-            StandardOutput = 1,
-            StandardError = 2,
+            //StandardIn = 0,
+            Output = 1,
+            Error = 2,
         }
         private struct StandardFileStruct
         {
@@ -185,7 +185,7 @@ namespace FancyServer.Nursery
             while (true)
             {
                 List<Process> plist = ProcessManager.GetProcesses();
-                List<InformationStruct> mlist = new List<InformationStruct>();
+                Dictionary<int, InformationStruct> mlist = new Dictionary<int, InformationStruct>();
 
                 foreach (Process ps in plist)
                 {
@@ -194,7 +194,7 @@ namespace FancyServer.Nursery
                         string pn = ps.ProcessName;
                         PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", pn);
                         PerformanceCounter memCounter = new PerformanceCounter("Process", "Working Set - Private", pn);
-                        mlist.Add(new InformationStruct
+                        mlist.Add(ps.Id, new InformationStruct
                         {
                             pid = ps.Id,
                             processName = pn,
@@ -208,7 +208,7 @@ namespace FancyServer.Nursery
                         LoggingManager.Warn($"Process exited in unsuitable time, get its information failed: {e.Message}");
                     }
                 }
-                if (mlist.Count > 0) // TODO 
+                if (mlist.Count > 0)
                 {
                     Send(mlist);
                     Clear = true;

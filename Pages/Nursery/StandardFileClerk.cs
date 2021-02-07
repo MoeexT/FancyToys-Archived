@@ -10,9 +10,9 @@ namespace FancyToys.Pages.Nursery
 {
     enum StandardFileType
     {
-        StandardIn = 0,
-        StandardOutput = 1,
-        StandardError = 2,
+        //StandardIn = 0,
+        Output = 1,
+        Error = 2,
     }
     struct StandardFileStruct
     {
@@ -30,13 +30,17 @@ namespace FancyToys.Pages.Nursery
                 StandardFileStruct sfs = JsonConvert.DeserializeObject<StandardFileStruct>(message);
                 switch (sfs.type)
                 {
-                    case StandardFileType.StandardIn:
+                    case StandardFileType.Output:
+                        if (sfs.content.Trim().Length != 0)
+                        {
+                            LoggingManager.StandardOutput(sfs.processName, sfs.content);
+                        }
                         break;
-                    case StandardFileType.StandardOutput:
-                        LoggingManager.StandardOutput(sfs.processName, sfs.content);
-                        break;
-                    case StandardFileType.StandardError:
-                        LoggingManager.StandardError(sfs.processName, sfs.content);
+                    case StandardFileType.Error:
+                        if (sfs.content.Trim().Length != 0)
+                        {
+                            LoggingManager.StandardError(sfs.processName, sfs.content);
+                        }
                         break;
                     default:
                         LoggingManager.Warn($"Invalid StandardFileType: {sfs.type}");

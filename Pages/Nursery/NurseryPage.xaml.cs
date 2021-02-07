@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Controls.Primitives;
 using FancyToys.Pages.Dialog;
 using Microsoft.UI.Xaml.Controls;
 using System.Reflection;
+using Microsoft.Toolkit.Uwp.UI.Controls;
+using System.Collections.ObjectModel;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -204,5 +206,66 @@ namespace FancyToys.Pages.Nursery
             return style;
         }
 
+        private void ProcessGrid_Sorting(object sender, DataGridColumnEventArgs e)
+        {
+            switch(e.Column.Header.ToString())
+            {
+                case "Process":
+                    if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+                    {
+                        SortData((x, y) => x.Process.CompareTo(y.Process));
+                        e.Column.SortDirection = DataGridSortDirection.Ascending;
+                    }
+                    else
+                    {
+                        SortData((x, y) => -x.Process.CompareTo(y.Process));
+                        e.Column.SortDirection = DataGridSortDirection.Descending;
+                    }
+                    break;
+                case "PID":
+                    if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+                    {
+                        SortData((x, y) => x.PID - y.PID);
+                        e.Column.SortDirection = DataGridSortDirection.Ascending;
+                    }
+                    else
+                    {
+                        SortData((x, y) => y.PID - x.PID);
+                        e.Column.SortDirection = DataGridSortDirection.Descending;
+                    }
+                    break;
+                case "CPU":
+                    if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+                    {
+                        SortData((x, y) => (int)(x.cpu - y.cpu));
+                        e.Column.SortDirection = DataGridSortDirection.Ascending;
+                    }
+                    else
+                    {
+                        SortData((x, y) => (int)(y.cpu - x.cpu));
+                        e.Column.SortDirection = DataGridSortDirection.Descending;
+                    }
+                    break;
+                case "Memory":
+                    if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+                    {
+                        SortData((x, y) => x.memory - y.memory);
+                        e.Column.SortDirection = DataGridSortDirection.Ascending;
+                    }
+                    else
+                    {
+                        SortData((x, y) => y.memory - x.memory);
+                        e.Column.SortDirection = DataGridSortDirection.Descending;
+                    }
+                    break;
+            }
+            foreach(var dc in ProcessGrid.Columns)
+            {
+                if (dc.Header.ToString() != e.Column.Header.ToString())
+                {
+                    dc.SortDirection = null;
+                }
+            }
+        }
     }
 }

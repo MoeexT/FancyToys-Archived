@@ -74,7 +74,7 @@ namespace FancyServer.NotifyForm
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
                 }));
-                LoggingManager.Info($"Added {pathName} to menu item.");
+                LoggingManager.Info($"Added {pathName}");
             }
             return !hasThisPS;
         }
@@ -90,7 +90,7 @@ namespace FancyServer.NotifyForm
                         (item as ToolStripMenuItem).CheckState = checkState;
 
                     }));
-                    LoggingManager.Info($"Set menu item {item.Text} check state: {checkState}");
+                    LoggingManager.Info($"Set {item.Text} {checkState}");
                     return true;
                 }
             }
@@ -107,7 +107,7 @@ namespace FancyServer.NotifyForm
                     {
                         item.Text = processName;
                     }));
-                    LoggingManager.Info($"Updated menu item: {pathName}");
+                    LoggingManager.Info($"Updated {pathName}");
                     return true;
                 }
             }
@@ -125,7 +125,7 @@ namespace FancyServer.NotifyForm
                     {
                         NurseryMenu.DropDownItems.Remove(item);
                     }));
-                    LoggingManager.Info($"Removed menu item: {pathName}");
+                    LoggingManager.Info($"Removed {pathName}");
                     return true;
                 }
             }

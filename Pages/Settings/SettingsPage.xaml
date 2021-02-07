@@ -23,11 +23,19 @@
             </StackPanel>
             <StackPanel Margin="0,10,0,0" >
                 <TextBlock Text="Log" FontSize="24" Height="35" />
-                <ComboBox x:Name="LogLevelCombox" ItemsSource="{x:Bind LogLevelList}" SelectedIndex="{x:Bind IndexOfLogLevels()}" SelectionChanged="LogLevelChanged">
-                    <ComboBox.Header>
-                        <TextBlock Text="Log Level" ToolTipService.ToolTip="Minimum log level print to screen." />
-                    </ComboBox.Header>
-                </ComboBox>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox x:Name="LogLevelCombox" ItemsSource="{x:Bind LogLevelList}" SelectedIndex="{x:Bind IndexOfLogLevels()}" SelectionChanged="LogLevelChanged">
+                        <ComboBox.Header>
+                            <TextBlock Text="Log Level" ToolTipService.ToolTip="Minimum log level print to screen." />
+                        </ComboBox.Header>
+                    </ComboBox>
+                    <ComboBox x:Name="StdFileCombox" ItemsSource="{x:Bind StdLevelList}" SelectedIndex="{x:Bind IndexOfStdLevels()}" SelectionChanged="StdLevelChanged"  Margin="20,0,0,0">
+                        <ComboBox.Header>
+                            <TextBlock Text="Std-File Level" ToolTipService.ToolTip="Standard file stream which can be print to screen." />
+                        </ComboBox.Header>
+                    </ComboBox>
+                </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" >
                     <Slider x:Name="OpatitySlider" Header="Background Opacity" Width="200" HorizontalAlignment="Left" Padding="0,10,0,0"
                             Minimum="0" Maximum="1"
@@ -37,7 +45,7 @@
                         <Border.Background>
                             <SolidColorBrush Color="Black" Opacity="{x:Bind OpatitySlider.Value, Mode=OneWay}" />
                         </Border.Background>
-                        <TextBlock Text="Opacity" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="Opacity" Foreground="White" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </StackPanel>
             </StackPanel>

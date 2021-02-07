@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using FancyToys.Pages.Dialog;
 using System.ComponentModel;
 using System.Diagnostics;
+using FancyToys.Pages.Nursery;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -49,6 +50,25 @@ namespace FancyToys.Pages.Settings
                     {
                         Content = level,
                         Foreground = new SolidColorBrush(LoggingManager.LogForegroundColors[level]),
+                    };
+                    levels.Add(item);
+                }
+                return levels;
+            }
+        }
+
+        private List<ComboBoxItem> StdLevelList
+        {
+            get
+            {
+                Array levelArr = Enum.GetValues(typeof(StandardFileType));
+                List<ComboBoxItem> levels = new List<ComboBoxItem>();
+                foreach(StandardFileType level in levelArr)
+                {
+                    ComboBoxItem item = new ComboBoxItem
+                    {
+                        Content = level,
+                        Foreground = new SolidColorBrush(LoggingManager.StdForegroundColors[level])
                     };
                     levels.Add(item);
                 }
@@ -100,6 +120,16 @@ namespace FancyToys.Pages.Settings
             SettingsClerk.Clerk.STLogLevel = (LogLevel)item.Content;
         }
 
+        private void StdLevelChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cs = sender as ComboBox;
+            var item = cs.SelectedValue as ComboBoxItem;
+            var eb = (cs.Header as TextBlock).Foreground;
+            cs.Foreground = item.Foreground;
+            (cs.Header as TextBlock).Foreground = eb;
+            SettingsClerk.Clerk.STStdLevel = (StandardFileType)item.Content;
+        }
+
         private void OpatitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             SettingsClerk.Clerk.STLogPanelOpacity = (sender as Slider).Value;
@@ -114,6 +144,18 @@ namespace FancyToys.Pages.Settings
                 }
             }
             LoggingManager.Warn("Can't find right log level.");
+            return 0;
+        }
+        
+        private int IndexOfStdLevels()
+        {
+            for (int i = 0; i < StdLevelList.Count; i++)
+            {
+                if ((StandardFileType)StdLevelList[i].Content == SettingsClerk.Clerk.STStdLevel) {
+                    return i;
+                }
+            }
+            LoggingManager.Warn("Can't find right std level.");
             return 0;
         }
 
@@ -134,5 +176,7 @@ namespace FancyToys.Pages.Settings
                 default: break;
             }
         }
+
+        
     }
 }

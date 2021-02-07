@@ -19,7 +19,7 @@ namespace FancyServer.Bridge
     class PipeMessenger
     {
         //private static string pipeName = $"Sessions\\{Process.GetCurrentProcess().SessionId}\\AppContainerNamedObjects\\{ApplicationData.Current.LocalSettings.Values["PackageSid"]}\\NurseryPipe";
-        private static string pipeName = @"Sessions\1\AppContainerNamedObjects\S-1-15-2-1581880831-1621145202-3734567036-1267083148-3520691029-3022891357-2621489355\NurseryPipe";
+        private static string pipeName = @"Sessions\3\AppContainerNamedObjects\S-1-15-2-1581880831-1621145202-3734567036-1267083148-3520691029-3022891357-2621489355\NurseryPipe";
         private static NamedPipeServerStream server;
         private static StreamReader reader;
         private static StreamWriter writer;
@@ -104,11 +104,18 @@ namespace FancyServer.Bridge
 
         public static bool Post(string message)
         {
-            
-            if (!server.IsConnected) { return false; }
-            writer.WriteLine(message);
-            writer.Flush();
-            return true;
+            try
+            {
+                if (!server.IsConnected) { return false; }
+                writer.WriteLine(message);
+                writer.Flush();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
+                return false;
+            }
         }
 
         public static void ClosePipe()

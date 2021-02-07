@@ -124,6 +124,8 @@
                 GridLinesVisibility="Vertical"
                 RowDetailsTemplate="{StaticResource ProcessDetailsTemplate}"
                 RowDetailsVisibilityMode="VisibleWhenSelected"
+                CanUserSortColumns="True"
+                Sorting="ProcessGrid_Sorting"
                 >
                 <mtuc:DataGrid.RowStyle>
                     <Style TargetType="mtuc:DataGridRow">

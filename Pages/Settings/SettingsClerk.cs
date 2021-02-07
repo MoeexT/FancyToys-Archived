@@ -1,4 +1,5 @@
 using FancyToys.Pages.Dialog;
+using FancyToys.Pages.Nursery;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ namespace FancyToys.Pages.Settings
     {
         public LogLevel level;
     }
-
+     
     class SettingsClerk
     {
         public static SettingsClerk Clerk { get => clerk; }
@@ -36,6 +37,7 @@ namespace FancyToys.Pages.Settings
             public static string ApplicationTheme = "ApplicationTheme";
             public static string LogPanelOpacity = "LogPanelOpacity";
             public static string LogLevel = "LogLevel";
+            public static string StdLevel = "StdLevel";
         }
         public ElementTheme STApplicationTheme
         {
@@ -62,16 +64,14 @@ namespace FancyToys.Pages.Settings
 
         public LogLevel STLogLevel
         {
-            set
-            {
-                lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
-                LoggingSettingStruct lss = new LoggingSettingStruct
-                {
-                    level = value
-                };
-                SettingsManager.Send(lss);
-            }
+            set => lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
             get => LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
+        }
+
+        public StandardFileType STStdLevel
+        {
+            set => lSettings.Values[SettingsKeyEnum.StdLevel] = value.ToString();
+            get => LoadEnumSetting<StandardFileType>(SettingsKeyEnum.StdLevel, StandardFileType.Error);
         }
 
 
@@ -80,7 +80,8 @@ namespace FancyToys.Pages.Settings
         public void InitlailzeLocalSettings()
         {
             STLogLevel = LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
-            STLogPanelOpacity = LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.5);
+            STStdLevel = LoadEnumSetting<StandardFileType>(SettingsKeyEnum.StdLevel, StandardFileType.Error);
+            STLogPanelOpacity = LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.55);
             STApplicationTheme = LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
         }
 
@@ -93,7 +94,7 @@ namespace FancyToys.Pages.Settings
             }
             else
             {
-                LoggingManager.Info($"Load default setting: {(T)dValue}");
+                LoggingManager.Info($"Load default {sKey} setting: {(T)dValue}");
                 return (T)dValue;
             }
         }
@@ -110,7 +111,7 @@ namespace FancyToys.Pages.Settings
             }
             else
             {
-                LoggingManager.Info($"Load default setting: {(T)dValue}");
+                LoggingManager.Info($"Load default {sKey} setting: {(T)dValue}");
                 return (T)dValue;
             }
         }

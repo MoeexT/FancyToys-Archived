@@ -68,8 +68,11 @@ namespace FancyToys.Pages
             { LogLevel.Error, Colors.DeepPink },
             { LogLevel.Fatal, Colors.Red }
         };
-        private static readonly Color outputColor = Colors.Aquamarine;
-        private static readonly Color errorColor = Colors.Firebrick;
+        public static readonly Dictionary<StandardFileType, Color> StdForegroundColors = new Dictionary<StandardFileType, Color>()
+        {
+            { StandardFileType.Output, Colors.Aquamarine },
+            { StandardFileType.Error, Colors.Firebrick },
+        };
 
         LoggingManager()
         {
@@ -99,12 +102,15 @@ namespace FancyToys.Pages
 
         public static void StandardOutput(string processName, string msg)
         {
-            Print(processName, msg, outputColor);
+            if (SettingsClerk.Clerk.STStdLevel == StandardFileType.Output)
+            {
+                Print(processName, msg, StdForegroundColors[StandardFileType.Output]);
+            }
         }
         
         public static void StandardError(string processName, string msg)
         {
-            Print(processName, msg, errorColor);
+            Print(processName, msg, StdForegroundColors[StandardFileType.Error]);
         }
 
         public static void Trace(string msg, int depth = 1, LogSource source=LogSource.FancyToys)

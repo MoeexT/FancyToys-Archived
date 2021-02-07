@@ -65,7 +65,7 @@ namespace FancyToys.Pages.Server
             Run msg = new Run()
             {
                 Text = content,
-                Foreground = new SolidColorBrush(Colors.Black),
+                Foreground = new SolidColorBrush(Colors.White),
             };
             paragraph.Inlines.Add(src);
             paragraph.Inlines.Add(msg);
@@ -97,23 +97,11 @@ namespace FancyToys.Pages.Server
         {
             switch((sender as MenuFlyoutItem).Text)
             {
-                case "Trace":
-                    LoggingManager.Trace("Trace");
-                    break;
-                case "Debug": 
-                    LoggingManager.Debug("Debug");
-                    break;
-                case "Info": 
-                    LoggingManager.Info("Info");
-                    break;
-                case "Warn": 
-                    LoggingManager.Warn("Warn");
+                case "Output":
+                    LoggingManager.StandardOutput("puppet", "output");
                     break;
                 case "Error": 
-                    LoggingManager.Error("Error");
-                    break;
-                case "Fatal": 
-                    LoggingManager.Fatal("Fatal");
+                    LoggingManager.StandardError("puppet", "error");
                     break;
                 default:
                     _ = MessageDialog.Error("Error happened while testing log level", "Invalid LogType");
@@ -126,9 +114,9 @@ namespace FancyToys.Pages.Server
             LogPanel.Blocks.Clear();
         }
 
-        private void ShowLogLevel_Click(object sender, RoutedEventArgs e)
+        private void ShowStdLevel_Click(object sender, RoutedEventArgs e)
         {
-            PrintLog($"{LogSource.FancyToys}", $"{SettingsClerk.Clerk.STLogLevel}", Colors.Azure);
+            PrintLog($"{LogSource.FancyToys}", $"{SettingsClerk.Clerk.STStdLevel}", Colors.Azure);
         }
     }
 }

@@ -96,9 +96,9 @@ namespace FancyServer.Nursery
             Process s = sender as Process;
             Send(new StandardFileStruct
             {
-                type = StandardFileType.StandardOutput,
+                type = StandardFileType.Output,
                 processName = s.ProcessName,
-                content = e.Data
+                content = e.Data ?? string.Empty,
             });
         }
 
@@ -113,9 +113,9 @@ namespace FancyServer.Nursery
             Process s = sender as Process;
             Send(new StandardFileStruct
             {
-                type = StandardFileType.StandardError,
+                type = StandardFileType.Error,
                 processName = s.ProcessName,
-                content = e.Data
+                content = e.Data ?? string.Empty,
             });
         }
 
@@ -130,7 +130,7 @@ namespace FancyServer.Nursery
                 case OperationStruct os:
                     pdu = PDU(NurseryType.Operation, JsonConvert.SerializeObject(os));
                     break;
-                case List<InformationStruct> lis:
+                case Dictionary<int, InformationStruct> lis:
                     pdu = PDU(NurseryType.Information, JsonConvert.SerializeObject(lis));
                     break;
                 case StandardFileStruct sfs:
