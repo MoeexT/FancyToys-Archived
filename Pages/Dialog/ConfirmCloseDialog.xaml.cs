@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“内容对话框”项模板
 // https://jingyan.baidu.com/article/219f4bf7b10624de452d3857.html
 
-namespace FancyToys.Pages.Dialog
+namespace FancyToys.Log.Dialog
 {
     public enum CloseAction
     {

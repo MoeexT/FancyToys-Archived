@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 
-namespace FancyToys.Pages
+namespace FancyToys.Log
 {
     struct ActionStruct
     {

@@ -1,5 +1,5 @@
-using FancyToys.Pages.Dialog;
-using FancyToys.Pages.Nursery;
+using FancyToys.Log.Dialog;
+using FancyToys.Log.Nursery;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +9,22 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 
-namespace FancyToys.Pages.Settings
+namespace FancyToys.Log.Settings
 {
+    public enum FormSettingType { }
     struct FormSettingStruct { }
+    public enum MessageSettingType { }
     struct MessageSettingStruct { }
-
-    struct LoggingSettingStruct
+    public enum LogSettingType
     {
-        public LogLevel level;
+        LogLevel = 1,
+        StdLevel = 2,
+    }
+    public struct LogSettingStruct
+    {
+        public LogSettingType type;
+        public LogType logLevel;
+        public StdType stdLevel;
     }
      
     class SettingsClerk
@@ -38,6 +46,7 @@ namespace FancyToys.Pages.Settings
             public static string LogPanelOpacity = "LogPanelOpacity";
             public static string LogLevel = "LogLevel";
             public static string StdLevel = "StdLevel";
+            public static string FlushTime = "FlushTime";
         }
         public ElementTheme STApplicationTheme
         {
@@ -62,16 +71,42 @@ namespace FancyToys.Pages.Settings
             get => LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.5);
         }
 
-        public LogLevel STLogLevel
+        public LogType STLogLevel
         {
-            set => lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
-            get => LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
+            set
+            {
+                lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
+                SettingsManager.Send(new LogSettingStruct
+                {
+                    type = LogSettingType.LogLevel,
+                    logLevel = value
+                });
+            }
+            get => LoadEnumSetting<LogType>(SettingsKeyEnum.LogLevel, LogType.Info);
         }
 
-        public StandardFileType STStdLevel
+        public StdType STStdLevel
         {
-            set => lSettings.Values[SettingsKeyEnum.StdLevel] = value.ToString();
-            get => LoadEnumSetting<StandardFileType>(SettingsKeyEnum.StdLevel, StandardFileType.Error);
+            set
+            {
+                lSettings.Values[SettingsKeyEnum.StdLevel] = value.ToString();
+                SettingsManager.Send(new LogSettingStruct
+                {
+                    type = LogSettingType.StdLevel,
+                    stdLevel = value
+                });
+            }
+            get => LoadEnumSetting<StdType>(SettingsKeyEnum.StdLevel, StdType.Error);
+        }
+
+        public int STFlushTime
+        {
+            set
+            {
+                lSettings.Values[SettingsKeyEnum.FlushTime] = value;
+                ConfigClerk.SetFlushTime(value);
+            }
+            get => LoadSetting<int>(SettingsKeyEnum.FlushTime, 1000);
         }
 
 
@@ -79,8 +114,9 @@ namespace FancyToys.Pages.Settings
 
         public void InitlailzeLocalSettings()
         {
-            STLogLevel = LoadEnumSetting<LogLevel>(SettingsKeyEnum.LogLevel, LogLevel.Info);
-            STStdLevel = LoadEnumSetting<StandardFileType>(SettingsKeyEnum.StdLevel, StandardFileType.Error);
+            STFlushTime = 1000;
+            STLogLevel = LoadEnumSetting<LogType>(SettingsKeyEnum.LogLevel, LogType.Info);
+            STStdLevel = LoadEnumSetting<StdType>(SettingsKeyEnum.StdLevel, StdType.Error);
             STLogPanelOpacity = LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.55);
             STApplicationTheme = LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
         }

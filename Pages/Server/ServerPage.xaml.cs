@@ -1,5 +1,5 @@
-using FancyToys.Pages.Dialog;
-using FancyToys.Pages.Settings;
+using FancyToys.Log.Dialog;
+using FancyToys.Log.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Pages.Server
+namespace FancyToys.Log.Server
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -60,7 +60,7 @@ namespace FancyToys.Pages.Server
             Run src = new Run() 
             {
                 Foreground = new SolidColorBrush(foreground),
-                Text = $"{source}> ",
+                Text = source,
             };
             Run msg = new Run()
             {
@@ -98,10 +98,9 @@ namespace FancyToys.Pages.Server
             switch((sender as MenuFlyoutItem).Text)
             {
                 case "Output":
-                    LoggingManager.StandardOutput("puppet", "output");
+                    
                     break;
                 case "Error": 
-                    LoggingManager.StandardError("puppet", "error");
                     break;
                 default:
                     _ = MessageDialog.Error("Error happened while testing log level", "Invalid LogType");
@@ -116,7 +115,7 @@ namespace FancyToys.Pages.Server
 
         private void ShowStdLevel_Click(object sender, RoutedEventArgs e)
         {
-            PrintLog($"{LogSource.FancyToys}", $"{SettingsClerk.Clerk.STStdLevel}", Colors.Azure);
+            PrintLog($"FancyToys", $"{SettingsClerk.Clerk.STStdLevel}", Colors.Azure);
         }
     }
 }

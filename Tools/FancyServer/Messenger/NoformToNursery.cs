@@ -15,21 +15,21 @@ namespace FancyServer.Messenger
     ///       ↑          
     ///    NoForm
     /// </summary>
-    class NoformToNursery
+    class NoformToOperation
     {
         public static void AddProcess(string pathName)
         {
-            NurseryManager.AddProcess(pathName);
+            OperationClerk.AddProcess(pathName);
         }
 
         public static void StartProcess(string pathName)
         {
-            NurseryManager.StartProcess(pathName, "");
+            OperationClerk.StartProcess(pathName, "");
         }
 
         public static void StopProcess(string pathName)
         {
-            NurseryManager.StopProcess(pathName);
+            OperationClerk.StopProcess(pathName);
         }
     }
 }

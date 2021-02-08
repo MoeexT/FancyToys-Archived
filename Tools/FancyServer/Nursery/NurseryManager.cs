@@ -1,11 +1,9 @@
-using System;
-using System.Threading;
-using System.Diagnostics;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
-using Newtonsoft.Json;
-
+using FancyServer.Log;
 using FancyServer.Messenger;
+using FancyServer.Utils;
 
 namespace FancyServer.Nursery
 {
@@ -14,7 +12,6 @@ namespace FancyServer.Nursery
         Setting = 1,        // Nursery 设置        ↓      SettingStruct
         Operation = 2,      // 进程开启/关闭       ↓↑      OperationStruct
         Information = 3,    // 进程的具体消息       ↑      InformationStruct
-        StandardFile = 4,   // 子进程标准输出流     ↑      StandradFileStruct
     }
 
     struct NurseryStruct
@@ -24,209 +21,84 @@ namespace FancyServer.Nursery
         public string content;      // 消息内容
     }
 
-    /// <summary>
-    /// 处理所有由Nursery页面发来的请求
-    /// PDU: NurseryStruct
-    /// </summary>
     partial class NurseryManager
     {
-        private enum SettingCode
+
+        enum ConfigType
         {
-            OK = 1,
-            Failed = 2,
+            FlushTime = 1,
         }
 
-        private struct SettingStruct
+        struct ConfigStruct
         {
-            public SettingCode code;
+            public ConfigType type;
             public int flushTime;       // 信息刷新时间
         }
 
-        enum OperationCode
-        {
-            OK = 1,
-            Failed = 2,
-        }
-
-        enum OperationType
-        {
-            Add = 1,
-            Remove = 2,
-            Start = 3,
-            Stop = 4,
-        }
-
-        private struct OperationStruct
-        {
-            public OperationType type;
-            public OperationCode code;
-            public string pathName;     // 要打开的文件
-            public string args;         // 参数
-            public string processName;  // 打开后的进程名
-        }
-
-        private struct InformationStruct
-        {
-            public int pid;
-            public string processName;
-            public float cpu;
-            public int memory;
-        }
-        private enum StandardFileType
-        {
-            //StandardIn = 0,
-            Output = 1,
-            Error = 2,
-        }
-        private struct StandardFileStruct
-        {
-            public StandardFileType type;
-            public string processName;
-            public string content;
-        }
-
-        private static Thread senderThread;
-        private static int threadSleepSpan = 1000;  // 更新信息时间间隔(ms)
-
-        public static int ThreadSleepSpan { get => threadSleepSpan; set => threadSleepSpan = value; }
-
-        /// <summary>
-        /// 接受前端消息，只有`Operation`的操作，`Information`操作只能从后台发往前端
-        /// 只要`NurseryOperationStruct.delete`置为true，就执行删除操作（此时该进程一定是退出状态）
-        /// turn on: 执行并回应
-        /// turn off: 只执行不回应；回应操作由进程退出事件触发（进程退出的原因不只有前端的操作）
-        /// </summary>
-        /// <param name="ms"></param>
         public static void Deal(string content)
         {
-            try
+            bool success = JsonUtil.ParseStruct<NurseryStruct>(content, out NurseryStruct ns);
+            if (success)
             {
-                NurseryStruct ns = JsonConvert.DeserializeObject<NurseryStruct>(content);
                 switch (ns.type)
                 {
                     case NurseryType.Setting:
-                        DealWithSetting(ns.content);
+                        DealWithConfig(ns.content);
                         break;
                     case NurseryType.Operation:
-                        DealWithOperation(ns.content);
+                        OperationClerk.Deal(ns.content);
                         break;
-                    //case NurseryType.information:; break;
-                    //case NurseryType.StandardOutput:; break;
-                    //case NurseryType.StandardOError:; break;
                     default:
-                        LoggingManager.Warn($"Invalid nursery type. {content}");
+                        LogClerk.Warn($"Invalid nursery type. {content}");
                         break;
                 }
             }
-            catch (JsonException e)
-            {
-                LoggingManager.Warn($"Deserialize NurseryStruct failed. {e.Message}");
-            }
         }
 
-
-        private static void DealWithSetting(string content)
+        private static void DealWithConfig(string content)
         {
-            try
+            bool success = JsonUtil.ParseStruct<ConfigStruct>(content, out ConfigStruct cs);
+            if (success)
             {
-                SettingStruct ss = JsonConvert.DeserializeObject<SettingStruct>(content);
-                ThreadSleepSpan = ss.flushTime;
-                ss.code = SettingCode.OK;
-                // Send(ss);
-            }
-            catch (JsonException e)
-            {
-                LoggingManager.Warn($"Deserialize SettingStruct failed. {e.Message}");
-            }
-        }
-
-        private static void DealWithOperation(string content)
-        {
-            try
-            {
-                OperationStruct os = JsonConvert.DeserializeObject<OperationStruct>(content);
-                switch (os.type)
+                switch (cs.type)
                 {
-                    case OperationType.Add:
-                        AddProcess(os.pathName);
-                        break;
-                    case OperationType.Remove:
-                        RemoveProcess(os.pathName);
-                        break;
-                    case OperationType.Start:
-                        StartProcess(os.pathName, os.args);
-                        break;
-                    case OperationType.Stop:
-                        StopProcess(os.pathName);
-                        break;
-                    default:
-                        LoggingManager.Warn("Invalid OperationType.");
+                    case ConfigType.FlushTime:
+                        InformationClerk.ThreadSleepSpan = cs.flushTime;
+                        LogClerk.Info($"Set flush time {InformationClerk.ThreadSleepSpan}");
                         break;
                 }
             }
-            catch (JsonException e)
+        }
+
+        public static void Send(object sdu)
+        {
+            NurseryStruct? pdu = null;
+            switch (sdu)
             {
-                LoggingManager.Warn($"Deserialize OperationStruct failed. {e.Message}");
+                case OperationStruct os:
+                    pdu = PDU(NurseryType.Operation, JsonConvert.SerializeObject(os));
+                    break;
+                case Dictionary<int, InformationStruct> lis:
+                    pdu = PDU(NurseryType.Information, JsonConvert.SerializeObject(lis));
+                    break;
+                default:
+                    LogClerk.Warn("Invalid nursery SDU type.", 2);
+                    break;
+            }
+            if (pdu != null)
+            {
+                MessageManager.Send(pdu);
             }
         }
 
-        public static void InitProcessInformationSender()
+        private static NurseryStruct PDU(NurseryType nt, string sdu)
         {
-            senderThread = new Thread(new ThreadStart(NurseryInformationThread))
+            NurseryStruct ns = new NurseryStruct
             {
-                Name = "SenderThread"
+                type = nt,
+                content = sdu
             };
-            senderThread.Start();
-        }
-
-        private static void NurseryInformationThread()
-        {
-            bool Clear = true;
-            while (true)
-            {
-                List<Process> plist = ProcessManager.GetProcesses();
-                Dictionary<int, InformationStruct> mlist = new Dictionary<int, InformationStruct>();
-
-                foreach (Process ps in plist)
-                {
-                    try
-                    {
-                        string pn = ps.ProcessName;
-                        PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", pn);
-                        PerformanceCounter memCounter = new PerformanceCounter("Process", "Working Set - Private", pn);
-                        mlist.Add(ps.Id, new InformationStruct
-                        {
-                            pid = ps.Id,
-                            processName = pn,
-                            cpu = cpuCounter.NextValue(),
-                            memory = (int)memCounter.NextValue() >> 10
-                        });
-                        Console.Write($"\r{DateTime.Now:ss:FFF} Process {pn} cpu {cpuCounter.NextValue():F} memory {(int)memCounter.NextValue() >> 10}\t");
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        LoggingManager.Warn($"Process exited in unsuitable time, get its information failed: {e.Message}");
-                    }
-                }
-                if (mlist.Count > 0)
-                {
-                    Send(mlist);
-                    Clear = true;
-                }
-                else
-                {
-                    if (Clear)
-                    {
-                        Send(mlist);
-                        Clear = false;
-                    }
-                }
-                Thread.Sleep(ThreadSleepSpan);
-            }
-        }
-        public static void CloseSender()
-        {
-            if (senderThread != null) { senderThread.Abort(); }
+            return ns;
         }
     }
 }

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using FancyServer.Messenger;
 using System.Threading;
+using FancyServer.Utils;
 
 namespace FancyServer.NotifyForm
 {
@@ -25,9 +26,9 @@ namespace FancyServer.NotifyForm
 
         public static void Deal(string message)
         {
-            try
+            bool success = JsonUtil.ParseStruct<ActionStruct>(message, out ActionStruct ac);
+            if (success)
             {
-                ActionStruct ac = JsonConvert.DeserializeObject<ActionStruct>(message);
                 if (ac.exitApp)
                 {
                     ExitApp();
@@ -37,11 +38,6 @@ namespace FancyServer.NotifyForm
                     IsShown = false;
                 }
             }
-            catch(JsonException e)
-            {
-                LoggingManager.Warn($"Deserialize ActionStruct failed: {e.Message}");
-            }
-
         }
 
         /// <summary>
@@ -121,11 +117,11 @@ namespace FancyServer.NotifyForm
                 // 这里有不懂的地方(bug)：`i.CheckState`理应为Unchecked，却总是为Checked 现在没了
                 if (i.CheckState == CheckState.Checked)
                 {
-                    NoformToNursery.StopProcess(i.ToolTipText);
+                    NoformToOperation.StopProcess(i.ToolTipText);
                 }
                 else
                 {
-                    NoformToNursery.StartProcess(i.ToolTipText);
+                    NoformToOperation.StartProcess(i.ToolTipText);
                 }
             });
             return item;

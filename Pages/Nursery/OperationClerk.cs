@@ -8,7 +8,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
-namespace FancyToys.Pages.Nursery
+namespace FancyToys.Log.Nursery
 {
     enum OperationCode
     {
@@ -89,6 +89,7 @@ namespace FancyToys.Pages.Nursery
 
         private static void ConfirmStop(string pathName)
         {
+            LoggingManager.Debug(pathName);
             NurseryPage.Page.TogglSwitch(pathName, false);
         }
 

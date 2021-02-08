@@ -1,17 +1,10 @@
 using Newtonsoft.Json;
-using NLog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Pipes;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
+using FancyServer.Log;
 using FancyServer.Bridge;
 using FancyServer.Nursery;
 using FancyServer.NotifyForm;
+using FancyServer.Utils;
 
 namespace FancyServer.Messenger
 {
@@ -23,12 +16,12 @@ namespace FancyServer.Messenger
         logging = 3,    // 日志、错误消息      ↑
         nursery = 4,    // Nursery           ↑↓      
     }
-    
-    
+
+
     /// <summary>
     /// 负责上层消息的封装与下层消息的解封
     /// </summary>
-    partial class MessageManager
+    internal partial class MessageManager
     {
         struct MessageStruct
         {
@@ -40,18 +33,18 @@ namespace FancyServer.Messenger
         public static void Init()
         {
             PipeMessenger.InitPipeServer();
-            NurseryManager.InitProcessInformationSender();
+            InformationClerk.InitProcessInformationSender();
         }
 
-        public static void Receive(string message)
+        public static void Deal(string message)
         {
-            try
+            bool success = JsonUtil.ParseStruct<MessageStruct>(message, out MessageStruct ms);
+            if (success)
             {
-                MessageStruct ms = JsonConvert.DeserializeObject<MessageStruct>(message);
                 switch (ms.type)
                 {
                     case MessageType.setting:
-                        SettingManager.Deal(ms.content);
+                        SettingsManager.Deal(ms.content);
                         break;
                     case MessageType.action:
                         ActionManager.Deal(ms.content);
@@ -61,19 +54,17 @@ namespace FancyServer.Messenger
                         break;
                     //case MessageType.log: break;
                     default:
-                        LoggingManager.Error("Invalid message type");
+                        LogClerk.Error("Invalid message type");
                         break;
                 }
             }
-            catch (JsonException e)
-            {
-                LoggingManager.Warn($"Deserialize MessageSettingStruct failed: {e.Message}");
-            }
         }
+
+        
 
         public static void CloseServer()
         {
-            NurseryManager.CloseSender();
+            InformationClerk.CloseSender();
             PipeMessenger.ClosePipe();
         }
     }

@@ -11,15 +11,16 @@ using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls.Primitives;
 
-using FancyToys.Pages.Dialog;
+using FancyToys.Log.Dialog;
 using Microsoft.UI.Xaml.Controls;
 using System.Reflection;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using System.Collections.ObjectModel;
+using FancyToys.Log.Settings;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Pages.Nursery
+namespace FancyToys.Log.Nursery
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -78,8 +79,7 @@ namespace FancyToys.Pages.Nursery
 
         private void Switch_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch tswitch = sender as ToggleSwitch;
-            if (tswitch != null)
+            if (sender is ToggleSwitch tswitch)
             {
                 string pathName = tswitch.Tag as string;
 
@@ -118,19 +118,53 @@ namespace FancyToys.Pages.Nursery
 
         private void StopAllFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-
+            foreach (ToggleSwitch ts in ProcessListBox.Items)
+            {
+                if (ts.IsOn)
+                {
+                    OperationClerk.TryStop(ts.Tag as string);
+                }
+            }
         }
 
-        private void RemoveAllFlyoutItem_Click(object sender, RoutedEventArgs e)
+        private async void RemoveAllFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
+            bool hasAliveProcess = false;
+            bool comfirm = true;
+            foreach (ToggleSwitch ts in ProcessListBox.Items)
+            {
+                if (ts.IsOn)
+                {
+                    hasAliveProcess = true;
+                    break;
+                }
+            }
+            if (hasAliveProcess)
+            {
+                comfirm &= await MessageDialog.Warn("有进程未退出", "继续操作可能丢失工作内容", "仍然退出");
+            }
+            if (comfirm)
+            {
+                foreach (ToggleSwitch ts in ProcessListBox.Items)
+                {
+                    if (ts.IsOn)
+                    {
+                        OperationClerk.TryStop(ts.Tag as string);
+                    }
+                    OperationClerk.TryRemove(ts.Tag as string);
+                }
+            }
         }
 
         private void HelpFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
+            DropFileTechingTip.IsOpen = true;
         }
 
         private void AboutFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
+            _ = MessageDialog.Info("Nursery v0.1.3", 
+                "Nursery is a simple daemon process manager powered by FancyServer and it will keep your application online.");
         }
 
         /// <summary>
@@ -185,6 +219,11 @@ namespace FancyToys.Pages.Nursery
         private void DataGridSize_Click(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private void FlushSpeed_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsClerk.Clerk.STFlushTime = int.Parse((sender as MenuFlyoutItem).Tag as string);
         }
 
         /// <summary>

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FancyToys.Pages;
-using FancyToys.Pages.Settings;
-using FancyToys.Pages.Nursery;
+using FancyToys.Log;
+using FancyToys.Log.Settings;
+using FancyToys.Log.Nursery;
 using FancyToys.Bridge;
 
-namespace FancyToys.Pages
+namespace FancyToys.Log
 {
     enum MessageType
     {
@@ -92,6 +92,21 @@ namespace FancyToys.Pages
                 content = sdu
             };
             return pdu;
+        }
+
+        public static bool ParseStruct<T>(string content, out T sdu)
+        {
+            try
+            {
+                sdu = JsonConvert.DeserializeObject<T>(content);
+                return true;
+            }
+            catch (JsonException e)
+            {
+                LoggingManager.Warn($"Deserialize object failed: {e.Message}");
+                sdu = default;
+                return false;
+            }
         }
     }
 }

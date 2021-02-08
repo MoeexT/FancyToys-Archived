@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyToys.Pages.Settings
+namespace FancyToys.Log.Settings
 {
     enum SettingType
     {
         Form = 1,       // ActionManager
         Message = 2,    // MessageManager
-        Logging    // LoggingManager
+        Log = 3    // LoggingManager
     }
     enum SettingCode
     {
@@ -24,6 +24,7 @@ namespace FancyToys.Pages.Settings
         public SettingCode code;
         public string content;
     }
+    
 
     class SettingsManager
     {
@@ -53,10 +54,10 @@ namespace FancyToys.Pages.Settings
                     pdu = PDU(SettingType.Form, JsonConvert.SerializeObject(fss));
                     break;
                 case MessageSettingStruct mss:
-                    pdu = PDU(SettingType.Form, JsonConvert.SerializeObject(mss));
+                    pdu = PDU(SettingType.Message, JsonConvert.SerializeObject(mss));
                     break;
-                case LoggingSettingStruct lss:
-                    pdu = PDU(SettingType.Form, JsonConvert.SerializeObject(lss));
+                case LogSettingStruct lss:
+                    pdu = PDU(SettingType.Log, JsonConvert.SerializeObject(lss));
                     break;
                 default:
                     LoggingManager.Warn("Invalid setting message type.");

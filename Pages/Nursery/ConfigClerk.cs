@@ -5,22 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyToys.Pages.Nursery
+namespace FancyToys.Log.Nursery
 {
-
-    enum SettingCode
+    enum ConfigType
     {
-        OK = 1,
-        Failed = 2,
+        FlushTime = 1,
     }
 
-    struct SettingStruct
+    struct ConfigStruct
     {
-        public SettingCode code;
+        public ConfigType type;
         public int flushTime;       // 信息刷新时间
     }
 
-    class SettingClerk
+    class ConfigClerk
     {
         public static void Deal(string message)
         {
@@ -29,8 +27,9 @@ namespace FancyToys.Pages.Nursery
 
         public static void SetFlushTime(int span)
         {
-            NurseryManager.Send(new SettingStruct
+            NurseryManager.Send(new ConfigStruct
             {
+                type = ConfigType.FlushTime,
                 flushTime = span
             });
         }

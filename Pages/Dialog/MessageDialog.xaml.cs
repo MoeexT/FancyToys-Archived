@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Navigation;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“内容对话框”项模板
 
-namespace FancyToys.Pages.Dialog
+namespace FancyToys.Log.Dialog
 {
     public sealed partial class MessageDialog : ContentDialog
     {

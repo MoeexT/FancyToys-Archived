@@ -24,17 +24,17 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using muxc = Microsoft.UI.Xaml.Controls;
 
-using FancyToys.Pages;
-using FancyToys.Pages.Dialog;
-using FancyToys.Pages.Media;
-using FancyToys.Pages.Nursery;
-using FancyToys.Pages.Server;
-using FancyToys.Pages.Settings;
+using FancyToys.Log;
+using FancyToys.Log.Dialog;
+using FancyToys.Log.Media;
+using FancyToys.Log.Nursery;
+using FancyToys.Log.Server;
+using FancyToys.Log.Settings;
 using FancyToys.Bridge;
 using Windows.UI.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
-namespace FancyToys.Pages
+namespace FancyToys.Log
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。

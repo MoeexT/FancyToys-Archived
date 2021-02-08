@@ -132,7 +132,7 @@
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\LoggingManager.cs" />
+    <Compile Include="Log\LoggingManager.cs" />
     <Compile Include="Messenger\MessageManager.cs" />
     <Compile Include="Pages\ActionManager.cs" />
     <Compile Include="Pages\Dialog\ConfirmCloseDialog.xaml.cs">
@@ -160,8 +160,7 @@
       <DependentUpon>NurseryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Nursery\OperationClerk.cs" />
-    <Compile Include="Pages\Nursery\SettingClerk.cs" />
-    <Compile Include="Pages\Nursery\StandardFileClerk.cs" />
+    <Compile Include="Pages\Nursery\ConfigClerk.cs" />
     <Compile Include="Pages\Server\ServerPage.xaml.cs">
       <DependentUpon>ServerPage.xaml</DependentUpon>
     </Compile>

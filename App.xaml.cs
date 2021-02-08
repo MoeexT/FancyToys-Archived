@@ -11,12 +11,12 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Activation;
 
 using FancyToys.Bridge;
-using FancyToys.Pages;
-using FancyToys.Pages.Dialog;
+using FancyToys.Log;
+using FancyToys.Log.Dialog;
 using Windows.Security.Authentication.Web;
 using System.Diagnostics;
 using Windows.Storage;
-using FancyToys.Pages.Settings;
+using FancyToys.Log.Settings;
 
 namespace FancyToys
 {

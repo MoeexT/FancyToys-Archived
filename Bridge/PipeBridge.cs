@@ -10,7 +10,7 @@ using Windows.Security.Authentication.Web;
 using Windows.Storage;
 using Windows.UI.Core;
 
-using FancyToys.Pages;
+using FancyToys.Log;
 using System.Diagnostics;
 
 namespace FancyToys.Bridge
@@ -90,7 +90,6 @@ namespace FancyToys.Bridge
             if (client == null || !client.IsConnected) { return false; }
             writer.WriteLine(message);
             writer.Flush();
-            LoggingManager.Trace($"发送了：{message}");
             return true;
         }
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using FancyServer.Messenger;
+using FancyServer.Log;
 
 namespace FancyServer.Nursery
 {
@@ -40,7 +41,13 @@ namespace FancyServer.Nursery
     {
         //private static Dictionary<string, FileStruct> files = new Dictionary<string, FileStruct>();
         private static Dictionary<string, ProcessStruct> processes = new Dictionary<string, ProcessStruct>();
-        public static Dictionary<string, string> fpName = new Dictionary<string, string>();
+        private static Dictionary<string, string> fpName = new Dictionary<string, string>();
+
+        public static Dictionary<string, ProcessStruct> Processes { get => processes; set => processes = value; }
+        /// <summary>
+        /// <pathName, processName>
+        /// </summary>
+        public static Dictionary<string, string> FPName { get => fpName; set => fpName = value; }
 
         public ProcessManager() { }
 
@@ -49,18 +56,18 @@ namespace FancyServer.Nursery
         {
             if (!File.Exists(pathName))
             {
-                LoggingManager.Error($"File doesn't exist: {pathName}");
+                LogClerk.Error($"File doesn't exist: {pathName}");
                 return false;
             }
-            if (processes.ContainsKey(pathName))
+            if (Processes.ContainsKey(pathName))
             {
-                if (processes[pathName].isRunning)
+                if (Processes[pathName].isRunning)
                 {
-                    LoggingManager.Warn($"Process has been running: {pathName}[{processes[pathName].process.Id}]");
+                    LogClerk.Warn($"Process has been running: {pathName}[{Processes[pathName].process.Id}]");
                 }
                 else
                 {
-                    LoggingManager.Warn($"Process already exists, click the switch to run: {pathName}");
+                    LogClerk.Warn($"Process already exists, click the switch to run: {pathName}");
                 }
                 return false;
             }
@@ -70,19 +77,19 @@ namespace FancyServer.Nursery
 
         public static string Start(string pathName, string args)
         {
-            if (!processes.ContainsKey(pathName))
+            if (!Processes.ContainsKey(pathName))
             {
-                LoggingManager.Error($"Process doesn't not exist: {pathName}");
+                LogClerk.Error($"Process doesn't not exist: {pathName}");
                 return null;
             }
-            if (processes.ContainsKey(pathName) && processes[pathName].isRunning)
+            if (Processes.ContainsKey(pathName) && Processes[pathName].isRunning)
             {
-                LoggingManager.Warn($"Process has been running: {pathName}[{processes[pathName].process.Id}]");
-                return processes[pathName].process.ProcessName;
+                LogClerk.Warn($"Process has been running: {pathName}[{Processes[pathName].process.Id}]");
+                return Processes[pathName].process.ProcessName;
             }
             
 
-            ProcessStruct ps = processes[pathName];
+            ProcessStruct ps = Processes[pathName];
             Process child = ps.process;
             if (!args.Equals(""))
             {
@@ -92,7 +99,7 @@ namespace FancyServer.Nursery
 
             if (!launchOK)
             {
-                LoggingManager.Error($"Process launch failed: {pathName}");
+                LogClerk.Error($"Process launch failed: {pathName}");
                 return null;
             }
             try
@@ -102,49 +109,49 @@ namespace FancyServer.Nursery
             }
             catch (InvalidOperationException e)
             {
-                LoggingManager.Warn($"{e.Message}");
+                LogClerk.Warn($"{e.Message}");
             }
 
             ps.isRunning = true;
-            processes[pathName] = ps;
-            fpName[pathName] = child.ProcessName;
-            LoggingManager.Info($"Process launched successfully: {child.ProcessName}[{child.Id}]");
-            return processes[pathName].process.ProcessName;
+            Processes[pathName] = ps;
+            FPName[pathName] = child.ProcessName;
+            LogClerk.Info($"Process launched successfully: {child.ProcessName}[{child.Id}]");
+            return Processes[pathName].process.ProcessName;
         }
 
         public static bool Stop(string pathName)
         {
 
-            if (!processes.ContainsKey(pathName))
+            if (!Processes.ContainsKey(pathName))
             {
-                LoggingManager.Error($"Process doesn't exist: {pathName}");
+                LogClerk.Error($"Process doesn't exist: {pathName}");
                 return false;
             }
-            ProcessStruct ps = processes[pathName];
+            ProcessStruct ps = Processes[pathName];
             if (ps.process.HasExited)
             {
-                LoggingManager.Warn($"Process had exited: {pathName}");
+                LogClerk.Warn($"Process had exited: {pathName}");
             } else
             {
                 ps.process.Kill();
             }
             ps.isRunning = false;
-            processes[pathName] = ps;
+            Processes[pathName] = ps;
             return true;
         }
 
         public static void Remove(string pathName)
         {
-            if (!processes.ContainsKey(pathName))
+            if (!Processes.ContainsKey(pathName))
             {
-                LoggingManager.Error($"Process doesn't exist: {pathName}");
+                LogClerk.Error($"Process doesn't exist: {pathName}");
                 return;
             }
-            Process ps = processes[pathName].process;
+            Process ps = Processes[pathName].process;
 
             if (!ps.HasExited) { ps.Kill(); }
-            processes.Remove(pathName);
-            fpName.Remove(pathName);
+            Processes.Remove(pathName);
+            FPName.Remove(pathName);
         }
 
         /// <summary>
@@ -154,7 +161,7 @@ namespace FancyServer.Nursery
         public static List<Process> GetProcesses()
         {
             List<Process> rpl = new List<Process>();
-            foreach (ProcessStruct ps in processes.Values)
+            foreach (ProcessStruct ps in Processes.Values)
             {
                 if (ps.isRunning)
                 {

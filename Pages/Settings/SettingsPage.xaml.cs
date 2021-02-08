@@ -14,14 +14,14 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-using FancyToys.Pages.Dialog;
+using FancyToys.Log.Dialog;
 using System.ComponentModel;
 using System.Diagnostics;
-using FancyToys.Pages.Nursery;
+using FancyToys.Log.Nursery;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Pages.Settings
+namespace FancyToys.Log.Settings
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -42,9 +42,9 @@ namespace FancyToys.Pages.Settings
         {
             get
             {
-                Array levelArr = Enum.GetValues(typeof(LogLevel));
+                Array levelArr = Enum.GetValues(typeof(LogType));
                 List<ComboBoxItem> levels = new List<ComboBoxItem>();
-                foreach(LogLevel level in levelArr)
+                foreach(LogType level in levelArr)
                 {
                     ComboBoxItem item = new ComboBoxItem
                     {
@@ -61,9 +61,9 @@ namespace FancyToys.Pages.Settings
         {
             get
             {
-                Array levelArr = Enum.GetValues(typeof(StandardFileType));
+                Array levelArr = Enum.GetValues(typeof(StdType));
                 List<ComboBoxItem> levels = new List<ComboBoxItem>();
-                foreach(StandardFileType level in levelArr)
+                foreach(StdType level in levelArr)
                 {
                     ComboBoxItem item = new ComboBoxItem
                     {
@@ -117,7 +117,7 @@ namespace FancyToys.Pages.Settings
             var eb = (cs.Header as TextBlock).Foreground;
             cs.Foreground = item.Foreground;
             (cs.Header as TextBlock).Foreground = eb;
-            SettingsClerk.Clerk.STLogLevel = (LogLevel)item.Content;
+            SettingsClerk.Clerk.STLogLevel = (LogType)item.Content;
         }
 
         private void StdLevelChanged(object sender, SelectionChangedEventArgs e)
@@ -127,7 +127,7 @@ namespace FancyToys.Pages.Settings
             var eb = (cs.Header as TextBlock).Foreground;
             cs.Foreground = item.Foreground;
             (cs.Header as TextBlock).Foreground = eb;
-            SettingsClerk.Clerk.STStdLevel = (StandardFileType)item.Content;
+            SettingsClerk.Clerk.STStdLevel = (StdType)item.Content;
         }
 
         private void OpatitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -139,7 +139,7 @@ namespace FancyToys.Pages.Settings
         {
             for (int i = 0; i < LogLevelList.Count; i++)
             {
-                if ((LogLevel)LogLevelList[i].Content == SettingsClerk.Clerk.STLogLevel) {
+                if ((LogType)LogLevelList[i].Content == SettingsClerk.Clerk.STLogLevel) {
                     return i;
                 }
             }
@@ -151,7 +151,7 @@ namespace FancyToys.Pages.Settings
         {
             for (int i = 0; i < StdLevelList.Count; i++)
             {
-                if ((StandardFileType)StdLevelList[i].Content == SettingsClerk.Clerk.STStdLevel) {
+                if ((StdType)StdLevelList[i].Content == SettingsClerk.Clerk.STStdLevel) {
                     return i;
                 }
             }

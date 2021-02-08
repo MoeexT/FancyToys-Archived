@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using FancyServer.NotifyForm;
 using FancyServer.Nursery;
 using FancyServer.Bridge;
+using FancyServer.Log;
 
 namespace FancyServer.Messenger
 {
@@ -27,7 +28,7 @@ namespace FancyServer.Messenger
                     pdu = PDU(MessageType.setting, JsonConvert.SerializeObject(ss));
                     break;
                 default:
-                    LoggingManager.Error("Invalid message SDU type");
+                    LogClerk.Error("Invalid message SDU type");
                     break;
             }
             if (pdu != null)

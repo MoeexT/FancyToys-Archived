@@ -1,20 +1,65 @@
-using System.Diagnostics;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
-using Newtonsoft.Json;
-
+using FancyServer.Log;
 using FancyServer.Messenger;
+using FancyServer.Utils;
 
 namespace FancyServer.Nursery
 {
-    partial class NurseryManager
+    enum OperationType
     {
+        Add = 1,
+        Remove = 2,
+        Start = 3,
+        Stop = 4,
+    }
+    enum OperationCode
+    {
+        OK = 1,
+        Failed = 2,
+    }
+    struct OperationStruct
+    {
+        public OperationType type;
+        public OperationCode code;
+        public string pathName;     // 要打开的文件
+        public string args;         // 参数
+        public string processName;  // 打开后的进程名
+    }
+    class OperationClerk
+    {
+
+        public static void Deal(string content)
+        {
+            bool success = JsonUtil.ParseStruct<OperationStruct>(content, out OperationStruct os);
+            if (success)
+            {
+                switch (os.type)
+                {
+                    case OperationType.Add:
+                        OperationClerk.AddProcess(os.pathName);
+                        break;
+                    case OperationType.Remove:
+                        OperationClerk.RemoveProcess(os.pathName);
+                        break;
+                    case OperationType.Start:
+                        OperationClerk.StartProcess(os.pathName, os.args);
+                        break;
+                    case OperationType.Stop:
+                        OperationClerk.StopProcess(os.pathName);
+                        break;
+                    default:
+                        LogClerk.Warn("Invalid OperationType.");
+                        break;
+                }
+            }
+        }
+        
         public static void AddProcess(string pathName)
         {
             bool ac = ProcessManager.Add(pathName);
             bool success = NurseryToNoform.AddNurseryItem(pathName);
-            Send(new OperationStruct
+            NurseryManager.Send(new OperationStruct
             {
                 type = OperationType.Add,
                 code = ac && success ? OperationCode.OK : OperationCode.Failed,
@@ -31,7 +76,7 @@ namespace FancyServer.Nursery
             string processName = ProcessManager.Start(pathName, args);
             bool uni = NurseryToNoform.UpdateNurseryItem(pathName, processName);
             bool scics = NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Checked);
-            Send(new OperationStruct
+            NurseryManager.Send(new OperationStruct
             {
                 type = OperationType.Start,
                 code = processName != null && uni && scics ? OperationCode.OK : OperationCode.Failed,
@@ -58,7 +103,7 @@ namespace FancyServer.Nursery
         public static void OnProcessStopped(string pathName, string processName)
         {
             NurseryToNoform.SetNurseryItemCheckState(pathName, CheckState.Unchecked);
-            Send(new OperationStruct
+            NurseryManager.Send(new OperationStruct
             {
                 type = OperationType.Stop,
                 code = OperationCode.OK,
@@ -77,83 +122,12 @@ namespace FancyServer.Nursery
         {
             ProcessManager.Remove(pathName);
             bool success = NurseryToNoform.RemoveNurseryItem(pathName);
-            Send(new OperationStruct
+            NurseryManager.Send(new OperationStruct
             {
                 type = OperationType.Remove,
                 code = success ? OperationCode.OK : OperationCode.Failed,
                 pathName = pathName
             });
-        }
-
-        /// <summary>
-        /// NurseryType: StandardFile
-        /// 标准输出流
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public static void SendStandardOutput(object sender, DataReceivedEventArgs e)
-        {
-            Process s = sender as Process;
-            Send(new StandardFileStruct
-            {
-                type = StandardFileType.Output,
-                processName = s.ProcessName,
-                content = e.Data ?? string.Empty,
-            });
-        }
-
-        /// <summary>
-        /// NurseryType: StandardFile
-        /// 标准错误流
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public static void SendStandardError(object sender, DataReceivedEventArgs e)
-        {
-            Process s = sender as Process;
-            Send(new StandardFileStruct
-            {
-                type = StandardFileType.Error,
-                processName = s.ProcessName,
-                content = e.Data ?? string.Empty,
-            });
-        }
-
-        private static void Send(object sdu)
-        {
-            NurseryStruct? pdu = null;
-            switch (sdu)
-            {
-                case SettingStruct ss:
-                    pdu = PDU(NurseryType.Setting, JsonConvert.SerializeObject(ss));
-                    break;
-                case OperationStruct os:
-                    pdu = PDU(NurseryType.Operation, JsonConvert.SerializeObject(os));
-                    break;
-                case Dictionary<int, InformationStruct> lis:
-                    pdu = PDU(NurseryType.Information, JsonConvert.SerializeObject(lis));
-                    break;
-                case StandardFileStruct sfs:
-                    pdu = PDU(NurseryType.StandardFile, JsonConvert.SerializeObject(sfs));
-                    break;
-                default:
-                    LoggingManager.Warn("Invalid nursery SDU type.", 2);
-                    break;
-            }
-            if (pdu != null)
-            {
-                MessageManager.Send(pdu);
-            }
-        }
-
-        private static NurseryStruct PDU(NurseryType nt, string sdu)
-        {
-            NurseryStruct ns = new NurseryStruct
-            {
-                type = nt,
-                content = sdu
-            };
-            return ns;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-
+using FancyServer.Log;
 using FancyServer.Messenger;
 
 namespace FancyServer.Nursery
@@ -9,8 +9,6 @@ namespace FancyServer.Nursery
     {
         private static Process AddProcess(string pathName)
         {
-            // if (args == null) { args = string.Empty; }
-
             Process child = new Process();
             child.StartInfo.RedirectStandardOutput = true;
             child.StartInfo.RedirectStandardError = true;
@@ -20,16 +18,28 @@ namespace FancyServer.Nursery
             child.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(pathName);
             child.EnableRaisingEvents = true;  // 这样才会引发 Process.Exited
             child.Exited += OnProcessExit;
-            child.OutputDataReceived += new DataReceivedEventHandler(NurseryManager.SendStandardOutput);
-            child.ErrorDataReceived += new DataReceivedEventHandler(NurseryManager.SendStandardError);
+            child.OutputDataReceived += (s, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    StdClerk.StdOutput((s as Process).ProcessName, e.Data);
+                }
+            };
+            child.ErrorDataReceived += (s, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    StdClerk.StdError((s as Process).ProcessName, e.Data);
+                }
+            };
 
-            processes[pathName] = new ProcessStruct
+            Processes[pathName] = new ProcessStruct
             {
                 process = child,
                 isRunning = false
             };
-            fpName[pathName] = null;
-            LoggingManager.Info($"Added {pathName} to local process table.");
+            FPName[pathName] = null;
+            LogClerk.Info($"Added {pathName} to local process table.");
             return child;
         }
 
@@ -37,11 +47,11 @@ namespace FancyServer.Nursery
         {
             Process ps = sender as Process;
             string pathName = ps.StartInfo.FileName;
-            ProcessStruct pst = processes[pathName];
+            ProcessStruct pst = Processes[pathName];
             pst.isRunning = false;
-            processes[pathName] = pst;
-            NurseryManager.OnProcessStopped(pathName, fpName[pathName]);
-            LoggingManager.Info($"Process {fpName[pathName]} exited");
+            Processes[pathName] = pst;
+            OperationClerk.OnProcessStopped(pathName, FPName[pathName]);
+            LogClerk.Info($"Process {FPName[pathName]} exited");
         }
     }
 }

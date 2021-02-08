@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using FancyServer.Log;
 using FancyServer.Messenger;
 
 namespace FancyServer.NotifyForm
@@ -10,7 +10,7 @@ namespace FancyServer.NotifyForm
     public partial class NoForm : Form
     {
         delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
-        private static NoForm form = new NoForm();
+        private static readonly NoForm form = new NoForm();
 
         public static NoForm Form => form;
 
@@ -39,7 +39,7 @@ namespace FancyServer.NotifyForm
             if (_e.Button == MouseButtons.Left)
             {
                 ActionManager.ShowWindow();
-                LoggingManager.Debug("NotifyIcon MouseClick");
+                LogClerk.Debug("NotifyIcon MouseClick");
             }
         }
 
@@ -74,7 +74,7 @@ namespace FancyServer.NotifyForm
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
                 }));
-                LoggingManager.Info($"Added {pathName}");
+                LogClerk.Info($"Added {pathName}");
             }
             return !hasThisPS;
         }
@@ -90,7 +90,7 @@ namespace FancyServer.NotifyForm
                         (item as ToolStripMenuItem).CheckState = checkState;
 
                     }));
-                    LoggingManager.Info($"Set {item.Text} {checkState}");
+                    LogClerk.Info($"Set {item.Text} {checkState}");
                     return true;
                 }
             }
@@ -107,11 +107,11 @@ namespace FancyServer.NotifyForm
                     {
                         item.Text = processName;
                     }));
-                    LoggingManager.Info($"Updated {pathName}");
+                    LogClerk.Info($"Updated {pathName}");
                     return true;
                 }
             }
-            LoggingManager.Warn($"Menu item not exit while updating it: {pathName}");
+            LogClerk.Warn($"Menu item not exit while updating it: {pathName}");
             return false;
         }
 
@@ -125,11 +125,11 @@ namespace FancyServer.NotifyForm
                     {
                         NurseryMenu.DropDownItems.Remove(item);
                     }));
-                    LoggingManager.Info($"Removed {pathName}");
+                    LogClerk.Info($"Removed {pathName}");
                     return true;
                 }
             }
-            LoggingManager.Warn($"Menu item not exit while removing it: {pathName}");
+            LogClerk.Warn($"Menu item not exit while removing it: {pathName}");
             return false;
         }
 

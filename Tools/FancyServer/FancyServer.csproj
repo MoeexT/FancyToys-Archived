@@ -84,10 +84,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messenger\LoggingManager.cs" />
+    <Compile Include="Log\DialogClerk.cs" />
+    <Compile Include="Log\LogClerk.cs" />
+    <Compile Include="Log\LoggingManager.cs" />
+    <Compile Include="Log\StdClerk.cs" />
+    <Compile Include="IManager.cs" />
     <Compile Include="Messenger\MessageManagerVice.cs" />
-    <Compile Include="Messenger\SettingManager.cs" />
-    <Compile Include="Messenger\SettingManagerVice.cs" />
+    <Compile Include="Nursery\InformationClerk.cs" />
+    <Compile Include="Nursery\OperationClerk.cs" />
+    <Compile Include="Saver\LocalSetting.cs" />
+    <Compile Include="Saver\NurseryCollector.cs" />
+    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Bridge\PipeBridge.cs" />
     <Compile Include="Messenger\MessageManager.cs" />
     <Compile Include="NotifyForm\ActionManager.cs" />
@@ -98,13 +105,13 @@
       <DependentUpon>NoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Nursery\NurseryManager.cs" />
-    <Compile Include="Nursery\NurseryManagerVice.cs" />
     <Compile Include="Nursery\ProcessManager.cs" />
     <Compile Include="Nursery\ProcessManagerVice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messenger\NoformToNursery.cs" />
     <Compile Include="Messenger\NurseryToNoform.cs" />
+    <Compile Include="Utils\JsonUtil.cs" />
     <EmbeddedResource Include="NotifyForm\NoForm.resx">
       <DependentUpon>NoForm.cs</DependentUpon>
     </EmbeddedResource>
