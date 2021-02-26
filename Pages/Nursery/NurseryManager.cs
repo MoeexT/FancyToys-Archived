@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyToys.Log.Nursery
+using FancyToys.Log;
+using FancyToys.Messenger;
+
+namespace FancyToys.Pages.Nursery
 {
     enum NurseryType
     {                       //    功能        信息流方向        SDU

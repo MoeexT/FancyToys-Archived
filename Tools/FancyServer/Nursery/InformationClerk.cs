@@ -17,7 +17,8 @@ namespace FancyServer.Nursery
     class InformationClerk
     {
         private static Thread senderThread;
-        public static int ThreadSleepSpan { get; set; }
+        private static int threadSleepSpan = 1000;
+        public static int ThreadSleepSpan { get => threadSleepSpan; set => threadSleepSpan = value; }
 
         public static void InitProcessInformationSender()
         {

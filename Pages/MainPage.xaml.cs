@@ -24,17 +24,18 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using muxc = Microsoft.UI.Xaml.Controls;
 
-using FancyToys.Log;
-using FancyToys.Log.Dialog;
-using FancyToys.Log.Media;
-using FancyToys.Log.Nursery;
-using FancyToys.Log.Server;
-using FancyToys.Log.Settings;
+using FancyToys.Pages;
+using FancyToys.Pages.Dialog;
+using FancyToys.Pages.Media;
+using FancyToys.Pages.Nursery;
+using FancyToys.Pages.Server;
+using FancyToys.Pages.Settings;
 using FancyToys.Bridge;
 using Windows.UI.Core;
+using System.Diagnostics;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
-namespace FancyToys.Log
+namespace FancyToys.Pages
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -55,7 +56,6 @@ namespace FancyToys.Log
             ContentFrame.CacheSize = 64;
             PipeBridge.Bridge.PipeOpened += OnServerConnected;
             PipeBridge.Bridge.PipeClosed += OnServerDisconnected;
-            SettingsClerk.Clerk.InitlailzeLocalSettings();
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

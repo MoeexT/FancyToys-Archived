@@ -45,7 +45,7 @@ namespace FancyServer.NotifyForm
             this.TheNotifyIcon.BalloonTipText = "Fancy Toys";
             this.TheNotifyIcon.ContextMenuStrip = this.TheMenu;
             this.TheNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("TheNotifyIcon.Icon")));
-            this.TheNotifyIcon.Text = "TheNotifyIcon";
+            this.TheNotifyIcon.Text = "FancyToys";
             this.TheNotifyIcon.Visible = true;
             this.TheNotifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TheNotifyIcon_MouseClick);
             // 
@@ -99,7 +99,7 @@ namespace FancyServer.NotifyForm
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "NoForm";
             this.ShowInTaskbar = false;
-            this.Text = "NoOne";
+            this.Text = "FancyServer";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.TheMenu.ResumeLayout(false);
             this.ResumeLayout(false);

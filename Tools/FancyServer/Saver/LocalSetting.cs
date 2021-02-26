@@ -49,7 +49,7 @@ namespace FancyServer.Saver
         {
             var clients = new Dictionary<Client, object>
             {
-                [Client.Nursery] = NurseryCollector.Collect()
+                [Client.Nursery] = NurseryCollector.Collector.Collect()
             };
             using (StreamWriter writer = new StreamWriter(json))
             {

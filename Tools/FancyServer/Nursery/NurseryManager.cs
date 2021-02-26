@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FancyServer.Log;
 using FancyServer.Messenger;
 using FancyServer.Utils;
+using System;
 
 namespace FancyServer.Nursery
 {
@@ -64,6 +65,7 @@ namespace FancyServer.Nursery
                 {
                     case ConfigType.FlushTime:
                         InformationClerk.ThreadSleepSpan = cs.flushTime;
+                        Console.WriteLine($"Set flush time {InformationClerk.ThreadSleepSpan}");
                         LogClerk.Info($"Set flush time {InformationClerk.ThreadSleepSpan}");
                         break;
                 }

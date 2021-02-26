@@ -19,9 +19,8 @@ Log and std-output/error will be sent to `ServerPage`.
 
 # Controls
 
-+ [`NavigationView`](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.navigationview?view=winrt-19041) (with a `Frame`)
++ [`NavigationView`](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.navigationview?view=winrt-19041)
 + [`CommandBarFlyout`](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.commandbarflyout?view=winrt-19041)
-+ [`MenuBar`](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.menubar?view=winrt-19041)
 + `ListBox`
 + `ToggleSwitch`
 + `Rectangle`

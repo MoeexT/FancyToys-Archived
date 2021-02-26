@@ -1,5 +1,3 @@
-using FancyToys.Log.Dialog;
-using FancyToys.Log.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,9 +17,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using FancyToys.Log;
+using FancyToys.Pages.Dialog;
+using FancyToys.Pages.Settings;
+
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Log.Server
+namespace FancyToys.Pages.Server
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -31,7 +33,7 @@ namespace FancyToys.Log.Server
         public static ServerPage Page { get => page; set => page = value; }
         private static ServerPage page;
 
-        private double logPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
+        private double logPanelOpacity = SettingsClerk.Clerk.STLogOpacity;
         private double LogPanelOpacity {
             get => logPanelOpacity;
             set
@@ -80,7 +82,7 @@ namespace FancyToys.Log.Server
             LoggingManager.FlushLogCache();
             SettingsClerk.Clerk.OpacityChanged += () =>
             {
-                LogPanelOpacity = SettingsClerk.Clerk.STLogPanelOpacity;
+                LogPanelOpacity = SettingsClerk.Clerk.STLogOpacity;
             };
         }
 

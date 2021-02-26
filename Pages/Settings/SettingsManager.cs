@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyToys.Log.Settings
+using FancyToys.Log;
+using FancyToys.Messenger;
+
+namespace FancyToys.Pages.Settings
 {
     enum SettingType
     {

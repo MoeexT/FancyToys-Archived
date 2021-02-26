@@ -8,7 +8,9 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
-namespace FancyToys.Log.Nursery
+using FancyToys.Log;
+
+namespace FancyToys.Pages.Nursery
 {
     enum OperationCode
     {

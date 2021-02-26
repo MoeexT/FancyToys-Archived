@@ -10,8 +10,10 @@ using Windows.Security.Authentication.Web;
 using Windows.Storage;
 using Windows.UI.Core;
 
-using FancyToys.Log;
+using FancyToys.Pages;
 using System.Diagnostics;
+using FancyToys.Log;
+using FancyToys.Messenger;
 
 namespace FancyToys.Bridge
 {
@@ -87,8 +89,9 @@ namespace FancyToys.Bridge
 
         public bool Post(string message)
         {
-            if (client == null || !client.IsConnected) { return false; }
+            if (client == null || writer == null || !client.IsConnected) { return false; }
             writer.WriteLine(message);
+            LoggingManager.Debug(message);
             writer.Flush();
             return true;
         }

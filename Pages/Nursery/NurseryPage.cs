@@ -19,11 +19,11 @@ using Windows.UI.Core;
 using Microsoft.Toolkit.Uwp.Helpers;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml.Controls.Primitives;
-using FancyToys.Log.Dialog;
+using FancyToys.Pages.Dialog;
 using System.IO;
 using Microsoft.Toolkit.Uwp.UI.Triggers;
 
-namespace FancyToys.Log.Nursery
+namespace FancyToys.Pages.Nursery
 {
     public partial class NurseryPage
     {

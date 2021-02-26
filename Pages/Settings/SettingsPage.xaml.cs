@@ -14,14 +14,15 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-using FancyToys.Log.Dialog;
+using FancyToys.Pages.Dialog;
 using System.ComponentModel;
 using System.Diagnostics;
-using FancyToys.Log.Nursery;
+using FancyToys.Pages.Nursery;
+using FancyToys.Log;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Log.Settings
+namespace FancyToys.Pages.Settings
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
@@ -30,10 +31,10 @@ namespace FancyToys.Log.Settings
     {
         public static SettingsPage Page { private set; get; }
         public double OpacitySliderValue {
-            get => SettingsClerk.Clerk.STLogPanelOpacity;
+            get => SettingsClerk.Clerk.STLogOpacity;
             set
             {
-                SettingsClerk.Clerk.STLogPanelOpacity = value;
+                SettingsClerk.Clerk.STLogOpacity = value;
                 RaisePropertyChanged(nameof(OpacitySliderValue));
             }
         }
@@ -132,7 +133,7 @@ namespace FancyToys.Log.Settings
 
         private void OpatitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            SettingsClerk.Clerk.STLogPanelOpacity = (sender as Slider).Value;
+            SettingsClerk.Clerk.STLogOpacity = (sender as Slider).Value;
         }
 
         private int IndexOfLogLevels()

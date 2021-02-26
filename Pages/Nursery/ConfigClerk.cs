@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FancyToys.Log.Nursery
+namespace FancyToys.Pages.Nursery
 {
     enum ConfigType
     {

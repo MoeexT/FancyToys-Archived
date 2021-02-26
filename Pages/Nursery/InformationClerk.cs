@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 
-namespace FancyToys.Log.Nursery
+using FancyToys.Log;
+
+namespace FancyToys.Pages.Nursery
 {
     public struct InformationStruct
     {

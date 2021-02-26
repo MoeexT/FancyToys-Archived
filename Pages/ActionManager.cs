@@ -1,4 +1,3 @@
-using FancyToys.Bridge;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 
-namespace FancyToys.Log
+using FancyToys.Bridge;
+using FancyToys.Log;
+using FancyToys.Messenger;
+
+namespace FancyToys.Pages
 {
     struct ActionStruct
     {

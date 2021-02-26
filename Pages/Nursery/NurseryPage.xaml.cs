@@ -11,16 +11,17 @@ using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls.Primitives;
 
-using FancyToys.Log.Dialog;
+using FancyToys.Pages.Dialog;
 using Microsoft.UI.Xaml.Controls;
 using System.Reflection;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using System.Collections.ObjectModel;
-using FancyToys.Log.Settings;
+using FancyToys.Pages.Settings;
+using FancyToys.Log;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
-namespace FancyToys.Log.Nursery
+namespace FancyToys.Pages.Nursery
 {
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。

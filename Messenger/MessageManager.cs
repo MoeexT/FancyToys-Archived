@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FancyToys.Log;
-using FancyToys.Log.Settings;
-using FancyToys.Log.Nursery;
+using FancyToys.Pages;
+using FancyToys.Pages.Settings;
+using FancyToys.Pages.Nursery;
 using FancyToys.Bridge;
+using FancyToys.Log;
 
-namespace FancyToys.Log
+namespace FancyToys.Messenger
 {
     enum MessageType
     {
@@ -21,10 +22,24 @@ namespace FancyToys.Log
     }
     class MessageManager
     {
+        private static Queue<MessageStruct?> cache = new Queue<MessageStruct?>();
+
         struct MessageStruct
         {
             public MessageType type;    // 消息类型
             public string content;      // 消息内容
+        }
+
+        public static void Initialize()
+        {
+            PipeBridge.Bridge.PipeOpened += (s, e) =>
+            {
+                while (cache.Count > 0)
+                {
+                    PipeBridge.Bridge.Post(JsonConvert.SerializeObject(cache.Dequeue()));
+                    LoggingManager.Debug($"dequeue");
+                }
+            };
         }
 
         public static void Receive(string message)
@@ -71,7 +86,7 @@ namespace FancyToys.Log
                 case NurseryStruct ns:
                     pdu = PDU(MessageType.nursery, JsonConvert.SerializeObject(ns));
                     break;
-                case Settings.SettingStruct ss:
+                case Pages.Settings.SettingStruct ss:
                     pdu = PDU(MessageType.setting, JsonConvert.SerializeObject(ss));
                     break;
                 default:
@@ -80,7 +95,11 @@ namespace FancyToys.Log
             }
             if (pdu != null)
             {
-                PipeBridge.Bridge.Post(JsonConvert.SerializeObject(pdu));
+                if (!PipeBridge.Bridge.Post(JsonConvert.SerializeObject(pdu)))
+                {
+                    cache.Enqueue(pdu);
+                    LoggingManager.Debug($"enqueue{pdu?.content}");
+                }
             }
         }
 

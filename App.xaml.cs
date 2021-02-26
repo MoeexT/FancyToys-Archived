@@ -11,12 +11,13 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Activation;
 
 using FancyToys.Bridge;
-using FancyToys.Log;
-using FancyToys.Log.Dialog;
+using FancyToys.Pages;
+using FancyToys.Pages.Dialog;
 using Windows.Security.Authentication.Web;
 using System.Diagnostics;
 using Windows.Storage;
-using FancyToys.Log.Settings;
+using FancyToys.Pages.Settings;
+using FancyToys.Messenger;
 
 namespace FancyToys
 {
@@ -116,7 +117,9 @@ namespace FancyToys
             titleBar.ButtonBackgroundColor = Colors.Transparent;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
+            MessageManager.Initialize();
             PipeBridge.Bridge.LaunchThenConnectServer();
+            SettingsClerk.Clerk.InitlailzeLocalSettings();
 
             // 退出确认
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += async (s, _e) => {

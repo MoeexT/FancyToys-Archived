@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -10,14 +10,14 @@
 
 	<Identity
 	  Name="8ad34b35-18d0-4364-ba96-d295b848e52e"
-	  Publisher="CN=Administrator"
-	  Version="1.0.0.0" />
+	  Publisher="CN=MoeexT"
+	  Version="0.2.6.0" />
 
 	<mp:PhoneIdentity PhoneProductId="8ad34b35-18d0-4364-ba96-d295b848e52e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
 	<Properties>
 		<DisplayName>FancyToys</DisplayName>
-		<PublisherDisplayName>Administrator</PublisherDisplayName>
+		<PublisherDisplayName>MoeexT</PublisherDisplayName>
 		<Logo>Assets\StoreLogo.png</Logo>
 	</Properties>
 
@@ -47,7 +47,7 @@
 				<!--<uap:Extension Category="windows.appService">
 				<uap:AppService Name="SystrayExtensionService"/>
 			</uap:Extension>-->
-				<desktop:Extension Category="windows.fullTrustProcess" Executable="Tools\bin\FancyTool.exe">
+				<desktop:Extension Category="windows.fullTrustProcess" Executable="Tools\bin\FancyServer.exe">
 					<!--<desktop:FullTrustProcess>
 					<desktop:ParameterGroup GroupId="ChromeGroup" Parameters="C:\Users\Administrator\桌面\puppet.exe"/>
 					<desktop:ParameterGroup GroupId="WordGroup" Parameters="WINWORD.exe"/>

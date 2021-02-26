@@ -1,5 +1,6 @@
-using FancyToys.Log.Dialog;
-using FancyToys.Log.Nursery;
+using FancyToys.Log;
+using FancyToys.Pages.Dialog;
+using FancyToys.Pages.Nursery;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 
-namespace FancyToys.Log.Settings
+namespace FancyToys.Pages.Settings
 {
     public enum FormSettingType { }
     struct FormSettingStruct { }
@@ -40,10 +41,10 @@ namespace FancyToys.Log.Settings
             OpacityChanged?.Invoke();
         }
 
-        private class SettingsKeyEnum
+        private class SettingKeys
         {
-            public static string ApplicationTheme = "ApplicationTheme";
-            public static string LogPanelOpacity = "LogPanelOpacity";
+            public static string AppTheme = "ApplicationTheme";
+            public static string LogOpacity = "LogPanelOpacity";
             public static string LogLevel = "LogLevel";
             public static string StdLevel = "StdLevel";
             public static string FlushTime = "FlushTime";
@@ -55,58 +56,58 @@ namespace FancyToys.Log.Settings
                 if (Window.Current.Content is FrameworkElement framework)
                 {
                     framework.RequestedTheme = value;
-                    lSettings.Values[SettingsKeyEnum.ApplicationTheme] = value.ToString();
+                    lSettings.Values[SettingKeys.AppTheme] = value.ToString();
                 }
             }
-            get => LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
+            get => LoadEnumSetting<ElementTheme>(SettingKeys.AppTheme, ElementTheme.Default);
         }
 
-        public double STLogPanelOpacity
+        public double STLogOpacity
         {
             set
             {
-                lSettings.Values[SettingsKeyEnum.LogPanelOpacity] = value;
+                lSettings.Values[SettingKeys.LogOpacity] = value;
                 OnOpacityChanged();
             }
-            get => LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.5);
+            get => LoadSetting<double>(SettingKeys.LogOpacity, 0.5);
         }
 
         public LogType STLogLevel
         {
             set
             {
-                lSettings.Values[SettingsKeyEnum.LogLevel] = value.ToString();
+                lSettings.Values[SettingKeys.LogLevel] = value.ToString();
                 SettingsManager.Send(new LogSettingStruct
                 {
                     type = LogSettingType.LogLevel,
                     logLevel = value
                 });
             }
-            get => LoadEnumSetting<LogType>(SettingsKeyEnum.LogLevel, LogType.Info);
+            get => LoadEnumSetting<LogType>(SettingKeys.LogLevel, LogType.Info);
         }
 
         public StdType STStdLevel
         {
             set
             {
-                lSettings.Values[SettingsKeyEnum.StdLevel] = value.ToString();
+                lSettings.Values[SettingKeys.StdLevel] = value.ToString();
                 SettingsManager.Send(new LogSettingStruct
                 {
                     type = LogSettingType.StdLevel,
                     stdLevel = value
                 });
             }
-            get => LoadEnumSetting<StdType>(SettingsKeyEnum.StdLevel, StdType.Error);
+            get => LoadEnumSetting<StdType>(SettingKeys.StdLevel, StdType.Error);
         }
 
         public int STFlushTime
         {
             set
             {
-                lSettings.Values[SettingsKeyEnum.FlushTime] = value;
+                lSettings.Values[SettingKeys.FlushTime] = value;
                 ConfigClerk.SetFlushTime(value);
             }
-            get => LoadSetting<int>(SettingsKeyEnum.FlushTime, 1000);
+            get => LoadSetting<int>(SettingKeys.FlushTime, 1000);
         }
 
 
@@ -114,11 +115,11 @@ namespace FancyToys.Log.Settings
 
         public void InitlailzeLocalSettings()
         {
-            STFlushTime = 1000;
-            STLogLevel = LoadEnumSetting<LogType>(SettingsKeyEnum.LogLevel, LogType.Info);
-            STStdLevel = LoadEnumSetting<StdType>(SettingsKeyEnum.StdLevel, StdType.Error);
-            STLogPanelOpacity = LoadSetting<double>(SettingsKeyEnum.LogPanelOpacity, 0.55);
-            STApplicationTheme = LoadEnumSetting<ElementTheme>(SettingsKeyEnum.ApplicationTheme, ElementTheme.Default);
+            STFlushTime = LoadSetting<int>(SettingKeys.FlushTime, 1000);
+            STLogOpacity = LoadSetting<double>(SettingKeys.LogOpacity, 0.55);
+            STLogLevel = LoadEnumSetting<LogType>(SettingKeys.LogLevel, LogType.Info);
+            STStdLevel = LoadEnumSetting<StdType>(SettingKeys.StdLevel, StdType.Error);
+            STApplicationTheme = LoadEnumSetting<ElementTheme>(SettingKeys.AppTheme, ElementTheme.Default);
         }
 
 
@@ -126,11 +127,12 @@ namespace FancyToys.Log.Settings
         {
             if (lSettings.Values.TryGetValue(sKey, out object value))
             {
+                Debug.WriteLine($"got: {(T)value}");
                 return (T)value;
             }
             else
             {
-                LoggingManager.Info($"Load default {sKey} setting: {(T)dValue}");
+                Debug.WriteLine($"Load default {sKey} setting: {(T)dValue}");
                 return (T)dValue;
             }
         }
@@ -143,11 +145,12 @@ namespace FancyToys.Log.Settings
                  * After uncomment this line, the program whill fall into endless loop.
                  * I tried to find the reason but failed. 
                 LoggingManager.Debug($"Load setting: {(value as string)}");*/
+                Debug.WriteLine($"got: {ParseEnum<T>(value as string)}");
                 return ParseEnum<T>(value as string);
             }
             else
             {
-                LoggingManager.Info($"Load default {sKey} setting: {(T)dValue}");
+                Debug.WriteLine($"Load default {sKey} setting: {dValue}");
                 return (T)dValue;
             }
         }
