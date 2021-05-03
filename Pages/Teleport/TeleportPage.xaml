@@ -1,0 +1,91 @@
+<Page
+    x:Class="FancyToys.Pages.Teleport.TeleportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FancyToys.Pages.Teleport"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    >
+
+    <Grid Margin="5,0,0,2" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="160" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0">
+                <ScrollViewer >
+                    <RichTextBlock VerticalAlignment="Stretch">
+                        <Paragraph Foreground="Aqua">
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Helloello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Helloello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                            Hello World!Hello World!Hello World!Hello World!Hello World!
+                        </Paragraph>
+                    </RichTextBlock>
+                </ScrollViewer>
+            </Border>
+            
+            <RichEditBox Grid.Row="1" VerticalAlignment="Stretch"
+                         CornerRadius="1"
+                         >
+
+            </RichEditBox>
+        </Grid>
+        
+        <Grid Grid.Column="1">
+            
+        </Grid>
+    </Grid>
+</Page>

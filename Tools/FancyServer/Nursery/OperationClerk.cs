@@ -2,7 +2,7 @@ using System.Windows.Forms;
 
 using FancyServer.Log;
 using FancyServer.Messenger;
-using FancyServer.Utils;
+using FancyUtil;
 
 namespace FancyServer.Nursery
 {

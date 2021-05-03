@@ -111,7 +111,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messenger\NoformToNursery.cs" />
     <Compile Include="Messenger\NurseryToNoform.cs" />
-    <Compile Include="Utils\JsonUtil.cs" />
     <EmbeddedResource Include="NotifyForm\NoForm.resx">
       <DependentUpon>NoForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -162,6 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Persistence\" />
+    <Folder Include="Util\" />
   </ItemGroup>
+  <Import Project="..\FancyUtil\FancyUtil.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

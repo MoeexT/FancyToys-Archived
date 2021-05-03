@@ -33,6 +33,7 @@ using FancyToys.Pages.Settings;
 using FancyToys.Bridge;
 using Windows.UI.Core;
 using System.Diagnostics;
+using FancyToys.Pages.Teleport;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 namespace FancyToys.Pages
@@ -46,6 +47,7 @@ namespace FancyToys.Pages
         {
             ("nursery", typeof(NurseryPage)),
             ("trimage", typeof(TrimagePage)),
+            ("teleport", typeof(TeleportPage)),
             //("avideo", typeof(AVideoPage)),
             ("fancyServer", typeof(ServerPage)),
         };

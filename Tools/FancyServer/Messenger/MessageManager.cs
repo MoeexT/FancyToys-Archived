@@ -4,7 +4,8 @@ using FancyServer.Log;
 using FancyServer.Bridge;
 using FancyServer.Nursery;
 using FancyServer.NotifyForm;
-using FancyServer.Utils;
+
+using FancyUtil;
 
 namespace FancyServer.Messenger
 {
@@ -38,7 +39,7 @@ namespace FancyServer.Messenger
 
         public static void Deal(string message)
         {
-            bool success = JsonUtil.ParseStruct<MessageStruct>(message, out MessageStruct ms);
+            bool success = JsonUtil.ParseStruct(message, out MessageStruct ms);
             if (success)
             {
                 switch (ms.type)
