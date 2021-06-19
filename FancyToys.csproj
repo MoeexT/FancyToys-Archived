@@ -138,7 +138,7 @@
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Log\LoggingManager.cs" />
+    <Compile Include="Logging\LoggingManager.cs" />
     <Compile Include="Messenger\MessageManager.cs" />
     <Compile Include="Pages\ActionManager.cs" />
     <Compile Include="Pages\Dialog\ConfirmCloseDialog.xaml.cs">
@@ -174,6 +174,12 @@
     <Compile Include="Pages\Settings\SettingsManager.cs" />
     <Compile Include="Pages\Settings\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Teleport\TeleportPage.xaml.cs">
+      <DependentUpon>TeleportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Teleport\TeleportUnit.xaml.cs">
+      <DependentUpon>TeleportUnit.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -279,6 +285,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\Teleport\TeleportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Teleport\TeleportUnit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="FancyToys_TemporaryKey.pfx" />
@@ -298,6 +312,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>FancyToys_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

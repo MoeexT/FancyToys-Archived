@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using FancyServer.Log;
+using FancyServer.Logging;
 using FancyServer.Messenger;
 
 namespace FancyServer.NotifyForm

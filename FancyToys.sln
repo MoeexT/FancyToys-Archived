@@ -11,7 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FancyTest", "Tools\FancyTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FancyTool", "Tools\FancyTool\FancyTool.csproj", "{E70084E8-95B2-4A7E-852F-46EFDFD2BA1E}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FancyUtil", "Tools\FancyUtil\FancyUtil.shproj", "{5D7922B8-9FA2-4064-97DB-17987A3105F3}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tools\FancyUtil\FancyUtil.projitems*{5d7922b8-9fa2-4064-97db-17987a3105f3}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM

@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-using FancyServer.Log;
+using FancyServer.Logging;
 using FancyServer.Messenger;
-using FancyServer.Utils;
+using FancyUtil;
 using System;
 
 namespace FancyServer.Nursery

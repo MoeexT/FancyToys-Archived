@@ -12,7 +12,7 @@ using Windows.UI.Core;
 
 using FancyToys.Pages;
 using System.Diagnostics;
-using FancyToys.Log;
+using FancyToys.Logging;
 using FancyToys.Messenger;
 
 namespace FancyToys.Bridge

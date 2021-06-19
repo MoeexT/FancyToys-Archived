@@ -18,7 +18,7 @@ using FancyToys.Pages.Dialog;
 using System.ComponentModel;
 using System.Diagnostics;
 using FancyToys.Pages.Nursery;
-using FancyToys.Log;
+using FancyToys.Logging;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 

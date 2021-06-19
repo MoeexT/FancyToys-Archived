@@ -9,7 +9,7 @@ using FancyToys.Pages;
 using FancyToys.Pages.Settings;
 using FancyToys.Pages.Nursery;
 using FancyToys.Bridge;
-using FancyToys.Log;
+using FancyToys.Logging;
 
 namespace FancyToys.Messenger
 {

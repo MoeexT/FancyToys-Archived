@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-using FancyServer.Log;
+using FancyServer.Logging;
 
 namespace FancyServer.Nursery
 {

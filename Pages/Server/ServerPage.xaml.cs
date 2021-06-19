@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-using FancyToys.Log;
+using FancyToys.Logging;
 using FancyToys.Pages.Dialog;
 using FancyToys.Pages.Settings;
 

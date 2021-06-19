@@ -1,4 +1,4 @@
-using FancyToys.Log;
+using FancyToys.Logging;
 using FancyToys.Pages.Dialog;
 using FancyToys.Pages.Nursery;
 using System;

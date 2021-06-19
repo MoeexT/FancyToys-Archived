@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FancyToys.Log;
+using FancyToys.Logging;
 using FancyToys.Messenger;
 
 namespace FancyToys.Pages.Nursery

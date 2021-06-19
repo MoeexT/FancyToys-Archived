@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using FancyServer.NotifyForm;
 using FancyServer.Nursery;
 using FancyServer.Bridge;
-using FancyServer.Log;
+using FancyServer.Logging;
 
 namespace FancyServer.Messenger
 {

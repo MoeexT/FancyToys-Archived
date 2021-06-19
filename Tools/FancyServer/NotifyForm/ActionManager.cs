@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 using FancyServer.Messenger;
 using System.Threading;
-using FancyServer.Utils;
+using FancyUtil;
 
 namespace FancyServer.NotifyForm
 {

@@ -8,7 +8,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 
 using FancyToys.Bridge;
-using FancyToys.Log;
+using FancyToys.Logging;
 using FancyToys.Messenger;
 
 namespace FancyToys.Pages

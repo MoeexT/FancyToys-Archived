@@ -10,7 +10,7 @@ using System.Security.Principal;
 using System.Security.AccessControl;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel;
-using FancyServer.Log;
+using FancyServer.Logging;
 
 namespace FancyServer.Bridge
 {

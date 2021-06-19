@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using FancyServer.Log;
+using FancyServer.Logging;
 using FancyServer.Messenger;
 
 namespace FancyServer.Nursery

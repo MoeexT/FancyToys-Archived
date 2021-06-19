@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using FancyServer.Messenger;
-using FancyServer.Log;
+using FancyServer.Logging;
 
 namespace FancyServer.Nursery
 {
