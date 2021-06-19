@@ -306,7 +306,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Cache\" />
+    <Folder Include="util\collection\" />
   </ItemGroup>
+  <Import Project="Tools\FancyUtil\FancyUtil.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
