@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using FancyServer.Nursery;
 
@@ -15,7 +10,7 @@ namespace FancyServer.Messenger
     ///       ↑          
     ///    NoForm
     /// </summary>
-    class NoformToOperation
+    internal static class NoformToOperation
     {
         public static void AddProcess(string pathName)
         {
@@ -24,7 +19,7 @@ namespace FancyServer.Messenger
 
         public static void StartProcess(string pathName)
         {
-            OperationClerk.StartProcess(pathName, "");
+            OperationClerk.StartProcess(pathName);
         }
 
         public static void StopProcess(string pathName)

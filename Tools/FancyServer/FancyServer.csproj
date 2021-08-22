@@ -161,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Persistence\" />
-    <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="..\FancyUtil\FancyUtil.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

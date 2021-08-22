@@ -195,6 +195,7 @@
     <Content Include="Assets\Tools\Newtonsoft.Json.dll" />
     <Content Include="Assets\Tools\NurseryLauncher.exe" />
     <Content Include="Assets\Tools\NurseryMonitor.exe" />
+    <Content Include="counter.py" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -208,6 +209,7 @@
     <Content Include="Tools\bin\FancyTool.exe" />
     <Content Include="Tools\bin\Newtonsoft.Json.dll" />
     <Content Include="Tools\bin\NLog.dll" />
+    <Content Include="Tools\cp.py" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -306,7 +308,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Cache\" />
-    <Folder Include="util\collection\" />
   </ItemGroup>
   <Import Project="Tools\FancyUtil\FancyUtil.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

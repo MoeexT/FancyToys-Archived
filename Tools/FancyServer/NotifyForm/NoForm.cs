@@ -9,10 +9,9 @@ namespace FancyServer.NotifyForm
 
     public partial class NoForm : Form
     {
-        delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
-        private static readonly NoForm form = new NoForm();
+        private delegate void CrossThreadDelegate();  // 跨线程更改NoForm控件的委托
 
-        public static NoForm Form => form;
+        public static NoForm Form { get; } = new NoForm();
 
         private NoForm()
         {
@@ -25,22 +24,17 @@ namespace FancyServer.NotifyForm
         {
             NurserySeparatorItem.Paint += new PaintEventHandler((s, e) =>
             {
-                ToolStripSeparator sep = s as ToolStripSeparator;
-                e.Graphics.FillRectangle(new SolidBrush(Color.White),
-                    0, 0, sep.Width, sep.Height);
-                e.Graphics.DrawLine(new Pen(Color.Black),
-                    25, sep.Height / 2, sep.Width - 4, sep.Height / 2);
+                if (!(s is ToolStripSeparator sep)) return;
+                e.Graphics.FillRectangle(new SolidBrush(Color.White), 0, 0, sep.Width, sep.Height);
+                e.Graphics.DrawLine(new Pen(Color.Black), 25, sep.Height / 2, sep.Width - 4, sep.Height / 2);
             });
         }
 
         private void TheNotifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
-            MouseEventArgs _e = e as MouseEventArgs;
-            if (_e.Button == MouseButtons.Left)
-            {
-                ActionManager.ShowWindow();
-                LogClerk.Debug("NotifyIcon MouseClick");
-            }
+            if (e.Button != MouseButtons.Left) return;
+            ActionManager.ShowWindow();
+            LogClerk.Debug("NotifyIcon MouseClick");
         }
 
         /// <summary>
@@ -62,21 +56,21 @@ namespace FancyServer.NotifyForm
              *          ↓                                                          |
              * ToolStripDropDownItem ----------------------------------------------|
              */
-            bool hasThisPS = false;
+            bool hasThisProcess = false;
             foreach (ToolStripItem item in NurseryMenu.DropDownItems)
             {
-                if (item.ToolTipText != null && item.ToolTipText.Equals(pathName)) { hasThisPS = true; }
+                if (item.ToolTipText != null && item.ToolTipText.Equals(pathName)) { hasThisProcess = true; }
             }
-            if (!hasThisPS)
+            if (!hasThisProcess)
             {
-                var newItem = ActionManager.GetItem(pathName);
+                ToolStripMenuItem newItem = ActionManager.GetItem(pathName);
                 BeginInvoke(new CrossThreadDelegate(() =>
                 {
                     NurseryMenu.DropDownItems.Add(newItem);
                 }));
                 LogClerk.Info($"Added {pathName}");
             }
-            return !hasThisPS;
+            return !hasThisProcess;
         }
 
         public bool SetNurseryItemCheckState(string pathName, CheckState checkState)
@@ -87,7 +81,7 @@ namespace FancyServer.NotifyForm
                 {
                     BeginInvoke(new CrossThreadDelegate(() =>
                     {
-                        (item as ToolStripMenuItem).CheckState = checkState;
+                        ((ToolStripMenuItem) item).CheckState = checkState;
 
                     }));
                     LogClerk.Info($"Set {item.Text} {checkState}");

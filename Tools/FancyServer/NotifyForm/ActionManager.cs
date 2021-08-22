@@ -3,48 +3,35 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Newtonsoft.Json;
-
-using FancyServer.Messenger;
-using System.Threading;
 using FancyUtil;
 
-namespace FancyServer.NotifyForm
-{
-    struct ActionStruct
-    {
-        public bool showWindow;     // 显示主界面
-        public bool exitApp;        // 退出程序
+using FancyServer.Messenger;
+
+
+namespace FancyServer.NotifyForm {
+
+    internal struct ActionStruct {
+        public bool showWindow; // 显示主界面
+        public bool exitApp; // 退出程序
     }
-    class ActionManager
-    {
 
-        private static bool isShown = true;
-        private static DateTime lastReversedShowState = DateTime.Now;
-        public static bool IsShown { get => isShown; set => isShown = value; }
-        public static DateTime LastReversedShowState { get => lastReversedShowState; set => lastReversedShowState = value; }
+    internal static class ActionManager {
+        private static bool IsShown { get; set; } = true;
 
-        public static void Deal(string message)
-        {
-            bool success = JsonUtil.ParseStruct<ActionStruct>(message, out ActionStruct ac);
-            if (success)
-            {
-                if (ac.exitApp)
-                {
-                    ExitApp();
-                }
-                if (!ac.showWindow)
-                {
-                    IsShown = false;
-                }
-            }
+        public static DateTime LastReversedShowState { get; set; } = DateTime.Now;
+
+        public static void Deal(string message) {
+            bool success = JsonUtil.ParseStruct(message, out ActionStruct ac);
+
+            if (!success) return;
+            if (ac.exitApp) ExitApp();
+            if (!ac.showWindow) IsShown = false;
         }
 
         /// <summary>
         /// Server控制 显示/隐藏前端页面
         /// </summary>
-        public static void ShowWindow()
-        {
+        public static void ShowWindow() {
             IsShown = true;
             Send(true, false);
         }
@@ -52,20 +39,16 @@ namespace FancyServer.NotifyForm
         /// <summary>
         /// 退出应用
         /// </summary>
-        public static void TryExitApp()
-        {
+        public static void TryExitApp() {
             Send(false, true);
             MessageManager.CloseServer();
             Application.Exit();
         }
-        
-        private static void ExitApp()
-        {
+
+        private static void ExitApp() {
             MessageManager.CloseServer();
-            Thread.Sleep(5000);
             Application.Exit();
         }
-
 
 
         /// <summary>
@@ -84,26 +67,18 @@ namespace FancyServer.NotifyForm
         /// <param name="show">show UWP</param>
         /// <param name="exit">tell UWP to exit application</param>
         /// <returns></returns>
-        private static void Send(bool show, bool exit)
-        {
-            ActionStruct pdu = new ActionStruct
-            {
-                showWindow = show && !exit,
-                exitApp = exit
-            };
+        private static void Send(bool show, bool exit) {
+            ActionStruct pdu = new ActionStruct {showWindow = show && !exit, exitApp = exit};
             MessageManager.Send(pdu);
         }
 
 
-        public static ToolStripMenuItem GetItem(string pathName, string processName = null)
-        {
-            if (processName == null || processName.Equals(string.Empty))
-            {
+        public static ToolStripMenuItem GetItem(string pathName, string processName = null) {
+            if (processName == null || processName.Equals(string.Empty)) {
                 processName = Path.GetFileNameWithoutExtension(pathName);
             }
 
-            ToolStripMenuItem item = new ToolStripMenuItem()
-            {
+            ToolStripMenuItem item = new ToolStripMenuItem() {
                 Text = processName,
                 // Tag = pathName,
                 AutoToolTip = true,
@@ -112,19 +87,19 @@ namespace FancyServer.NotifyForm
                 BackColor = Color.White,
                 CheckState = CheckState.Unchecked
             };
-            item.Click += new EventHandler((s, e) => {
+
+            item.Click += (s, e) => {
                 ToolStripMenuItem i = s as ToolStripMenuItem;
+
                 // 这里有不懂的地方(bug)：`i.CheckState`理应为Unchecked，却总是为Checked 现在没了
-                if (i.CheckState == CheckState.Checked)
-                {
+                if (i?.CheckState == CheckState.Checked) {
                     NoformToOperation.StopProcess(i.ToolTipText);
+                } else {
+                    NoformToOperation.StartProcess(i?.ToolTipText);
                 }
-                else
-                {
-                    NoformToOperation.StartProcess(i.ToolTipText);
-                }
-            });
+            };
             return item;
         }
     }
+
 }

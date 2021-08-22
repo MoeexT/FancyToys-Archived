@@ -13,8 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FancyTool", "Tools\FancyToo
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FancyUtil", "Tools\FancyUtil\FancyUtil.shproj", "{5D7922B8-9FA2-4064-97DB-17987A3105F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2478017F-0070-43DC-970B-9F7D456A455E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tools\FancyUtil\FancyUtil.projitems*{0dd03d12-8626-44bf-b1e4-2d2d096f008d}*SharedItemsImports = 4
+		Tools\FancyUtil\FancyUtil.projitems*{359b9806-02b0-4d04-896e-ff2eb6769e82}*SharedItemsImports = 4
 		Tools\FancyUtil\FancyUtil.projitems*{5d7922b8-9fa2-4064-97db-17987a3105f3}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,41 +1,36 @@
-namespace FancyServer.Logging
-{
-    public enum StdType
-    {
-        //StandardIn = 0,
+
+namespace FancyServer.Logging {
+
+    public enum StdType {
+        //Input = 0,
         Output = 1,
         Error = 2,
     }
-    public struct StdStruct
-    {
+
+    public struct StdStruct {
         public StdType type;
         public string process;
         public string content;
     }
 
-    public class StdClerk
-    {
+    public static class StdClerk {
         public static StdType StdLevel { get; set; } = StdType.Error;
 
-        public static void StdOutput(string process, string message)
-        {
-            LoggingManager.Send(new StdStruct
-            {
+        public static void StdOutput(string process, string message) {
+            LoggingManager.Send(new StdStruct {
                 type = StdType.Output,
                 process = process,
                 content = message,
             });
         }
 
-        public static void StdError(string process, string message)
-        {
-            LoggingManager.Send(new StdStruct
-            {
+        public static void StdError(string process, string message) {
+            LoggingManager.Send(new StdStruct {
                 type = StdType.Error,
                 process = process,
                 content = message,
             });
         }
-
     }
+
 }

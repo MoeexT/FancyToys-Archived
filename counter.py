@@ -13,7 +13,7 @@ def dfs(path):
         if os.path.isdir(pf):
             dfs(pf)
         else:
-            if f.endswith("cs") and 'obj' not in pf:
+            if '.g.' not in f and f.endswith("cs") and 'obj' not in pf:
                 counter(pf)
 
 
@@ -25,5 +25,5 @@ def counter(csfile):
 
 
 if __name__ == "__main__":
-    dfs(r"C:\Users\Administrator\OneDrive\文档\Visual Studio 2019\FancyToys")
+    dfs(r"./")
     print(COUNT, "lines")
